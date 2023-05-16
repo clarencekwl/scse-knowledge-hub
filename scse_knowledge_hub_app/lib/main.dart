@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/pages/home_page.dart';
 import 'package:scse_knowledge_hub_app/pages/splash_screen_page.dart';
 import 'package:scse_knowledge_hub_app/pages/unknown_page.dart';
+import 'package:scse_knowledge_hub_app/utils/router.dart';
+import 'package:scse_knowledge_hub_app/utils/styles.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,9 +52,16 @@ class _MyAppState extends State<MyApp> {
           title: 'SCSE Knowledge Hub',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
+            // appBarTheme: AppBarTheme(
+            //     iconTheme: IconThemeData(color: Colors.white),
+            //     color: Styles.primaryBlueColor,
+            //     systemOverlayStyle: SystemUiOverlayStyle(
+            //         statusBarColor: Styles.primaryBlueColor,
+            //         statusBarBrightness: Brightness.light,
+            //         statusBarIconBrightness: Brightness.light)),
             // Define the default brightness and colors
             // brightness: Brightness.dark,
-            primaryColor: Colors.white,
+            primaryColor: Styles.primaryBlueColor,
             // accentColor: Colors.grey,
             brightness: Brightness.light,
             // primaryIconTheme: Theme.of(context).primaryIconTheme.copyWith(
@@ -94,9 +103,9 @@ class _MyAppState extends State<MyApp> {
             // cardTheme: CardTheme(),
           ),
           themeMode: ThemeMode.light,
-          initialRoute: SplashScreenPage.routeName,
+          // initialRoute: SplashScreenPage.routeName,
           home: HomePage(),
-          // routes: appRoutes as Map<String, Widget Function(BuildContext)>,
+          routes: appRoutes as Map<String, Widget Function(BuildContext)>,
           onUnknownRoute: (RouteSettings settings) {
             return MaterialPageRoute(
               builder: (BuildContext context) => UnknownPage(),

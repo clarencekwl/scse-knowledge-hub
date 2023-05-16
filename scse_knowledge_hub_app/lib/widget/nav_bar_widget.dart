@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -41,6 +43,7 @@ class NavBar extends StatelessWidget {
             Icons.home,
             "Home",
             () {
+              log("pressed home");
               Navigator.popUntil(
                 context,
                 ModalRoute.withName(Navigator.defaultRouteName),
@@ -55,17 +58,16 @@ class NavBar extends StatelessWidget {
     );
   }
 
-  ListTile drawerList(IconData icon, String title, Function onTap) {
+  ListTile drawerList(IconData icon, String title, Function()? onTap) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: Colors.white,
-      ),
-      title: Text(
-        title,
-        style: const TextStyle(color: Colors.white),
-      ),
-      onTap: () => onTap,
-    );
+        leading: Icon(
+          icon,
+          color: Colors.white,
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(color: Colors.white),
+        ),
+        onTap: onTap);
   }
 }
