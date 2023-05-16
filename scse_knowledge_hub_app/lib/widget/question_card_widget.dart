@@ -1,12 +1,15 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 
 class QuestionCard extends StatefulWidget {
+  final Question question;
   final VoidCallback? onTap;
   const QuestionCard({
     Key? key,
+    required this.question,
     this.onTap,
   }) : super(key: key);
   @override
@@ -42,19 +45,19 @@ class _QuestionCardState extends State<QuestionCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Title of Question",
+          Text(widget.question.title,
               style: TextStyle(
-                  color: Styles.primaryBlueColor,
+                  color: Styles.titleTextColor,
                   overflow: TextOverflow.ellipsis,
                   fontWeight: FontWeight.bold,
                   fontSize: 18)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             mainAxisSize: MainAxisSize.min,
-            children: const [
+            children: [
               Expanded(
                 child: Text(
-                  "Clarence",
+                  widget.question.user,
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ),
@@ -65,7 +68,7 @@ class _QuestionCardState extends State<QuestionCard> {
             child: Align(
               alignment: Alignment.center,
               child: Text(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliquaadasdasdasdas dasdasdasdas dasdasdasdasd asdasdad dasd aasdasd asdasda sda sd.",
+                widget.question.description,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 12),
@@ -76,8 +79,10 @@ class _QuestionCardState extends State<QuestionCard> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              bottomRowIcons(Icons.thumb_up_sharp, "50 Likes"),
-              bottomRowIcons(Icons.reply_rounded, "50 Replies")
+              bottomRowIcons(
+                  Icons.thumb_up_alt_rounded, "${widget.question.likes} Likes"),
+              bottomRowIcons(
+                  Icons.reply_rounded, "${widget.question.replies} Replies")
             ],
           )
         ],

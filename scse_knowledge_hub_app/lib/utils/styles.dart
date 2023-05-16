@@ -7,6 +7,7 @@ class Styles {
   static Color primaryBackgroundColor = const Color.fromRGBO(194, 194, 194, 1);
   static Color primaryGreyColor = const Color.fromRGBO(58, 66, 86, 1.0);
   static Color secondaryBlueColor = const Color.fromRGBO(53, 92, 125, 1);
+  static Color titleTextColor = Color.fromRGBO(48, 121, 210, 1);
   static Color primaryBlueColor = Color.fromRGBO(48, 121, 210, 0.745);
 
   static Column buttonColumn(IconData icon, String label) {

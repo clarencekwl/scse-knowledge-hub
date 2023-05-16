@@ -1,9 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:provider/provider.dart';
+import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/nav_bar_widget.dart';
 import 'package:scse_knowledge_hub_app/widget/no_glow_scroll.dart';
@@ -17,6 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late QuestionProvider _questionProvider;
   ScrollController _scrollController = ScrollController();
   final String _welcomeText = "Hi, Clarence";
   late String _titleText;
@@ -26,6 +26,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    Future.microtask(() async {
+      await _questionProvider.getAllQuestions();
+      log("hi  ${_questionProvider.listOfQuestions.length}");
+    });
     _titleText = _welcomeText;
     _scrollController = ScrollController()
       ..addListener(() {
@@ -41,6 +45,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    _questionProvider = Provider.of(context);
     return Scaffold(
       drawer: NavBar(),
       body: SafeArea(
@@ -113,10 +118,11 @@ class _HomePageState extends State<HomePage> {
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
                       return QuestionCard(
+                        question: _questionProvider.listOfQuestions[index],
                         onTap: () {},
                       );
                     },
-                    childCount: 20,
+                    childCount: _questionProvider.listOfQuestions.length,
                   ),
                 ),
               ],
