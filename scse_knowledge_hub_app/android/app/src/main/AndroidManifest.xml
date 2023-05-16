@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.scse_knowledge_hub_app">
    <application
-        android:label="scse_knowledge_hub_app"
+        android:label="SCSE Knowledge Hub"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
