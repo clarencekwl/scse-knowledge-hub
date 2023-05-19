@@ -15,7 +15,7 @@ class QuestionProvider extends ChangeNotifier {
           id: i,
           title: _tempListOfTitles[Random().nextInt(_tempListOfNames.length)],
           description:
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliquaadasdasdasdas dasdasdasdas dasdasdasdasd asdasdad dasd aasdasd asdasda sdaa dasd dsd sd s",
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliquaadasdasdasdas dasdasdasdas dasdasdasdasd asdasdad dasd aasdasd asdasda sdaa dasd dsd sd szxc asdas d asd dsd asd dsd sds d",
           user: _tempListOfNames[Random().nextInt(_tempListOfNames.length)],
           likes: Random().nextInt(100),
           replies: Random().nextInt(100)));

@@ -4,21 +4,28 @@ import 'package:flutter/material.dart';
 
 class Styles {
   //* SCSE Knowledge Hub Styles
-  static Color primaryBackgroundColor = const Color.fromRGBO(194, 194, 194, 1);
+  static Color primaryBackgroundColor = const Color.fromRGBO(239, 242, 247, 1);
   static Color primaryGreyColor = const Color.fromRGBO(58, 66, 86, 1.0);
-  static Color secondaryBlueColor = const Color.fromRGBO(53, 92, 125, 1);
   static Color titleTextColor = Color.fromRGBO(48, 121, 210, 1);
+  static Color titleDetailsTextColor = Color.fromRGBO(48, 81, 210, 1);
   static Color primaryBlueColor = Color.fromRGBO(48, 121, 210, 0.745);
 
-  static Column buttonColumn(IconData icon, String label) {
-    return Column(
+  static Row bottomRowIcons(IconData icon, String text) {
+    return Row(
       mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-            padding: const EdgeInsets.only(bottom: 5),
-            child: Icon(icon, color: Colors.grey)),
-        Text(label, style: TextStyle(color: Colors.grey))
+        Icon(
+          icon,
+          size: 20,
+          color: Colors.grey,
+        ),
+        SizedBox(
+          width: 5,
+        ),
+        Text(
+          text,
+          style: TextStyle(color: Colors.grey, fontSize: 10),
+        )
       ],
     );
   }

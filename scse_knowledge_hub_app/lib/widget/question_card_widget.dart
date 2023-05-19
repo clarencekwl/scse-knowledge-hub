@@ -19,8 +19,7 @@ class QuestionCard extends StatefulWidget {
 class _QuestionCardState extends State<QuestionCard> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
+    return SizedBox(
       height: 175,
       // width: Styles.kScreenWidth(context) * 0.9,
       child: Card(
@@ -28,12 +27,7 @@ class _QuestionCardState extends State<QuestionCard> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: InkWell(
             borderRadius: BorderRadius.circular(20),
-            onTap: widget.onTap ??
-                () {
-                  // Navigator.of(context).push(MaterialPageRoute(
-                  //     builder: (context) =>
-                  //         CaseDetailsPage(item: widget.item)));
-                },
+            onTap: widget.onTap,
             child: cardDetails()),
       ),
     );
@@ -79,34 +73,14 @@ class _QuestionCardState extends State<QuestionCard> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              bottomRowIcons(
+              Styles.bottomRowIcons(
                   Icons.thumb_up_alt_rounded, "${widget.question.likes} Likes"),
-              bottomRowIcons(
+              Styles.bottomRowIcons(
                   Icons.reply_rounded, "${widget.question.replies} Replies")
             ],
           )
         ],
       ),
-    );
-  }
-
-  Row bottomRowIcons(IconData icon, String text) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Colors.grey,
-        ),
-        SizedBox(
-          width: 5,
-        ),
-        Text(
-          text,
-          style: TextStyle(color: Colors.grey, fontSize: 10),
-        )
-      ],
     );
   }
 }
