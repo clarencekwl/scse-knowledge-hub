@@ -2,8 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:scse_knowledge_hub_app/pages/home_page.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 
 class NavBar extends StatelessWidget {
