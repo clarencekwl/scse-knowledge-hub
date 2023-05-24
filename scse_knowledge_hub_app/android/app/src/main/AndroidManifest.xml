@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.scse_knowledge_hub_app">
+    package="com.clarence.scsekh">
    <application
         android:label="SCSE Knowledge Hub"
         android:name="${applicationName}"

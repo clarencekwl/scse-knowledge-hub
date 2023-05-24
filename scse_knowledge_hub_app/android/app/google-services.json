@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "383722446110",
+    "project_id": "scse-knowledge-hub",
+    "storage_bucket": "scse-knowledge-hub.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383722446110:android:e07e582a6e3d29c5723d0f",
+        "android_client_info": {
+          "package_name": "com.clarence.scsekh"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "383722446110-vladeufq9ms2p37ujoht49q149junka2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCBKRm-CvhAcxUgTPCF_dn7L2KNYHqyy8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "383722446110-vladeufq9ms2p37ujoht49q149junka2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "383722446110-hqkkavq43ots333sbcl8a54ch6b1mus9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.clarence.scsekh"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
       ..addListener(() {
         _currentSliverAppBarExpandedStatus = _isSliverAppBarExpanded;
         _isSliverAppBarExpanded = _scrollController.offset >
-            (Styles.kScreenHeight(context) * 0.18 - kToolbarHeight);
+            (Styles.kScreenHeight(context) * 0.16 - kToolbarHeight);
         if (_isSliverAppBarExpanded != _currentSliverAppBarExpandedStatus) {
           _titleText = _isSliverAppBarExpanded ? "Questions" : _welcomeText;
           setState(() {});
@@ -61,8 +61,9 @@ class _HomePageState extends State<HomePage> {
                 SliverAppBar(
                     pinned: true,
                     backgroundColor: Styles.primaryGreyColor,
-                    expandedHeight: Styles.kScreenHeight(context) * 0.18,
+                    expandedHeight: Styles.kScreenHeight(context) * 0.16,
                     flexibleSpace: FlexibleSpaceBar(
+                      centerTitle: false,
                       titlePadding: _isSliverAppBarExpanded
                           ? EdgeInsets.only(top: 10, bottom: 10, left: 50)
                           : EdgeInsets.only(bottom: 20, left: 25),

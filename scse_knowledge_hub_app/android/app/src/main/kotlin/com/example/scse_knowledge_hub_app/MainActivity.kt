@@ -1,4 +1,4 @@
-package com.example.scse_knowledge_hub_app
+package com.clarence.scsekh
 
 import io.flutter.embedding.android.FlutterActivity
 
