@@ -24,9 +24,10 @@ class _QuestionCardState extends State<QuestionCard> {
         elevation: 5,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: InkWell(
-            borderRadius: BorderRadius.circular(20),
-            onTap: widget.onTap,
-            child: cardDetails()),
+          borderRadius: BorderRadius.circular(20),
+          onTap: widget.onTap,
+          child: cardDetails(),
+        ),
       ),
     );
   }
@@ -49,7 +50,7 @@ class _QuestionCardState extends State<QuestionCard> {
             children: [
               Expanded(
                 child: Text(
-                  widget.question.user,
+                  widget.question.user ?? 'EMPTY FK',
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ),

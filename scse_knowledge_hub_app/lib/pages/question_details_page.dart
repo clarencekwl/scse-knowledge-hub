@@ -94,7 +94,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.question.user,
+            Text(widget.question.user ?? 'EMPTY FK',
                 style: TextStyle(
                     color: Colors.black,
                     overflow: TextOverflow.ellipsis,

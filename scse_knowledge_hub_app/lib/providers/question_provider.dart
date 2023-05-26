@@ -1,27 +1,82 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
-import 'dart:math';
+import 'package:scse_knowledge_hub_app/api/question_api.dart' as QuestionAPI;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scse_knowledge_hub_app/reponse/question_response.dart';
 
 class QuestionProvider extends ChangeNotifier {
+  final FirebaseFirestore db = FirebaseFirestore.instance;
+
   List<Question> _listOfQuestions = [];
   List<Question> get listOfQuestions => _listOfQuestions;
   set listOfQuestions(List<Question> listOfQuestions) {
     _listOfQuestions = listOfQuestions;
   }
 
-  Future<void> getAllQuestions() async {
-    for (int i = 0; i < 15; i++) {
-      _listOfQuestions.add(Question(
-          id: i,
-          title: _tempListOfTitles[Random().nextInt(_tempListOfNames.length)],
-          description:
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliquaadasdasdasdas dasdasdasdas dasdasdasdasd asdasdad dasd aasdasd asdasda sdaa dasd dsd sd szxc asdas d asd dsd asd dsd sds d",
-          user: _tempListOfNames[Random().nextInt(_tempListOfNames.length)],
-          likes: Random().nextInt(100),
-          replies: Random().nextInt(100)));
-      notifyListeners();
+  Future<void> getQuestionsFromDB() async {
+    startLoading();
+    ListOfQuestionReponse? res = await QuestionAPI.getQuestionsFromDB();
+    if (null == res) {
+      _listOfQuestions = [];
+    } else {
+      _listOfQuestions = res.listofQuestions;
     }
+    for (int i = 0; i < _listOfQuestions.length; i++) {
+      _listOfQuestions[i].user =
+          _tempListOfNames[math.Random().nextInt(_tempListOfNames.length)];
+      if (_listOfQuestions[i].likes == null) {
+        _listOfQuestions[i].likes = math.Random().nextInt(100);
+      }
+      if (_listOfQuestions[i].replies == null) {
+        _listOfQuestions[i].replies = math.Random().nextInt(100);
+      }
+    }
+    stopLoading();
   }
+
+  Future<void> createQuestion(
+      {required String title,
+      required String description,
+      required String userID}) async {
+    startLoading();
+    await QuestionAPI.createQuestion(
+      title: _tempListOfTitles[math.Random().nextInt(_tempListOfNames.length)],
+      description: description,
+      userID: userID,
+      likes: math.Random().nextInt(100),
+      replies: math.Random().nextInt(100),
+    );
+    await getQuestionsFromDB();
+    stopLoading();
+  }
+
+  Future<void> updateQuestion(
+      {required String docID, String? title, String? description}) async {
+    startLoading();
+    await QuestionAPI.updateQuestion(
+        docId: docID,
+        title:
+            _tempListOfTitles[math.Random().nextInt(_tempListOfNames.length)],
+        description: description);
+    await getQuestionsFromDB();
+    stopLoading();
+  }
+
+  // Future<void> getAllQuestions() async {
+  //   for (int i = 0; i < 15; i++) {
+  //     _listOfQuestions.add(Question(
+  //         id: i.toString(),
+  //         title:
+  //             _tempListOfTitles[math.Random().nextInt(_tempListOfNames.length)],
+  //         user:
+  //             _tempListOfNames[math.Random().nextInt(_tempListOfNames.length)],
+  //         likes: math.Random().nextInt(100),
+  //         replies: math.Random().nextInt(100)));
+  //     notifyListeners();
+  //   }
+  // }
 
   List<String> _tempListOfNames = [
     'Clarence Kway',

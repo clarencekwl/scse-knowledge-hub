@@ -28,8 +28,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     Future.microtask(() async {
-      await _questionProvider.getAllQuestions();
-      log("hi  ${_questionProvider.listOfQuestions.length}");
+      await _questionProvider.getQuestionsFromDB();
+      log("Number of questions:  ${_questionProvider.listOfQuestions.length}");
     });
     _titleText = _welcomeText;
     _scrollController = ScrollController()
@@ -57,6 +57,7 @@ class _HomePageState extends State<HomePage> {
             axisDirection: AxisDirection.down,
             child: CustomScrollView(
               controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
               slivers: <Widget>[
                 SliverAppBar(
                     pinned: true,
@@ -73,7 +74,7 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Text(
                             _titleText,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold),
@@ -96,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                             color: Styles.primaryBlueColor,
                           ),
                           Positioned(
-                            top: 50,
+                            top: 30,
                             right: 20,
                             child: InkWell(
                                 onTap: () {
@@ -109,9 +110,37 @@ class _HomePageState extends State<HomePage> {
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(20))),
-                                    onPressed: () => null,
-                                    icon: Icon(Icons.add),
+                                    onPressed: () async {
+                                      await _questionProvider.createQuestion(
+                                        title: "",
+                                        description:
+                                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliquaadasdasdasdas dasdasdasdas dasdasdasdasd asdasdad dasd aasdasd asdasda sdaa dasd dsd sd szxc asdas d asd dsd asd dsd sds d",
+                                        userID: "bmDrMYHQR4YThCLGFOMY",
+                                      );
+                                    },
+                                    icon: const Icon(Icons.add),
                                     label: Text("Ask"))),
+                          ),
+                          Positioned(
+                            top: 70,
+                            right: 20,
+                            child: InkWell(
+                                onTap: () {
+                                  // TODO: on tap profile icon
+                                },
+                                child: ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Styles.primaryGreyColor,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20))),
+                                    onPressed: () async {
+                                      await _questionProvider.updateQuestion(
+                                          docID: "vzogqKnf9iszcc2iePOa");
+                                    },
+                                    icon: const Icon(Icons.update),
+                                    label: Text("Update"))),
                           )
                         ],
                       ),
