@@ -1,5 +1,8 @@
+import 'dart:developer';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
+import 'package:cached_memory_image/cached_image_base64_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/api/question_api.dart' as QuestionAPI;
@@ -66,6 +69,38 @@ class QuestionProvider extends ChangeNotifier {
         description: description);
     await getQuestions();
     stopLoading();
+  }
+
+  List<Uint8List> _listOfAttachments = [];
+  List<Uint8List> get listOfAttachments => _listOfAttachments;
+  set listOfAttachments(List<Uint8List> listOfAttachements) {
+    _listOfAttachments = listOfAttachments;
+    notifyListeners();
+  }
+
+  //! TEMP: FUNCTIONS FOR ATTACHEMENTS
+  addAttachment(Uint8List annotatedImage) {
+    _listOfAttachments.add(annotatedImage);
+    notifyListeners();
+  }
+
+  removeAttachment(int imageIndex) {
+    _listOfAttachments.removeAt(imageIndex);
+    notifyListeners();
+  }
+
+  removeAllAttachments() {
+    _listOfAttachments = [];
+    notifyListeners();
+  }
+
+  clearImageCache() async {
+    try {
+      await CachedImageBase64Manager.instance().clearCache();
+      log('delete cache!');
+    } catch (e) {
+      log("e: $e");
+    }
   }
 
   // Future<void> getAllQuestions() async {

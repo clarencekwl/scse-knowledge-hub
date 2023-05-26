@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:scse_knowledge_hub_app/pages/create_question_page.dart';
 import 'package:scse_knowledge_hub_app/pages/question_details_page.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
@@ -61,7 +62,7 @@ class _HomePageState extends State<HomePage> {
               slivers: <Widget>[
                 SliverAppBar(
                     pinned: true,
-                    backgroundColor: Styles.primaryGreyColor,
+                    backgroundColor: Styles.primaryBlueColor,
                     expandedHeight: Styles.kScreenHeight(context) * 0.16,
                     flexibleSpace: FlexibleSpaceBar(
                       centerTitle: false,
@@ -111,12 +112,16 @@ class _HomePageState extends State<HomePage> {
                                             borderRadius:
                                                 BorderRadius.circular(20))),
                                     onPressed: () async {
-                                      await _questionProvider.createQuestion(
-                                        title: "",
-                                        description:
-                                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliquaadasdasdasdas dasdasdasdas dasdasdasdasd asdasdad dasd aasdasd asdasda sdaa dasd dsd sd szxc asdas d asd dsd asd dsd sds d",
-                                        userID: "bmDrMYHQR4YThCLGFOMY",
-                                      );
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CreateQuestionPage()));
+                                      // await _fquestionProvider.createQuestion(
+                                      //   title: "",
+                                      //   description:
+                                      //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliquaadasdasdasdas dasdasdasdas dasdasdasdasd asdasdad dasd aasdasd asdasda sdaa dasd dsd sd szxc asdas d asd dsd asd dsd sds d",
+                                      //   userID: "bmDrMYHQR4YThCLGFOMY",
+                                      // );
                                     },
                                     icon: const Icon(Icons.add),
                                     label: Text("Ask"))),

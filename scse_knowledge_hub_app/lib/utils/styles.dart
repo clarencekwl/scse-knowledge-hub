@@ -8,7 +8,7 @@ class Styles {
   static Color primaryGreyColor = const Color.fromRGBO(58, 66, 86, 1.0);
   static Color titleTextColor = Color.fromRGBO(48, 121, 210, 1);
   static Color titleDetailsTextColor = Color.fromRGBO(48, 81, 210, 1);
-  static Color primaryBlueColor = Color.fromRGBO(48, 121, 210, 0.745);
+  static Color primaryBlueColor = Color.fromRGBO(30, 90, 162, 1);
 
   static Row bottomRowIcons(IconData icon, String text) {
     return Row(
@@ -45,7 +45,7 @@ class Styles {
       isDense: true,
       // contentPadding: EdgeInsets.symmetric(vertical: 1),
       enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(
             width: 1,
             color: Styles.primaryBlueColor,
