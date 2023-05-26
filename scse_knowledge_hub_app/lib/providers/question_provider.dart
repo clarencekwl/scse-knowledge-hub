@@ -3,8 +3,11 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/api/question_api.dart' as QuestionAPI;
+import 'package:scse_knowledge_hub_app/api/user_api.dart' as UserAPI;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scse_knowledge_hub_app/models/User.dart';
 import 'package:scse_knowledge_hub_app/reponse/question_response.dart';
+import 'package:scse_knowledge_hub_app/reponse/user_response.dart';
 
 class QuestionProvider extends ChangeNotifier {
   final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -15,7 +18,7 @@ class QuestionProvider extends ChangeNotifier {
     _listOfQuestions = listOfQuestions;
   }
 
-  Future<void> getQuestionsFromDB() async {
+  Future<void> getQuestions() async {
     startLoading();
     ListOfQuestionReponse? res = await QuestionAPI.getQuestionsFromDB();
     if (null == res) {
@@ -24,8 +27,9 @@ class QuestionProvider extends ChangeNotifier {
       _listOfQuestions = res.listofQuestions;
     }
     for (int i = 0; i < _listOfQuestions.length; i++) {
-      _listOfQuestions[i].user =
-          _tempListOfNames[math.Random().nextInt(_tempListOfNames.length)];
+      UserReponse res = await UserAPI.getUser(_listOfQuestions[i].user);
+      User user = res.user;
+      _listOfQuestions[i].user = user.name;
       if (_listOfQuestions[i].likes == null) {
         _listOfQuestions[i].likes = math.Random().nextInt(100);
       }
@@ -48,7 +52,7 @@ class QuestionProvider extends ChangeNotifier {
       likes: math.Random().nextInt(100),
       replies: math.Random().nextInt(100),
     );
-    await getQuestionsFromDB();
+    await getQuestions();
     stopLoading();
   }
 
@@ -60,7 +64,7 @@ class QuestionProvider extends ChangeNotifier {
         title:
             _tempListOfTitles[math.Random().nextInt(_tempListOfNames.length)],
         description: description);
-    await getQuestionsFromDB();
+    await getQuestions();
     stopLoading();
   }
 
@@ -78,7 +82,7 @@ class QuestionProvider extends ChangeNotifier {
   //   }
   // }
 
-  List<String> _tempListOfNames = [
+  final List<String> _tempListOfNames = [
     'Clarence Kway',
     'Ernest Tan',
     'Pang Cheng Feng',
@@ -87,7 +91,7 @@ class QuestionProvider extends ChangeNotifier {
     'Xie Zijian'
   ];
 
-  List<String> _tempListOfTitles = [
+  final List<String> _tempListOfTitles = [
     'CZ2006 Lab 3 documentation',
     'MDP Android Bluetooth',
     'Database system principles',

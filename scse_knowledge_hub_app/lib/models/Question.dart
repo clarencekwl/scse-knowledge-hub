@@ -4,7 +4,7 @@ class Question {
   String id;
   String title;
   String description;
-  String? user;
+  String user;
   int? likes;
   int? replies;
 
@@ -12,7 +12,7 @@ class Question {
     required this.id,
     required this.title,
     required this.description,
-    this.user,
+    required this.user,
     this.likes,
     this.replies,
   });

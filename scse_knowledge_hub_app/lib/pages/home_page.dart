@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     Future.microtask(() async {
-      await _questionProvider.getQuestionsFromDB();
+      await _questionProvider.getQuestions();
       log("Number of questions:  ${_questionProvider.listOfQuestions.length}");
     });
     _titleText = _welcomeText;

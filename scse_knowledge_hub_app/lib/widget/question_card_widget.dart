@@ -50,7 +50,7 @@ class _QuestionCardState extends State<QuestionCard> {
             children: [
               Expanded(
                 child: Text(
-                  widget.question.user ?? 'EMPTY FK',
+                  widget.question.user,
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ),
