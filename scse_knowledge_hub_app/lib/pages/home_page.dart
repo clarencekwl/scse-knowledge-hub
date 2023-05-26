@@ -100,52 +100,55 @@ class _HomePageState extends State<HomePage> {
                           Positioned(
                             top: 30,
                             right: 20,
-                            child: InkWell(
-                                onTap: () {
-                                  // TODO: on tap profile icon
+                            child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Styles.primaryGreyColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20))),
+                                onPressed: () async {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          CreateQuestionPage()));
                                 },
-                                child: ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            Styles.primaryGreyColor,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20))),
-                                    onPressed: () async {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  CreateQuestionPage()));
-                                      // await _fquestionProvider.createQuestion(
-                                      //   title: "",
-                                      //   description:
-                                      //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliquaadasdasdasdas dasdasdasdas dasdasdasdasd asdasdad dasd aasdasd asdasda sdaa dasd dsd sd szxc asdas d asd dsd asd dsd sds d",
-                                      //   userID: "bmDrMYHQR4YThCLGFOMY",
-                                      // );
-                                    },
-                                    icon: const Icon(Icons.add),
-                                    label: Text("Ask"))),
+                                icon: const Icon(Icons.question_mark),
+                                label: Text("Ask")),
                           ),
                           Positioned(
                             top: 70,
                             right: 20,
-                            child: InkWell(
-                                onTap: () {
-                                  // TODO: on tap profile icon
+                            child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Styles.primaryGreyColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20))),
+                                onPressed: () async {
+                                  await _questionProvider.updateQuestion(
+                                      docID: "t9OPUj5d0gUXeOZkMcyC");
                                 },
-                                child: ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            Styles.primaryGreyColor,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20))),
-                                    onPressed: () async {
-                                      await _questionProvider.updateQuestion(
-                                          docID: "vzogqKnf9iszcc2iePOa");
-                                    },
-                                    icon: const Icon(Icons.update),
-                                    label: Text("Update"))),
+                                icon: const Icon(Icons.update),
+                                label: Text("Update")),
+                          ),
+                          Positioned(
+                            top: 30,
+                            right: 110,
+                            child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Styles.primaryGreyColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20))),
+                                onPressed: () async {
+                                  await _questionProvider.createQuestion(
+                                    title: "",
+                                    description:
+                                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliquaadasdasdasdas dasdasdasdas dasdasdasdasd asdasdad dasd aasdasd asdasda sdaa dasd dsd sd szxc asdas d asd dsd asd dsd sds d",
+                                    userID: "bmDrMYHQR4YThCLGFOMY",
+                                  );
+                                },
+                                icon: const Icon(Icons.add),
+                                label: Text("Add")),
                           )
                         ],
                       ),
