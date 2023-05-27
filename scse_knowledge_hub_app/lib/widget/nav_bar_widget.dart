@@ -10,19 +10,24 @@ class NavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      width: Styles.kScreenWidth(context) * 0.6,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topRight: Radius.circular(30), bottomRight: Radius.circular(30)),
+      ),
+      width: Styles.kScreenWidth(context) * 0.7,
       backgroundColor: Styles.primaryGreyColor,
       child: ListView(
         // Remove padding
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
+            margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 30),
             accountName: Text("Clarence",
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 20)),
-            accountEmail: Text('example@gmail.com',
+            accountEmail: Text('clarencekway@gmail.com',
                 style: TextStyle(color: Colors.white)),
             currentAccountPicture: CircleAvatar(
               radius: 25,
@@ -34,8 +39,9 @@ class NavBar extends StatelessWidget {
               ),
             ),
             decoration: BoxDecoration(
-              color: Styles.primaryGreyColor,
-            ),
+                color: Colors.grey.withOpacity(0.1),
+                borderRadius:
+                    BorderRadius.only(bottomRight: Radius.circular(50))),
           ),
           drawerList(
             Icons.home,

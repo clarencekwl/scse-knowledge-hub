@@ -98,6 +98,18 @@ class _HomePageState extends State<HomePage> {
                             color: Styles.primaryBlueColor,
                           ),
                           Positioned(
+                              top: 0,
+                              right: 0,
+                              child: Container(
+                                width: Styles.kScreenWidth(context) * 0.4,
+                                height: Styles.kScreenHeight(context) * 0.15,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.withOpacity(0.1),
+                                  borderRadius: BorderRadius.only(
+                                      bottomLeft: Radius.circular(50)),
+                                ),
+                              )),
+                          Positioned(
                             top: 30,
                             right: 20,
                             child: ElevatedButton.icon(

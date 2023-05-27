@@ -36,38 +36,26 @@ class Styles {
     fontSize: 18,
   );
 
-  static InputDecoration inputTextFieldStyle(String hintText,
-      {bool enabled = true}) {
+  static InputDecoration inputTextFieldStyle(String hintText) {
     return InputDecoration(
+      filled: true,
+      fillColor: Colors.white.withOpacity(0.7),
       errorStyle: const TextStyle(height: 0, fontSize: 12),
-      hintText: hintText,
-      enabled: enabled,
+      // hintText: hintText,
+      // hintStyle: TextStyle(fontSize: 14),
       isDense: true,
       // contentPadding: EdgeInsets.symmetric(vertical: 1),
       enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(
-            width: 1,
-            color: Styles.primaryBlueColor,
-          )),
-      errorBorder: true == enabled
-          ? OutlineInputBorder(
-              borderSide: BorderSide(width: 1, color: Colors.red.shade400),
-              borderRadius: BorderRadius.circular(10),
-            )
-          : OutlineInputBorder(
-              borderSide: const BorderSide(color: Colors.grey, width: 1.2),
-              borderRadius: BorderRadius.circular(15),
-            ),
-      focusedErrorBorder: true == enabled
-          ? OutlineInputBorder(
-              borderSide: BorderSide(width: 1, color: Colors.red.shade400),
-              borderRadius: BorderRadius.circular(15),
-            )
-          : OutlineInputBorder(
-              borderSide: const BorderSide(color: Colors.grey, width: 1.2),
-              borderRadius: BorderRadius.circular(15),
-            ),
+          borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
+      errorBorder: OutlineInputBorder(
+        borderSide: BorderSide(width: 1, color: Colors.red.shade400),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderSide: BorderSide(width: 1, color: Colors.red.shade400),
+        borderRadius: BorderRadius.circular(15),
+      ),
+
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(width: 1, color: Styles.primaryBlueColor),
         borderRadius: BorderRadius.circular(15),

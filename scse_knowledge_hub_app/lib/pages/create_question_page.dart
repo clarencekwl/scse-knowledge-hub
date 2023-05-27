@@ -40,7 +40,12 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
   Widget build(BuildContext context) {
     _questionProvider = Provider.of(context);
     return Scaffold(
+        backgroundColor: Styles.primaryBackgroundColor,
         appBar: AppBar(
+          title: Text(
+            "Ask a Question!",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           elevation: 0,
           iconTheme: IconThemeData(color: Colors.white),
           backgroundColor: Styles.primaryBlueColor,
@@ -72,6 +77,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                         // );
                       }
                     }),
+                    icon: _isFormValid ? Icons.check : null,
                     color:
                         _isFormValid ? Styles.primaryBlueColor : Colors.grey),
               )
@@ -136,15 +142,19 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
       children: [
         Text(
           title,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Styles.primaryGreyColor),
         ),
         SizedBox(
           height: 10,
         ),
         TextFormField(
+          style: TextStyle(),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           maxLines: isDescriptionField ? null : 1,
-          minLines: isDescriptionField ? 8 : 1,
+          minLines: isDescriptionField ? 10 : 1,
           validator: (value) {
             if (value!.isEmpty) {
               return "Please enter text";
@@ -183,13 +193,21 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
             padding: const EdgeInsets.all(20),
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // TASK TITLE
-                userInputField("Question Title", isDescriptionField: false),
+                userInputField("Title", isDescriptionField: false),
                 userInputField("Description", isDescriptionField: true),
-                Text(
-                  "Attachments",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                Row(
+                  children: [
+                    Text("Attachments",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Styles.primaryGreyColor)),
+                    SizedBox(width: 5),
+                    Icon(Icons.attachment_outlined)
+                  ],
                 ),
                 SizedBox(
                   height: 10,
@@ -218,19 +236,21 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                                                 topRight: Radius.circular(25))),
                                         builder: ((context) => SafeArea(
                                               child: Container(
-                                                height: 150,
-                                                padding: const EdgeInsets.only(
-                                                    top: 10),
-                                                child: Column(
-                                                  children: [
-                                                    attachmentSelection(context,
-                                                        fromCamera: false),
-                                                    const Divider(),
-                                                    attachmentSelection(context,
-                                                        fromCamera: true),
-                                                  ],
-                                                ),
-                                              ),
+                                                  height: 150,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 10),
+                                                  child: Column(
+                                                    children: [
+                                                      attachmentSelection(
+                                                          context,
+                                                          fromCamera: false),
+                                                      const Divider(),
+                                                      attachmentSelection(
+                                                          context,
+                                                          fromCamera: true)
+                                                    ],
+                                                  )),
                                             )));
                                   },
                                 );
@@ -260,6 +280,10 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                                                         TextAlign.center),
                                               ]),
                                           onConfirm: () {
+                                            _questionProvider.listOfAttachments
+                                                .clear();
+                                            _questionProvider.clearImageCache();
+                                            Navigator.of(context).pop();
                                             setState(() {});
                                           },
                                           onCancel: () {

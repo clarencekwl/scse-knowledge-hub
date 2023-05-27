@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
-import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/display_image_widget.dart';
 import 'package:scse_knowledge_hub_app/widget/image_preview_box_widget.dart';
 import 'package:scse_knowledge_hub_app/widget/no_glow_scroll.dart';
 import 'package:scse_knowledge_hub_app/widget/open_images.dart';
-import 'package:scse_knowledge_hub_app/widget/question_card_widget.dart';
 import 'package:scse_knowledge_hub_app/widget/reply_card_widget.dart';
 
 class QuestionDetailsPage extends StatefulWidget {
@@ -22,8 +19,6 @@ class QuestionDetailsPage extends StatefulWidget {
 }
 
 class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
-  late QuestionProvider _questionProvider;
-
   //! TEMP: Images
   List<String> listOfThumbnailUrls = [
     'http://images.saymedia-content.com/.image/c_limit%2Ccs_srgb%2Cq_auto:eco%2Cw_1190/MTc2Mjg1ODI0ODMxMjAyNDk0/why-every-teenage-girl-should-learn-how-to-code.webp',
@@ -32,7 +27,6 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    _questionProvider = Provider.of(context);
     return Scaffold(
       backgroundColor: Styles.primaryBackgroundColor,
       appBar: AppBar(
@@ -117,7 +111,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
             ),
             Text(widget.question.title,
                 style: TextStyle(
-                    color: Styles.titleDetailsTextColor,
+                    color: Styles.primaryBlueColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 18)),
             SizedBox(

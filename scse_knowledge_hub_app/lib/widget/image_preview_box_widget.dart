@@ -41,8 +41,6 @@ class ImagePreviewBoxWidget extends StatelessWidget {
                       width: 70,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                            color: borderColor ?? Styles.primaryBlueColor),
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(18),

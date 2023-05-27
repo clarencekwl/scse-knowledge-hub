@@ -29,6 +29,7 @@ Future<void> createQuestion(
     "userId": userID,
   };
 
+  // ignore: unused_local_variable
   DocumentReference<Map<String, dynamic>> snapshot =
       await db.collection("questions").add(data);
 }
