@@ -4,13 +4,15 @@ import 'package:scse_knowledge_hub_app/utils/styles.dart';
 class DefaultButton extends StatelessWidget {
   final String title;
   final VoidCallback? onPressed;
-  final Color color;
+  final Color buttonColor;
+  final Color textColour;
   final IconData? icon;
 
-  DefaultButton(
+  const DefaultButton(
       {required this.title,
       required this.onPressed,
-      required this.color,
+      required this.buttonColor,
+      required this.textColour,
       this.icon});
 
   @override
@@ -21,14 +23,14 @@ class DefaultButton extends StatelessWidget {
         child: ElevatedButton(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
-              backgroundColor: color,
+              backgroundColor: buttonColor,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8))),
           child: icon == null
               ? Text(
                   title,
                   style: TextStyle(
-                      color: Colors.white,
+                      color: textColour,
                       fontWeight: FontWeight.bold,
                       fontSize: 16),
                 )

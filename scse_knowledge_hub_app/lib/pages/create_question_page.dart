@@ -78,7 +78,8 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                       }
                     }),
                     icon: _isFormValid ? Icons.check : null,
-                    color:
+                    textColour: Colors.white,
+                    buttonColor:
                         _isFormValid ? Styles.primaryBlueColor : Colors.grey),
               )
             ],

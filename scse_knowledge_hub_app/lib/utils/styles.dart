@@ -36,6 +36,29 @@ class Styles {
     fontSize: 18,
   );
 
+  static TextStyle loginHintTextStyle = TextStyle(
+    color: Colors.white54,
+    fontFamily: 'OpenSans',
+  );
+
+  static TextStyle loginLabelStyle = TextStyle(
+    color: primaryBlueColor,
+    fontWeight: FontWeight.bold,
+    fontFamily: 'OpenSans',
+  );
+
+  static BoxDecoration loginBoxDecorationStyle = BoxDecoration(
+    color: Color.fromRGBO(60, 104, 158, 1),
+    borderRadius: BorderRadius.circular(10.0),
+    boxShadow: const [
+      BoxShadow(
+        color: Colors.black12,
+        blurRadius: 6.0,
+        offset: Offset(0, 2),
+      ),
+    ],
+  );
+
   static InputDecoration inputTextFieldStyle(String hintText) {
     return InputDecoration(
       filled: true,
@@ -67,15 +90,6 @@ class Styles {
     );
   }
 
-  //* Pixium Boilerplate Styles
-  static Color pixiumPurpleColor = Color.fromRGBO(108, 79, 240, 1);
-  static Color pixiumRedColor = Color.fromRGBO(219, 56, 50, 1);
-  static Color? appAccentColor = Colors.cyan[600];
-  static Color appCanvasColor = Colors.white;
-  static Color appBackground = Colors.blue;
-  static Color? commonDarkBackground = Colors.grey[200];
-  static Color? commonDarkCardBackground = Colors.grey[200]; // #1e2d3b
-
   static Size screenSize(BuildContext context) {
     return MediaQuery.of(context).size;
   }
@@ -89,75 +103,6 @@ class Styles {
       {double percentage = 1, double reducedBy = 0.0}) {
     return (screenSize(context).width - reducedBy) * percentage;
   }
-
-  static Color? appDrawerIconColor = Colors.grey[800];
-  static TextStyle appDrawerTextStyle = TextStyle(color: Colors.grey[900]);
-
-  static TextStyle defaultStyle = TextStyle(
-    color: Colors.grey[800],
-  );
-
-  static TextStyle h1 = defaultStyle.copyWith(
-    fontWeight: FontWeight.w700,
-    fontSize: 18.0,
-    height: 22 / 18,
-    color: Colors.grey[700],
-  );
-
-  static TextStyle h1AppName = defaultStyle.copyWith(
-    fontSize: 30.0,
-    height: 35,
-    fontFamily: 'Prata',
-  );
-
-  static TextStyle title = defaultStyle.copyWith(
-    fontSize: 30.0,
-    height: 35,
-    fontFamily: 'Prata',
-  );
-
-  static TextStyle display1 = defaultStyle.copyWith(
-    fontSize: 30.0,
-    fontFamily: 'Radicals',
-  );
-
-  static TextStyle h1White = defaultStyle.copyWith(
-    fontWeight: FontWeight.w700,
-    fontSize: 18.0,
-    height: 22 / 18,
-    color: Colors.white,
-  );
-
-  static TextStyle p = defaultStyle.copyWith(
-    fontSize: 16.0,
-    color: Colors.grey[800],
-  );
-
-  static TextStyle pTheme = p.copyWith(
-    color: pixiumPurpleColor,
-  );
-
-  static TextStyle pWhite = p.copyWith(
-    color: Colors.white,
-  );
-
-  static TextStyle pMuted = p.copyWith(
-    color: Colors.grey[500],
-  );
-
-  static TextStyle pForgotPassword = p.copyWith(
-    color: Colors.blue,
-  );
-
-  static TextStyle pButton = defaultStyle.copyWith(
-    fontSize: 15.0,
-  );
-
-  static TextStyle error = defaultStyle.copyWith(
-    fontWeight: FontWeight.w500,
-    fontSize: 14.0,
-    color: Colors.red,
-  );
 
   static InputDecoration input = InputDecoration(
     fillColor: Colors.white,
