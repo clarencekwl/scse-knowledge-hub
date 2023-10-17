@@ -3,7 +3,6 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:scse_knowledge_hub_app/firebase_constants.dart';
 import 'package:scse_knowledge_hub_app/pages/email_verfication_page.dart';
 import 'package:scse_knowledge_hub_app/pages/home_page.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
@@ -195,24 +194,37 @@ class _LoginPageState extends State<LoginPage> {
                                         setState(() {});
                                         if (_formKey.currentState!.validate()) {
                                           log("login button pressed!");
-
-                                          User? user = await _signUp(
+                                          User? user;
+                                          if (true == _isRegister) {
+                                            user = await _signUp(
+                                                userEmail: _emailController.text
+                                                    .trim(),
+                                                userPassword:
+                                                    _passwordController.text
+                                                        .trim(),
+                                                context: context);
+                                            if (user != null) {
+                                              // ignore: use_build_context_synchronously
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const EmailVerificationPage()));
+                                            }
+                                          } else {
+                                            user = await _login(
                                               userEmail:
                                                   _emailController.text.trim(),
-                                              password: _passwordController.text
+                                              userPassword: _passwordController
+                                                  .text
                                                   .trim(),
-                                              context: context);
-                                          if (user != null) {
-                                            // ignore: use_build_context_synchronously
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const EmailVerificationPage()));
-                                          } else {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const HomePage()));
+                                            );
+                                            if (user != null) {
+                                              // ignore: use_build_context_synchronously
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const HomePage()));
+                                            }
                                           }
                                           _isLoading = false;
                                           setState(() {});
@@ -280,23 +292,51 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<User?> _signUp(
       {required String userEmail,
-      required String password,
+      required String userPassword,
       required BuildContext context}) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: userEmail, password: password);
+          .createUserWithEmailAndPassword(
+              email: userEmail, password: userPassword);
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('The password provided is too weak.')));
-      } else if (e.code == 'email-already-in-use' && _isRegister == true) {
+      } else if (e.code == 'email-already-in-use') {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('The account already exists for that email.')));
       }
       return null;
     } catch (e) {
       debugPrint(e.toString());
+      return null;
+    }
+  }
+
+  Future<User?> _login(
+      {required String userEmail, required String userPassword}) async {
+    try {
+      User? user = (await FirebaseAuth.instance.signInWithEmailAndPassword(
+              email: userEmail, password: userPassword))
+          .user;
+      return user;
+    } on FirebaseAuthException catch (e) {
+      log(e.code.toString());
+      switch (e.code) {
+        case "user-not-found":
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text(
+                  'This account does not exist. Please register a new account if you have not.')));
+          break;
+        case "wrong-password":
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('You have entered a wrong password')));
+          break;
+        default:
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Login unsuccessful. Please try again')));
+      }
       return null;
     }
   }
