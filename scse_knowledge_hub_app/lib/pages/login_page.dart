@@ -1,143 +1,258 @@
+import 'dart:developer';
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:scse_knowledge_hub_app/firebase_constants.dart';
+import 'package:scse_knowledge_hub_app/pages/email_verfication_page.dart';
 import 'package:scse_knowledge_hub_app/pages/home_page.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(colors: const [
-          Color.fromRGBO(30, 90, 162, 1),
-          Color.fromRGBO(60, 104, 158, 1),
-          Color.fromRGBO(82, 115, 156, 1)
-        ])),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(
-              height: 80,
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
+      body: Stack(
+        children: [
+          GestureDetector(
+            onTap: () {
+              FocusScopeNode currentFocus = FocusScope.of(context);
+
+              if (!currentFocus.hasPrimaryFocus) {
+                currentFocus.unfocus();
+              }
+            },
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: const [
+                Color.fromRGBO(30, 90, 162, 1),
+                Color.fromRGBO(60, 104, 158, 1),
+                Color.fromRGBO(82, 115, 156, 1)
+              ])),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const <Widget>[
-                  Text(
-                    "Register",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold),
-                  ),
+                children: <Widget>[
                   SizedBox(
-                    height: 10,
+                    height: 80,
                   ),
-                  Text(
-                    "Welcome to SCSE Knowledge Hub",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40))),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.all(30),
+                  Padding(
+                    padding: EdgeInsets.all(20),
                     child: Column(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 60,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const <Widget>[
+                        Text(
+                          "Register",
+                          style: TextStyle(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Styles.primaryGreyColor,
-                                    blurRadius: 35,
-                                    offset: Offset(0, 10))
-                              ]),
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom:
-                                            BorderSide(color: Colors.grey))),
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                      hintText: "NTU Email",
-                                      hintStyle: TextStyle(color: Colors.grey),
-                                      border: InputBorder.none),
-                                ),
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom:
-                                            BorderSide(color: Colors.grey))),
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                      hintText: "Password",
-                                      hintStyle: TextStyle(color: Colors.grey),
-                                      border: InputBorder.none),
-                                ),
-                              ),
-                            ],
-                          ),
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
-                          height: 40,
+                          height: 10,
                         ),
                         Text(
-                          "Forgot Password?",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        SizedBox(
-                          height: 40,
-                        ),
-                        SizedBox(
-                          height: 45,
-                          width: Styles.kScreenWidth(context) * 0.60,
-                          child: ElevatedButton(
-                              onPressed: () =>
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => HomePage(),
-                                  )),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Styles.primaryBlueColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20))),
-                              child: Text(
-                                "Login",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
-                              )),
+                          "Welcome to SCSE Knowledge Hub",
+                          style: TextStyle(color: Colors.white, fontSize: 18),
                         ),
                       ],
                     ),
                   ),
-                ),
+                  SizedBox(height: 20),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(40),
+                              topRight: Radius.circular(40))),
+                      child: Form(
+                        key: _formKey,
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.all(30),
+                            child: Column(
+                              children: <Widget>[
+                                SizedBox(
+                                  height: 60,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Styles.primaryGreyColor,
+                                            blurRadius: 35,
+                                            offset: Offset(0, 10))
+                                      ]),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                bottom: BorderSide(
+                                                    color: Colors.grey))),
+                                        child: TextFormField(
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return "Please enter a NTU email";
+                                            }
+                                            // if (false == _isNtuEmail(value)) {
+                                            //   log(value.toString());
+                                            //   return "Please enter a valid NTU email";
+                                            // }
+                                            return null;
+                                          },
+                                          controller: _emailController,
+                                          decoration: InputDecoration(
+                                              hintText: "NTU Email",
+                                              hintStyle:
+                                                  TextStyle(color: Colors.grey),
+                                              border: InputBorder.none),
+                                        ),
+                                      ),
+                                      // Container(
+                                      //   padding: EdgeInsets.all(10),
+                                      //   decoration: BoxDecoration(
+                                      //       border: Border(
+                                      //           bottom: BorderSide(
+                                      //               color: Colors.grey))),
+                                      //   child: TextFormField(
+                                      //     controller: _passwordController,
+                                      //     decoration: InputDecoration(
+                                      //         hintText: "Password",
+                                      //         hintStyle:
+                                      //             TextStyle(color: Colors.grey),
+                                      //         border: InputBorder.none),
+                                      //   ),
+                                      // ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                ),
+                                Text(
+                                  "Forgot Password?",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                ),
+                                SizedBox(
+                                  height: 45,
+                                  width: Styles.kScreenWidth(context) * 0.60,
+                                  child: ElevatedButton(
+                                      onPressed: () async {
+                                        _isLoading = true;
+                                        setState(() {});
+                                        if (_formKey.currentState!.validate()) {
+                                          log("login button pressed!");
+
+                                          User? user = await _signUp(
+                                              userEmail:
+                                                  _emailController.text.trim(),
+                                              password: _passwordController.text
+                                                  .trim(),
+                                              context: context);
+                                          if (user != null) {
+                                            // ignore: use_build_context_synchronously
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const EmailVerificationPage()));
+                                          }
+                                          _isLoading = false;
+                                          setState(() {});
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              Styles.primaryBlueColor,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20))),
+                                      child: Text(
+                                        "Login",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      )),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               ),
-            )
-          ],
-        ),
+            ),
+          ),
+          if (_isLoading)
+            Container(
+                height: double.infinity,
+                width: double.infinity,
+                color: Colors.black.withOpacity(0.3),
+                child: Center(
+                  child: SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: CircularProgressIndicator(
+                          color: Styles.primaryBlueColor)),
+                ))
+        ],
       ),
     );
+  }
+
+  bool _isNtuEmail(String email) {
+    // Define a regular expression pattern for email validation
+    // The pattern ensures the email ends with "ntu.edu.sg"
+    RegExp regex =
+        RegExp(r"^[a-zA-Z0-9._%+-]+@(e\.)?ntu\.edu\.sg$", caseSensitive: false);
+
+    // Use the hasMatch method to check if the email matches the pattern
+    return regex.hasMatch(email);
+  }
+
+  static Future<User?> _signUp(
+      {required String userEmail,
+      required String password,
+      required BuildContext context}) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: userEmail, password: "password123123");
+      return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('The password provided is too weak.')));
+      } else if (e.code == 'email-already-in-use') {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('The account already exists for that email.')));
+      }
+      return null;
+    } catch (e) {
+      debugPrint(e.toString());
+      return null;
+    }
   }
 }

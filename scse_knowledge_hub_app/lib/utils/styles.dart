@@ -36,29 +36,6 @@ class Styles {
     fontSize: 18,
   );
 
-  static TextStyle loginHintTextStyle = TextStyle(
-    color: Colors.white54,
-    fontFamily: 'OpenSans',
-  );
-
-  static TextStyle loginLabelStyle = TextStyle(
-    color: primaryBlueColor,
-    fontWeight: FontWeight.bold,
-    fontFamily: 'OpenSans',
-  );
-
-  static BoxDecoration loginBoxDecorationStyle = BoxDecoration(
-    color: Color.fromRGBO(60, 104, 158, 1),
-    borderRadius: BorderRadius.circular(10.0),
-    boxShadow: const [
-      BoxShadow(
-        color: Colors.black12,
-        blurRadius: 6.0,
-        offset: Offset(0, 2),
-      ),
-    ],
-  );
-
   static InputDecoration inputTextFieldStyle(String hintText) {
     return InputDecoration(
       filled: true,
