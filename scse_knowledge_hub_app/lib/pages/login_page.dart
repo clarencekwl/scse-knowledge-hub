@@ -20,6 +20,8 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _isRegister = true;
 
   @override
   Widget build(BuildContext context) {
@@ -52,14 +54,22 @@ class _LoginPageState extends State<LoginPage> {
                     padding: EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const <Widget>[
-                        Text(
-                          "Register",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold),
-                        ),
+                      children: <Widget>[
+                        _isRegister
+                            ? Text(
+                                "Register",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            : Text(
+                                "Login",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.bold),
+                              ),
                         SizedBox(
                           height: 10,
                         ),
@@ -125,30 +135,53 @@ class _LoginPageState extends State<LoginPage> {
                                               border: InputBorder.none),
                                         ),
                                       ),
-                                      // Container(
-                                      //   padding: EdgeInsets.all(10),
-                                      //   decoration: BoxDecoration(
-                                      //       border: Border(
-                                      //           bottom: BorderSide(
-                                      //               color: Colors.grey))),
-                                      //   child: TextFormField(
-                                      //     controller: _passwordController,
-                                      //     decoration: InputDecoration(
-                                      //         hintText: "Password",
-                                      //         hintStyle:
-                                      //             TextStyle(color: Colors.grey),
-                                      //         border: InputBorder.none),
-                                      //   ),
-                                      // ),
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                bottom: BorderSide(
+                                                    color: Colors.grey))),
+                                        child: TextFormField(
+                                          obscureText: _obscurePassword,
+                                          controller: _passwordController,
+                                          decoration: InputDecoration(
+                                              hintText: "Password",
+                                              hintStyle:
+                                                  TextStyle(color: Colors.grey),
+                                              border: InputBorder.none,
+                                              suffixIcon: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _obscurePassword =
+                                                        !_obscurePassword;
+                                                  });
+                                                },
+                                                icon: Icon(_obscurePassword
+                                                    ? Icons.visibility_off
+                                                    : Icons.visibility),
+                                              )),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
-                                Text(
-                                  "Forgot Password?",
-                                  style: TextStyle(color: Colors.grey),
+                                GestureDetector(
+                                  onTap: () {
+                                    _isRegister = !_isRegister;
+                                    setState(() {});
+                                  },
+                                  child: _isRegister
+                                      ? Text(
+                                          "Already Registered?",
+                                          style: TextStyle(color: Colors.grey),
+                                        )
+                                      : Text(
+                                          "Don't have an account yet?",
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
                                 ),
                                 SizedBox(
                                   height: 40,
@@ -175,6 +208,11 @@ class _LoginPageState extends State<LoginPage> {
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         const EmailVerificationPage()));
+                                          } else {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const HomePage()));
                                           }
                                           _isLoading = false;
                                           setState(() {});
@@ -186,13 +224,21 @@ class _LoginPageState extends State<LoginPage> {
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(20))),
-                                      child: Text(
-                                        "Login",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      )),
+                                      child: _isRegister
+                                          ? Text(
+                                              "Register",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16),
+                                            )
+                                          : Text(
+                                              "Login",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16),
+                                            )),
                                 ),
                               ],
                             ),
@@ -232,20 +278,19 @@ class _LoginPageState extends State<LoginPage> {
     return regex.hasMatch(email);
   }
 
-  static Future<User?> _signUp(
+  Future<User?> _signUp(
       {required String userEmail,
       required String password,
       required BuildContext context}) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: userEmail, password: "password123123");
+          .createUserWithEmailAndPassword(email: userEmail, password: password);
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('The password provided is too weak.')));
-      } else if (e.code == 'email-already-in-use') {
+      } else if (e.code == 'email-already-in-use' && _isRegister == true) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('The account already exists for that email.')));
       }

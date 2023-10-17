@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:scse_knowledge_hub_app/firebase_constants.dart';
+import 'package:scse_knowledge_hub_app/pages/home_page.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/loading.dart';
 
@@ -33,7 +34,8 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
       // TODO: implement your code after email verification
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Email Successfully Verified")));
-
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => const HomePage()));
       timer?.cancel();
     }
     setState(() {});
