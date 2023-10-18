@@ -9,3 +9,13 @@ Future<UserReponse> getUser(String userID) async {
 
   return UserReponse.fromJson(snapshot);
 }
+
+Future<void> createUser(
+    {required String userID, required String userEmail}) async {
+  Map<String, dynamic> data = {
+    "name": "Clarence",
+    "email": userEmail,
+  };
+
+  db.collection("users").doc(userID).set(data);
+}

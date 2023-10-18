@@ -8,6 +8,7 @@ import 'package:scse_knowledge_hub_app/pages/email_verfication_page.dart';
 import 'package:scse_knowledge_hub_app/pages/login_page.dart';
 import 'package:scse_knowledge_hub_app/pages/unknown_page.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
+import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/router.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 
@@ -53,7 +54,8 @@ class _MyAppState extends State<MyApp> {
         child: MultiProvider(
           providers: [
             ChangeNotifierProvider<QuestionProvider>(
-                create: (_) => QuestionProvider())
+                create: (_) => QuestionProvider()),
+            ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider())
           ],
           child: MaterialApp(
             title: 'SCSE Knowledge Hub',

@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/firebase_constants.dart';
 import 'package:scse_knowledge_hub_app/pages/home_page.dart';
+import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/loading.dart';
 
 class EmailVerificationPage extends StatefulWidget {
-
-  const EmailVerificationPage(
-      {Key? key,})
+  final String userEmail;
+  const EmailVerificationPage({Key? key, required this.userEmail})
       : super(key: key);
 
   @override
@@ -18,6 +19,7 @@ class EmailVerificationPage extends StatefulWidget {
 
 class _EmailVerificationPageState extends State<EmailVerificationPage> {
   bool isEmailVerified = false;
+  late UserProvider _userProvider;
 
   Timer? timer;
   @override
@@ -31,14 +33,17 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
 
   checkEmailVerified() async {
     await FirebaseAuth.instance.currentUser?.reload();
-
-    isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    User? user = FirebaseAuth.instance.currentUser;
+    isEmailVerified = user!.emailVerified;
 
     if (isEmailVerified) {
-      ScaffoldMessenger.of(context)
+      await _userProvider.createUser(
+          userID: user.uid, userEmail: widget.userEmail);
+
+      await ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Email Successfully Verified")));
-      Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => HomePage()));
       timer?.cancel();
     }
     setState(() {});
@@ -53,6 +58,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
 
   @override
   Widget build(BuildContext context) {
+    _userProvider = Provider.of(context);
     return SafeArea(
       child: Scaffold(
         body: Container(

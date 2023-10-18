@@ -208,7 +208,10 @@ class _LoginPageState extends State<LoginPage> {
                                               Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          EmailVerificationPage()));
+                                                          EmailVerificationPage(
+                                                              userEmail:
+                                                                  _emailController
+                                                                      .text)));
                                             }
                                           } else {
                                             user = await _login(

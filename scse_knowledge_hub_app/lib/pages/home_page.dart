@@ -10,8 +10,6 @@ import 'package:scse_knowledge_hub_app/widget/nav_bar_widget.dart';
 import 'package:scse_knowledge_hub_app/widget/no_glow_scroll.dart';
 import 'package:scse_knowledge_hub_app/widget/question_card_widget.dart';
 
-import '../models/User.dart';
-
 class HomePage extends StatefulWidget {
   const HomePage({
     Key? key,
@@ -22,7 +20,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late User user;
   late QuestionProvider _questionProvider;
   ScrollController _scrollController = ScrollController();
   final String _welcomeText = "Hi, Clarence";
