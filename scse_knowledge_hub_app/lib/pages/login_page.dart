@@ -208,7 +208,7 @@ class _LoginPageState extends State<LoginPage> {
                                               Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          const EmailVerificationPage()));
+                                                          EmailVerificationPage()));
                                             }
                                           } else {
                                             user = await _login(
@@ -220,10 +220,11 @@ class _LoginPageState extends State<LoginPage> {
                                             );
                                             if (user != null) {
                                               // ignore: use_build_context_synchronously
+
                                               Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          const HomePage()));
+                                                          HomePage()));
                                             }
                                           }
                                           _isLoading = false;

@@ -5,6 +5,13 @@ class UserProvider extends ChangeNotifier {
   Future<void> getUser(String userID) async {
     startLoading();
     await UserAPI.getUser(userID);
+    stopLoading();
+  }
+
+  Future<void> createUser(String userID) async {
+    startLoading();
+
+    stopLoading();
   }
 
   bool _isLoading = false;

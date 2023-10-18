@@ -30,8 +30,8 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
       //   Navigator.of(context).pushReplacement(
       //       MaterialPageRoute(builder: (context) => CaseOverviewPage()));
       // } else {
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (context) => HomePage()));
+      // Navigator.of(context)
+      //     .pushReplacement(MaterialPageRoute(builder: (context) => HomePage()));
       // }
     });
   }

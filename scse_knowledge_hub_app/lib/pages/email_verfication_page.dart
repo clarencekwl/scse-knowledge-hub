@@ -7,7 +7,10 @@ import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/loading.dart';
 
 class EmailVerificationPage extends StatefulWidget {
-  const EmailVerificationPage({Key? key}) : super(key: key);
+
+  const EmailVerificationPage(
+      {Key? key,})
+      : super(key: key);
 
   @override
   State<EmailVerificationPage> createState() => _EmailVerificationPageState();
@@ -15,6 +18,7 @@ class EmailVerificationPage extends StatefulWidget {
 
 class _EmailVerificationPageState extends State<EmailVerificationPage> {
   bool isEmailVerified = false;
+
   Timer? timer;
   @override
   void initState() {
@@ -31,11 +35,10 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
     isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
 
     if (isEmailVerified) {
-      // TODO: implement your code after email verification
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Email Successfully Verified")));
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => const HomePage()));
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => HomePage()));
       timer?.cancel();
     }
     setState(() {});
