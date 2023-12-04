@@ -5,15 +5,14 @@ import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/pages/create_question_page.dart';
 import 'package:scse_knowledge_hub_app/pages/question_details_page.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
+import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/nav_bar_widget.dart';
 import 'package:scse_knowledge_hub_app/widget/no_glow_scroll.dart';
 import 'package:scse_knowledge_hub_app/widget/question_card_widget.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({
-    Key? key,
-  }) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -21,9 +20,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late QuestionProvider _questionProvider;
+  late UserProvider _userProvider;
   ScrollController _scrollController = ScrollController();
-  final String _welcomeText = "Hi, Clarence";
-  late String _titleText;
+  late String _welcomeText = "Hi, ";
+  late String _titleText = "";
   late bool _currentSliverAppBarExpandedStatus;
   bool _isSliverAppBarExpanded = false;
 
@@ -31,10 +31,16 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     Future.microtask(() async {
+      log("user: ${_userProvider.user!.name}");
+      _welcomeText = "Hi, ${_userProvider.user!.name}";
+
+      setState(() {
+        log("welcome text is: $_welcomeText");
+        _titleText = _welcomeText;
+      });
       await _questionProvider.getQuestions();
-      log("Number of questions:  ${_questionProvider.listOfQuestions.length}");
+      log("Number of questions: ${_questionProvider.listOfQuestions.length}");
     });
-    _titleText = _welcomeText;
     _scrollController = ScrollController()
       ..addListener(() {
         _currentSliverAppBarExpandedStatus = _isSliverAppBarExpanded;
@@ -50,6 +56,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     _questionProvider = Provider.of(context);
+    _userProvider = Provider.of(context);
     return Scaffold(
       drawer: NavBar(),
       body: SafeArea(

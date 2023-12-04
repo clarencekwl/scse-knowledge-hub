@@ -3,8 +3,10 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/pages/email_verfication_page.dart';
 import 'package:scse_knowledge_hub_app/pages/home_page.dart';
+import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,8 +17,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  late UserProvider _userProvider;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -24,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    _userProvider = Provider.of(context);
     return Scaffold(
       body: Stack(
         children: [
@@ -109,6 +114,23 @@ class _LoginPageState extends State<LoginPage> {
                                       ]),
                                   child: Column(
                                     children: <Widget>[
+                                      if (true == _isRegister)
+                                        Container(
+                                          padding: EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                              border: Border(
+                                                  bottom: BorderSide(
+                                                      color: Colors.grey))),
+                                          child: TextFormField(
+                                            controller: _nameController,
+                                            decoration: InputDecoration(
+                                              hintText: "Name (Can be changed)",
+                                              hintStyle:
+                                                  TextStyle(color: Colors.grey),
+                                              border: InputBorder.none,
+                                            ),
+                                          ),
+                                        ),
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
@@ -190,13 +212,15 @@ class _LoginPageState extends State<LoginPage> {
                                   width: Styles.kScreenWidth(context) * 0.60,
                                   child: ElevatedButton(
                                       onPressed: () async {
-                                        _isLoading = true;
-                                        setState(() {});
+                                        log("login button pressed!");
                                         if (_formKey.currentState!.validate()) {
-                                          log("login button pressed!");
+                                          _isLoading = true;
+                                          setState(() {});
                                           User? user;
                                           if (true == _isRegister) {
                                             user = await _signUp(
+                                                userName:
+                                                    _nameController.text.trim(),
                                                 userEmail: _emailController.text
                                                     .trim(),
                                                 userPassword:
@@ -209,6 +233,9 @@ class _LoginPageState extends State<LoginPage> {
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           EmailVerificationPage(
+                                                              userName:
+                                                                  _nameController
+                                                                      .text,
                                                               userEmail:
                                                                   _emailController
                                                                       .text)));
@@ -223,7 +250,10 @@ class _LoginPageState extends State<LoginPage> {
                                             );
                                             if (user != null) {
                                               // ignore: use_build_context_synchronously
-
+                                              log("user is not null");
+                                              log(user.uid);
+                                              await _userProvider.setUser(
+                                                  userID: user.uid);
                                               Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                       builder: (context) =>
@@ -295,13 +325,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<User?> _signUp(
-      {required String userEmail,
+      {required String userName,
+      required String userEmail,
       required String userPassword,
       required BuildContext context}) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
               email: userEmail, password: userPassword);
+
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {

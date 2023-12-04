@@ -9,8 +9,10 @@ import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/loading.dart';
 
 class EmailVerificationPage extends StatefulWidget {
+  final String userName;
   final String userEmail;
-  const EmailVerificationPage({Key? key, required this.userEmail})
+  const EmailVerificationPage(
+      {Key? key, required this.userName, required this.userEmail})
       : super(key: key);
 
   @override
@@ -38,10 +40,12 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
 
     if (isEmailVerified) {
       await _userProvider.createUser(
-          userID: user.uid, userEmail: widget.userEmail);
-
-      await ScaffoldMessenger.of(context)
+          userID: user.uid,
+          userName: widget.userName,
+          userEmail: widget.userEmail);
+      ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Email Successfully Verified")));
+      Navigator.of(context).popUntil((route) => route.isFirst);
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => HomePage()));
       timer?.cancel();

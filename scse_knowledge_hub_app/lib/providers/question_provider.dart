@@ -30,7 +30,7 @@ class QuestionProvider extends ChangeNotifier {
       _listOfQuestions = res.listofQuestions;
     }
     for (int i = 0; i < _listOfQuestions.length; i++) {
-      UserReponse res = await UserAPI.getUser(_listOfQuestions[i].user);
+      UserReponse res = await UserAPI.getUser(userID: _listOfQuestions[i].user);
       User user = res.user;
       _listOfQuestions[i].user = user.name;
       if (_listOfQuestions[i].likes == null) {
