@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Question {
   String id;
   String title;
   String description;
-  String user;
+  String userId;
+  String userName;
   int? likes;
   int? replies;
 
@@ -10,7 +13,8 @@ class Question {
     required this.id,
     required this.title,
     required this.description,
-    required this.user,
+    required this.userId,
+    required this.userName,
     this.likes,
     this.replies,
   });
@@ -18,7 +22,8 @@ class Question {
   factory Question.fromJson(Map<String, dynamic> json, String docId) {
     return Question(
       id: docId,
-      user: json['userId'],
+      userId: json['userId'],
+      userName: '', // Default value, will be replaced by async method
       title: json['title'],
       description: json['description'],
       replies: json['replies'],
@@ -26,8 +31,30 @@ class Question {
     );
   }
 
+  static Future<Question> createWithUserName(Question question) async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    final String userId = question.userId;
+
+    final DocumentSnapshot userSnapshot =
+        await firestore.collection('users').doc(userId).get();
+
+    final String userName =
+        userSnapshot.exists ? userSnapshot['name'] : 'Unknown User';
+
+    return Question(
+      id: question.id,
+      userId: userId,
+      userName: userName,
+      title: question.title,
+      description: question.description,
+      replies: question.replies,
+      likes: question.likes,
+    );
+  }
+
   @override
   String toString() {
-    return "{id: $id, user: $user, title: $title}";
+    return "{id: $id, user: $userId, title: $title}";
   }
 }

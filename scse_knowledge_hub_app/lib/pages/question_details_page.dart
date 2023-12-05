@@ -1,11 +1,18 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
+import 'package:scse_knowledge_hub_app/pages/home_page.dart';
+import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
+import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/display_image_widget.dart';
 import 'package:scse_knowledge_hub_app/widget/image_preview_box_widget.dart';
 import 'package:scse_knowledge_hub_app/widget/no_glow_scroll.dart';
 import 'package:scse_knowledge_hub_app/widget/open_images.dart';
 import 'package:scse_knowledge_hub_app/widget/reply_card_widget.dart';
+import 'package:scse_knowledge_hub_app/widget/warning_dialog_widget.dart';
 
 class QuestionDetailsPage extends StatefulWidget {
   final Question question;
@@ -19,58 +26,138 @@ class QuestionDetailsPage extends StatefulWidget {
 }
 
 class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
+  late QuestionProvider _questionProvider;
+  late UserProvider _userProvider;
+  bool _isUserQuestion = false;
+  bool _isLoading = false;
+
   //! TEMP: Images
   List<String> listOfThumbnailUrls = [
     'http://images.saymedia-content.com/.image/c_limit%2Ccs_srgb%2Cq_auto:eco%2Cw_1190/MTc2Mjg1ODI0ODMxMjAyNDk0/why-every-teenage-girl-should-learn-how-to-code.webp',
-    'http://www.idlewyldanalytics.com/docs/images/prog/example-code-C.png',
+    'https://zubairkhanqureshi.files.wordpress.com/2014/08/2.png',
   ];
 
   @override
+  void initState() {
+    Future.microtask(() async {
+      log("user id: ${_userProvider.user!.id}");
+      log("question id: ${widget.question.userId}");
+      if (_userProvider.user!.id == widget.question.userId) {
+        _isUserQuestion = true;
+        setState(() {});
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _questionProvider = Provider.of(context);
+    _userProvider = Provider.of(context);
     return Scaffold(
       backgroundColor: Styles.primaryBackgroundColor,
       appBar: AppBar(
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Styles.primaryBackgroundColor,
-      ),
-      body: ScrollConfiguration(
-        behavior: NoGlowScrollBehavior(),
-        child: StretchingOverscrollIndicator(
-          axisDirection: AxisDirection.down,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                questionDetails(),
-                SizedBox(height: 25),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Replies (${widget.question.replies})",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
+          elevation: _isUserQuestion ? 2 : 0,
+          iconTheme: IconThemeData(color: Colors.black),
+          backgroundColor: Styles.primaryBackgroundColor,
+          actions: _isUserQuestion
+              ? <Widget>[
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.edit_document),
+                    color: Styles.primaryBlueColor,
                   ),
+                  IconButton(
+                      onPressed: () async {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return WarningDialogWidget(
+                                content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: const [
+                                      Text(
+                                          'Question will be permanently removed',
+                                          textAlign: TextAlign.center),
+                                      Text('Are you sure?',
+                                          textAlign: TextAlign.center),
+                                    ]),
+                                onConfirm: () async {
+                                  _isLoading = true;
+                                  setState(() {});
+                                  await _questionProvider.deleteQuestion(
+                                      docId: widget.question.id);
+                                  _isLoading = false;
+                                  setState(() {});
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) => HomePage()));
+                                },
+                                onCancel: () {
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                            });
+                      },
+                      icon: Icon(Icons.delete_rounded),
+                      color: Colors.red),
+                ]
+              : null),
+      body: Stack(
+        children: [
+          ScrollConfiguration(
+            behavior: NoGlowScrollBehavior(),
+            child: StretchingOverscrollIndicator(
+              axisDirection: AxisDirection.down,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    questionDetails(),
+                    SizedBox(height: 25),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Text(
+                        "Replies (${widget.question.replies})",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    SizedBox(height: 15),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: 10,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: ReplyCard(),
+                        );
+                      },
+                    )
+                  ],
                 ),
-                SizedBox(height: 15),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: ReplyCard(),
-                    );
-                  },
-                )
-              ],
+              ),
             ),
           ),
-        ),
+          if (_isLoading)
+            Container(
+                height: double.infinity,
+                width: double.infinity,
+                color: Colors.black.withOpacity(0.3),
+                child: Center(
+                  child: SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: CircularProgressIndicator(
+                          color: Styles.primaryBlueColor)),
+                ))
+        ],
       ),
     );
   }
@@ -88,7 +175,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.question.user,
+            Text(widget.question.userName,
                 style: TextStyle(
                     color: Colors.black,
                     overflow: TextOverflow.ellipsis,

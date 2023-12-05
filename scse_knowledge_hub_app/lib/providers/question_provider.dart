@@ -6,11 +6,8 @@ import 'package:cached_memory_image/cached_image_base64_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/api/question_api.dart' as QuestionAPI;
-import 'package:scse_knowledge_hub_app/api/user_api.dart' as UserAPI;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:scse_knowledge_hub_app/models/User.dart';
 import 'package:scse_knowledge_hub_app/reponse/question_response.dart';
-import 'package:scse_knowledge_hub_app/reponse/user_response.dart';
 
 class QuestionProvider extends ChangeNotifier {
   final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -30,9 +27,6 @@ class QuestionProvider extends ChangeNotifier {
       _listOfQuestions = res.listofQuestions;
     }
     for (int i = 0; i < _listOfQuestions.length; i++) {
-      UserReponse res = await UserAPI.getUser(userID: _listOfQuestions[i].user);
-      User user = res.user;
-      _listOfQuestions[i].user = user.name;
       if (_listOfQuestions[i].likes == null) {
         _listOfQuestions[i].likes = math.Random().nextInt(100);
       }
@@ -49,7 +43,7 @@ class QuestionProvider extends ChangeNotifier {
       required String userID}) async {
     startLoading();
     await QuestionAPI.createQuestion(
-      title: _tempListOfTitles[math.Random().nextInt(_tempListOfNames.length)],
+      title: title,
       description: description,
       userID: userID,
       likes: math.Random().nextInt(100),
@@ -67,6 +61,13 @@ class QuestionProvider extends ChangeNotifier {
         title:
             _tempListOfTitles[math.Random().nextInt(_tempListOfNames.length)],
         description: description);
+    await getQuestions();
+    stopLoading();
+  }
+
+  Future<void> deleteQuestion({required String docId}) async {
+    startLoading();
+    await QuestionAPI.deleteQuestion(docId: docId);
     await getQuestions();
     stopLoading();
   }

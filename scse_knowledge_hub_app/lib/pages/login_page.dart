@@ -27,6 +27,14 @@ class _LoginPageState extends State<LoginPage> {
   bool _isRegister = false;
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _userProvider = Provider.of(context);
     return Scaffold(
@@ -254,10 +262,12 @@ class _LoginPageState extends State<LoginPage> {
                                               log(user.uid);
                                               await _userProvider.setUser(
                                                   userID: user.uid);
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          HomePage()));
+
+                                              Navigator.of(context)
+                                                  .pushReplacement(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              HomePage()));
                                             }
                                           }
                                           _isLoading = false;

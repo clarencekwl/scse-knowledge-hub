@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:scse_knowledge_hub_app/pages/home_page.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 
 class NavBar extends StatelessWidget {
@@ -48,10 +49,8 @@ class NavBar extends StatelessWidget {
             "Home",
             () {
               log("pressed home");
-              Navigator.popUntil(
-                context,
-                ModalRoute.withName(Navigator.defaultRouteName),
-              );
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => HomePage()));
             },
           ),
           drawerList(

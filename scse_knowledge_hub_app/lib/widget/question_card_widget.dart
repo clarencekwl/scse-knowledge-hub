@@ -50,7 +50,7 @@ class _QuestionCardState extends State<QuestionCard> {
             children: [
               Expanded(
                 child: Text(
-                  widget.question.user,
+                  widget.question.userName,
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ),
@@ -59,7 +59,7 @@ class _QuestionCardState extends State<QuestionCard> {
           ),
           Expanded(
             child: Align(
-              alignment: Alignment.center,
+              alignment: Alignment.centerLeft,
               child: Text(
                 widget.question.description,
                 maxLines: 3,

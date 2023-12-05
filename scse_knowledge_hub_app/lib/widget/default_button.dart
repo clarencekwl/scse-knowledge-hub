@@ -37,17 +37,17 @@ class DefaultButton extends StatelessWidget {
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(icon),
-                    SizedBox(
-                      width: 20,
-                    ),
                     Text(
                       title,
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 16),
-                    )
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Icon(icon),
                   ],
                 ),
         ));

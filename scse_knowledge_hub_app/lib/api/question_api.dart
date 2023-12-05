@@ -6,11 +6,17 @@ import 'package:scse_knowledge_hub_app/reponse/question_response.dart';
 final FirebaseFirestore db = FirebaseFirestore.instance;
 
 Future<ListOfQuestionReponse?> getQuestionsFromDB() async {
-  QuerySnapshot<Map<String, dynamic>> snapshot =
-      await db.collection("questions").get();
-  if (snapshot.docs.isNotEmpty) {
-    return ListOfQuestionReponse.fromJson(snapshot.docs);
-  } else {
+  try {
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await db.collection("questions").get();
+
+    if (snapshot.docs.isNotEmpty) {
+      return ListOfQuestionReponse.fromJson(snapshot.docs);
+    } else {
+      return null;
+    }
+  } catch (e) {
+    log(e.toString());
     return null;
   }
 }
@@ -36,19 +42,25 @@ Future<void> createQuestion(
 
 Future<void> updateQuestion(
     {required String docId, String? title, String? description}) async {
+  DocumentReference<Map<String, dynamic>> documentReference =
+      db.collection("questions").doc(docId);
+
   if (null != title) {
-    db.collection("questions").doc(docId).update({"title": title}).then(
-        (value) => log("DocumentSnapshot successfully updated!"),
-        onError: (e) => log("Error updating document $e"));
+    documentReference.update({"title": title}).then(
+        (value) => log("Question successfully updated!"),
+        onError: (e) => log("Error updating question $e"));
   }
   if (null != description) {
-    db
-        .collection("questions")
-        .doc(docId)
-        .update({"description": description}).then(
-            (value) => log("DocumentSnapshot successfully updated!"),
-            onError: (e) => log("Error updating document $e"));
+    documentReference.update({"description": description}).then(
+        (value) => log("Question successfully updated!"),
+        onError: (e) => log("Error updating question $e"));
   }
+}
+
+Future<void> deleteQuestion({required String docId}) async {
+  db.collection("questions").doc(docId).delete().then(
+      (value) => log("Question successfully deleted"),
+      onError: (e) => log("Error updating question $e"));
 }
 
 // String generateRandomID() {

@@ -160,27 +160,6 @@ class _HomePageState extends State<HomePage> {
                                     icon: const Icon(Icons.update),
                                     label: Text("Update")),
                               ),
-                              Positioned(
-                                top: 30,
-                                right: 110,
-                                child: ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            Styles.primaryGreyColor,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20))),
-                                    onPressed: () async {
-                                      await _questionProvider.createQuestion(
-                                        title: "",
-                                        description:
-                                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliquaadasdasdasdas dasdasdasdas dasdasdasdasd asdasdad dasd aasdasd asdasda sdaa dasd dsd sd szxc asdas d asd dsd asd dsd sds d",
-                                        userID: "bmDrMYHQR4YThCLGFOMY",
-                                      );
-                                    },
-                                    icon: const Icon(Icons.add),
-                                    label: Text("Add")),
-                              )
                             ],
                           ),
                         )),

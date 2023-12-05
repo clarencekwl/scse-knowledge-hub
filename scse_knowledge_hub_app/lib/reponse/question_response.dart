@@ -6,11 +6,17 @@ class ListOfQuestionReponse {
 
   ListOfQuestionReponse({required this.listofQuestions});
 
-  factory ListOfQuestionReponse.fromJson(
-      List<QueryDocumentSnapshot<Map<String, dynamic>>> json) {
-    // List<dynamic>? list = json.map((e) => e.data()).toList();
-    return ListOfQuestionReponse(
-        listofQuestions:
-            json.map((e) => Question.fromJson(e.data(), e.id)).toList());
+  static Future<ListOfQuestionReponse> fromJson(
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> json) async {
+    final List<Question> listOfQuestions = [];
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> e in json) {
+      final Question question = Question.fromJson(e.data(), e.id);
+      final Question questionWithUserName =
+          await Question.createWithUserName(question);
+      listOfQuestions.add(questionWithUserName);
+    }
+
+    return ListOfQuestionReponse(listofQuestions: listOfQuestions);
   }
 }

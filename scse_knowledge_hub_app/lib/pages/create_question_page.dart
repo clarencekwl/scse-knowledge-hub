@@ -29,6 +29,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
       TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -61,40 +62,65 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
           iconTheme: IconThemeData(color: Colors.white),
           backgroundColor: Styles.primaryBlueColor,
         ),
-        body: GestureDetector(
-          onTap: () {
-            FocusScopeNode currentFocus = FocusScope.of(context);
+        body: Stack(
+          children: [
+            GestureDetector(
+              onTap: () {
+                FocusScopeNode currentFocus = FocusScope.of(context);
 
-            if (!currentFocus.hasPrimaryFocus) {
-              currentFocus.unfocus();
-            }
-          },
-          child: Column(
-            children: [
-              Expanded(child: createQuestionForm()),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: DefaultButton(
-                    title: "Submit",
-                    onPressed: (() async {
-                      if (_formKey.currentState!.validate()) {
-                        _questionProvider.removeAllAttachments();
-                        _questionProvider.clearImageCache();
-                        // Navigator.pop(context);
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => CaseSuccessPage()),
-                        // );
-                      }
-                    }),
-                    icon: _isFormValid ? Icons.check : null,
-                    textColour: Colors.white,
-                    buttonColor:
-                        _isFormValid ? Styles.primaryBlueColor : Colors.grey),
-              )
-            ],
-          ),
+                if (!currentFocus.hasPrimaryFocus) {
+                  currentFocus.unfocus();
+                }
+              },
+              child: Column(
+                children: [
+                  Expanded(child: createQuestionForm()),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: DefaultButton(
+                        title: "Submit",
+                        onPressed: (() async {
+                          if (_formKey.currentState!.validate()) {
+                            _isLoading = true;
+                            setState(() {});
+                            await _questionProvider.createQuestion(
+                                title: _titleTextController.text,
+                                description: _descriptionTextController.text,
+                                userID: _userProvider.user!.id);
+                            _questionProvider.removeAllAttachments();
+                            _questionProvider.clearImageCache();
+                            _isLoading = false;
+                            setState(() {});
+                            Navigator.pop(context);
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //       builder: (context) => CaseSuccessPage()),
+                            // );
+                          }
+                        }),
+                        icon: _isFormValid ? Icons.check : null,
+                        textColour: Colors.white,
+                        buttonColor: _isFormValid
+                            ? Styles.primaryBlueColor
+                            : Colors.grey),
+                  )
+                ],
+              ),
+            ),
+            if (_isLoading)
+              Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  color: Colors.black.withOpacity(0.3),
+                  child: Center(
+                    child: SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: CircularProgressIndicator(
+                            color: Styles.primaryBlueColor)),
+                  ))
+          ],
         ));
   }
 
