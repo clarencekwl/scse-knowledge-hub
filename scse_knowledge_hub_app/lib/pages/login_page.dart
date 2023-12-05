@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _obscurePassword = true;
-  bool _isRegister = true;
+  bool _isRegister = false;
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +228,8 @@ class _LoginPageState extends State<LoginPage> {
                                                         .trim(),
                                                 context: context);
                                             if (user != null) {
-                                              // ignore: use_build_context_synchronously
+                                              log("user is registered");
+                                              log(user.uid);
                                               Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                       builder: (context) =>
@@ -249,7 +250,6 @@ class _LoginPageState extends State<LoginPage> {
                                                   .trim(),
                                             );
                                             if (user != null) {
-                                              // ignore: use_build_context_synchronously
                                               log("user is not null");
                                               log(user.uid);
                                               await _userProvider.setUser(

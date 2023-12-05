@@ -43,6 +43,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
           userID: user.uid,
           userName: widget.userName,
           userEmail: widget.userEmail);
+      await _userProvider.setUser(userID: user.uid);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Email Successfully Verified")));
       Navigator.of(context).popUntil((route) => route.isFirst);

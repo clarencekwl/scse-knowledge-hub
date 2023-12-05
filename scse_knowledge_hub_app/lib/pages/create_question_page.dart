@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
+import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/default_button.dart';
 import 'package:scse_knowledge_hub_app/widget/image_painter_page.dart';
@@ -22,11 +23,20 @@ class CreateQuestionPage extends StatefulWidget {
 
 class _CreateQuestionPageState extends State<CreateQuestionPage> {
   late QuestionProvider _questionProvider;
+  late UserProvider _userProvider;
   final TextEditingController _titleTextController = TextEditingController();
   final TextEditingController _descriptionTextController =
       TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      log("user is: ${_userProvider.user!.id}");
+    });
+  }
 
   @override
   void dispose() {
@@ -39,6 +49,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
   @override
   Widget build(BuildContext context) {
     _questionProvider = Provider.of(context);
+    _userProvider = Provider.of(context);
     return Scaffold(
         backgroundColor: Styles.primaryBackgroundColor,
         appBar: AppBar(
