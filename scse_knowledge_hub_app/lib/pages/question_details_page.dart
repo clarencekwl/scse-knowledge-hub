@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/pages/home_page.dart';
+import 'package:scse_knowledge_hub_app/pages/update_question_page.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
@@ -64,7 +65,12 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
           actions: _isUserQuestion
               ? <Widget>[
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => UpdateQuestionPage(
+                                question: widget.question,
+                              )));
+                    },
                     icon: Icon(Icons.edit_document),
                     color: Styles.primaryBlueColor,
                   ),

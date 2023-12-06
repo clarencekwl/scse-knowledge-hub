@@ -57,10 +57,7 @@ class QuestionProvider extends ChangeNotifier {
       {required String docID, String? title, String? description}) async {
     startLoading();
     await QuestionAPI.updateQuestion(
-        docId: docID,
-        title:
-            _tempListOfTitles[math.Random().nextInt(_tempListOfNames.length)],
-        description: description);
+        docId: docID, title: title, description: description);
     await getQuestions();
     stopLoading();
   }

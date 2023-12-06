@@ -60,6 +60,17 @@ class _HomePageState extends State<HomePage> {
     _questionProvider = Provider.of(context);
     _userProvider = Provider.of(context);
     return Scaffold(
+      floatingActionButton: _isSliverAppBarExpanded
+          ? FloatingActionButton(
+              onPressed: () async {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => CreateQuestionPage()));
+              },
+              elevation: 6,
+              backgroundColor: Styles.primaryBlueColor,
+              child: Icon(Icons.add, color: Colors.white),
+            )
+          : null,
       drawer: NavBar(),
       body: SafeArea(
         top: false,
@@ -125,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   )),
                               Positioned(
-                                top: 30,
+                                top: 50,
                                 right: 20,
                                 child: ElevatedButton.icon(
                                     style: ElevatedButton.styleFrom(
@@ -142,23 +153,6 @@ class _HomePageState extends State<HomePage> {
                                     },
                                     icon: const Icon(Icons.question_mark),
                                     label: Text("Ask")),
-                              ),
-                              Positioned(
-                                top: 70,
-                                right: 20,
-                                child: ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            Styles.primaryGreyColor,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20))),
-                                    onPressed: () async {
-                                      await _questionProvider.updateQuestion(
-                                          docID: "t9OPUj5d0gUXeOZkMcyC");
-                                    },
-                                    icon: const Icon(Icons.update),
-                                    label: Text("Update")),
                               ),
                             ],
                           ),

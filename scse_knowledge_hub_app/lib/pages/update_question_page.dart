@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
@@ -14,21 +15,25 @@ import 'package:scse_knowledge_hub_app/widget/no_glow_scroll.dart';
 import 'package:scse_knowledge_hub_app/widget/open_images.dart';
 import 'package:scse_knowledge_hub_app/widget/warning_dialog_widget.dart';
 
-class CreateQuestionPage extends StatefulWidget {
-  const CreateQuestionPage({super.key});
+class UpdateQuestionPage extends StatefulWidget {
+  final Question question;
+  const UpdateQuestionPage({
+    Key? key,
+    required this.question,
+  }) : super(key: key);
 
   @override
-  State<CreateQuestionPage> createState() => _CreateQuestionPageState();
+  State<UpdateQuestionPage> createState() => _UpdateQuestionPageState();
 }
 
-class _CreateQuestionPageState extends State<CreateQuestionPage> {
+class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
   late QuestionProvider _questionProvider;
   late UserProvider _userProvider;
   final TextEditingController _titleTextController = TextEditingController();
   final TextEditingController _descriptionTextController =
       TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isFormValid = false;
+  bool _isFormValid = true;
   bool _isLoading = false;
 
   @override
@@ -37,6 +42,8 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
     Future.microtask(() async {
       log("user is: ${_userProvider.user!.id}");
     });
+    _titleTextController.text = widget.question.title;
+    _descriptionTextController.text = widget.question.description;
   }
 
   @override
@@ -55,7 +62,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
         backgroundColor: Styles.primaryBackgroundColor,
         appBar: AppBar(
           title: Text(
-            "Ask a Question!",
+            "Edit Question",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           elevation: 0,
@@ -74,19 +81,20 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
               },
               child: Column(
                 children: [
-                  Expanded(child: createQuestionForm()),
+                  Expanded(child: updateQuestionForm()),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20),
                     child: DefaultButton(
-                        title: "Submit",
+                        title: "Done",
                         onPressed: (() async {
                           if (_formKey.currentState!.validate()) {
                             _isLoading = true;
                             setState(() {});
-                            await _questionProvider.createQuestion(
-                                title: _titleTextController.text,
-                                description: _descriptionTextController.text,
-                                userID: _userProvider.user!.id);
+                            await _questionProvider.updateQuestion(
+                              docID: widget.question.id,
+                              title: _titleTextController.text,
+                              description: _descriptionTextController.text,
+                            );
                             _questionProvider.removeAllAttachments();
                             _questionProvider.clearImageCache();
                             _isLoading = false;
@@ -211,7 +219,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
     );
   }
 
-  Widget createQuestionForm() {
+  Widget updateQuestionForm() {
     return Form(
       key: _formKey,
       onChanged: () {

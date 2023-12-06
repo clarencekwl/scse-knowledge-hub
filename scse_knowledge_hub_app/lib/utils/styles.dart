@@ -101,10 +101,4 @@ class Styles {
       color: Colors.grey[600],
     ),
   );
-
-  // static int redColor = 0xffff2d55;
-  static Color tipColor = Color.fromRGBO(255, 226, 108, 1);
-  static Color matchWonCardSideColor = Color.fromRGBO(22, 160, 133, 1);
-  static Color matchLostCardSideColor = Color.fromRGBO(211, 84, 0, 1);
-  static Color? vipCardBgColor = Colors.orange[100];
 }
