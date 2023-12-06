@@ -18,6 +18,12 @@ class QuestionProvider extends ChangeNotifier {
     _listOfQuestions = listOfQuestions;
   }
 
+  List<Question> _listOfUserQuestions = [];
+  List<Question> get listOfUserQuestions => _listOfUserQuestions;
+  set listOfUserQuestions(List<Question> listOfUserQuestions) {
+    _listOfUserQuestions = listOfUserQuestions;
+  }
+
   Future<void> getQuestions() async {
     startLoading();
     ListOfQuestionReponse? res = await QuestionAPI.getQuestionsFromDB();
@@ -32,6 +38,18 @@ class QuestionProvider extends ChangeNotifier {
       }
       if (_listOfQuestions[i].replies == null) {
         _listOfQuestions[i].replies = math.Random().nextInt(100);
+      }
+    }
+    stopLoading();
+  }
+
+  void getUserQuestions(String userId) {
+    startLoading();
+    log("user id is: $userId");
+    for (int i = 0; i < _listOfQuestions.length; i++) {
+      log("question's user id is: ${_listOfQuestions[i].userId}");
+      if (userId == _listOfQuestions[i].userId) {
+        _listOfUserQuestions.add(_listOfQuestions[i]);
       }
     }
     stopLoading();
@@ -115,23 +133,23 @@ class QuestionProvider extends ChangeNotifier {
   //   }
   // }
 
-  final List<String> _tempListOfNames = [
-    'Clarence Kway',
-    'Ernest Tan',
-    'Pang Cheng Feng',
-    'Bhone Myat Gon',
-    'Teo Han Hua',
-    'Xie Zijian'
-  ];
+  // final List<String> _tempListOfNames = [
+  //   'Clarence Kway',
+  //   'Ernest Tan',
+  //   'Pang Cheng Feng',
+  //   'Bhone Myat Gon',
+  //   'Teo Han Hua',
+  //   'Xie Zijian'
+  // ];
 
-  final List<String> _tempListOfTitles = [
-    'CZ2006 Lab 3 documentation',
-    'MDP Android Bluetooth',
-    'Database system principles',
-    'Discrete Math propositional logic',
-    "CZ4031 don't understand what prof is teaching",
-    'Help me find the bug in my code!'
-  ];
+  // final List<String> _tempListOfTitles = [
+  //   'CZ2006 Lab 3 documentation',
+  //   'MDP Android Bluetooth',
+  //   'Database system principles',
+  //   'Discrete Math propositional logic',
+  //   "CZ4031 don't understand what prof is teaching",
+  //   'Help me find the bug in my code!'
+  // ];
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;

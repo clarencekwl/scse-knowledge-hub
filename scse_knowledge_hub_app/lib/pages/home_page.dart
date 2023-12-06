@@ -18,15 +18,18 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   late QuestionProvider _questionProvider;
   late UserProvider _userProvider;
   ScrollController _scrollController = ScrollController();
+  late TabController _tabController;
   late String _welcomeText = "";
   late String _titleText = "";
   late bool _currentSliverAppBarExpandedStatus;
   bool _isSliverAppBarExpanded = false;
   bool _isLoading = false;
+  int _currentTab = 0;
 
   @override
   void initState() {
@@ -43,6 +46,8 @@ class _HomePageState extends State<HomePage> {
       _isLoading = false;
       setState(() {});
     });
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_handleTabSelection);
     _scrollController = ScrollController()
       ..addListener(() {
         _currentSliverAppBarExpandedStatus = _isSliverAppBarExpanded;
@@ -85,28 +90,29 @@ class _HomePageState extends State<HomePage> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   slivers: <Widget>[
                     SliverAppBar(
-                        pinned: true,
-                        backgroundColor: Styles.primaryBlueColor,
-                        expandedHeight: Styles.kScreenHeight(context) * 0.16,
-                        flexibleSpace: FlexibleSpaceBar(
-                          centerTitle: false,
-                          titlePadding: _isSliverAppBarExpanded
-                              ? EdgeInsets.only(top: 10, bottom: 10, left: 50)
-                              : EdgeInsets.only(bottom: 20, left: 25),
-                          title: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _titleText,
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.ellipsis,
-                                textScaleFactor: 1,
-                              ),
-                              SizedBox(height: 2.5),
+                      pinned: true,
+                      backgroundColor: Styles.primaryBlueColor,
+                      expandedHeight: Styles.kScreenHeight(context) * 0.16,
+                      flexibleSpace: FlexibleSpaceBar(
+                        centerTitle: false,
+                        titlePadding: _isSliverAppBarExpanded
+                            ? EdgeInsets.only(top: 10, bottom: 15, left: 50)
+                            : EdgeInsets.only(bottom: 20, left: 25),
+                        title: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _titleText,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                              textScaleFactor: 1,
+                            ),
+                            SizedBox(height: 2.5),
+                            if (false == _isSliverAppBarExpanded)
                               Text(
                                 "Share your knowledge or ask for help!",
                                 style: TextStyle(
@@ -115,36 +121,37 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 textScaleFactor: 1,
                               ),
-                            ],
-                          ),
-                          background: Stack(
-                            children: [
-                              Container(
-                                color: Styles.primaryBlueColor,
-                              ),
+                          ],
+                        ),
+                        background: Stack(
+                          children: [
+                            Container(
+                              color: Styles.primaryBlueColor,
+                            ),
+                            Positioned(
+                                top: 0,
+                                right: 0,
+                                child: Container(
+                                  width: Styles.kScreenWidth(context) * 0.4,
+                                  height: Styles.kScreenHeight(context) * 0.15,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.withOpacity(0.1),
+                                    borderRadius: BorderRadius.only(
+                                        bottomLeft: Radius.circular(50)),
+                                  ),
+                                )),
+                            if (false == _isSliverAppBarExpanded)
                               Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: Container(
-                                    width: Styles.kScreenWidth(context) * 0.4,
-                                    height:
-                                        Styles.kScreenHeight(context) * 0.15,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.withOpacity(0.1),
-                                      borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(50)),
-                                    ),
-                                  )),
-                              Positioned(
-                                top: 50,
+                                top: 40,
                                 right: 20,
                                 child: ElevatedButton.icon(
                                     style: ElevatedButton.styleFrom(
+                                        elevation: 6,
                                         backgroundColor:
                                             Styles.primaryGreyColor,
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
-                                                BorderRadius.circular(20))),
+                                                BorderRadius.circular(300))),
                                     onPressed: () async {
                                       Navigator.of(context).push(
                                           MaterialPageRoute(
@@ -154,32 +161,106 @@ class _HomePageState extends State<HomePage> {
                                     icon: const Icon(Icons.question_mark),
                                     label: Text("Ask")),
                               ),
-                            ],
-                          ),
-                        )),
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (BuildContext context, int index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: QuestionCard(
-                              question:
-                                  _questionProvider.listOfQuestions[index],
-                              onTap: () {
-                                {
-                                  log("card tap!!");
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => QuestionDetailsPage(
-                                          question: _questionProvider
-                                              .listOfQuestions[index])));
-                                }
-                              },
-                            ),
-                          );
-                        },
-                        childCount: _questionProvider.listOfQuestions.length,
+                          ],
+                        ),
                       ),
                     ),
+
+                    // TabBar
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: CustomSliverAppBarDelegate(
+                        tabBar: TabBar(
+                          labelStyle: TextStyle(
+                            color: Styles.primaryBlueColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                          labelColor: Styles.primaryBlueColor,
+                          unselectedLabelColor: Colors.grey,
+                          indicatorColor: Styles.primaryBlueColor,
+                          controller: _tabController,
+                          tabs: const [
+                            Tab(
+                              icon: Icon(Icons.person,
+                                  color: Colors.transparent, size: 0),
+                              iconMargin: EdgeInsets.all(0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.home_outlined),
+                                  SizedBox(width: 8),
+                                  Text('Home'),
+                                ],
+                              ),
+                            ),
+                            Tab(
+                              icon: Icon(Icons.person,
+                                  color: Colors.transparent, size: 0),
+                              iconMargin: EdgeInsets.all(0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.person_outlined),
+                                  SizedBox(width: 8),
+                                  Text('Your Questions'),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SliverList(
+                        delegate: _currentTab == 0
+                            ? SliverChildBuilderDelegate(
+                                (BuildContext context, int index) {
+                                  return Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: QuestionCard(
+                                        question: _questionProvider
+                                            .listOfQuestions[index],
+                                        onTap: () {
+                                          {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        QuestionDetailsPage(
+                                                            question:
+                                                                _questionProvider
+                                                                        .listOfQuestions[
+                                                                    index])));
+                                          }
+                                        },
+                                      ));
+                                },
+                                childCount:
+                                    _questionProvider.listOfQuestions.length,
+                              )
+                            : SliverChildBuilderDelegate(
+                                (BuildContext context, int index) {
+                                  return Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: QuestionCard(
+                                        question: _questionProvider
+                                            .listOfUserQuestions[index],
+                                        onTap: () {
+                                          {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        QuestionDetailsPage(
+                                                            question:
+                                                                _questionProvider
+                                                                        .listOfUserQuestions[
+                                                                    index])));
+                                          }
+                                        },
+                                      ));
+                                },
+                                childCount: _questionProvider
+                                    .listOfUserQuestions.length,
+                              )),
                   ],
                 ),
               ),
@@ -200,5 +281,43 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  void _handleTabSelection() {
+    _currentTab = _tabController.index;
+    log("current tab: $_currentTab");
+    if (_currentTab == 1 && _questionProvider.listOfUserQuestions.isEmpty) {
+      _isLoading = true;
+      setState(() {});
+      _questionProvider.getUserQuestions(_userProvider.user!.id);
+      _isLoading = false;
+      log("length of list: ${_questionProvider.listOfUserQuestions.length}");
+    }
+    _scrollController.animateTo(0,
+        duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+    setState(() {});
+  }
+}
+
+class CustomSliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget tabBar;
+
+  CustomSliverAppBarDelegate({required this.tabBar});
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Align(child: Container(color: Colors.white, child: tabBar));
+  }
+
+  @override
+  double get maxExtent => kToolbarHeight + 10;
+
+  @override
+  double get minExtent => kToolbarHeight + 10;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
   }
 }

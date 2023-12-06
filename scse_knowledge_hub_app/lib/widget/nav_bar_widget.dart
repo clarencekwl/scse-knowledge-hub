@@ -15,7 +15,7 @@ class NavBar extends StatelessWidget {
         borderRadius: BorderRadius.only(
             topRight: Radius.circular(30), bottomRight: Radius.circular(30)),
       ),
-      width: Styles.kScreenWidth(context) * 0.7,
+      width: Styles.kScreenWidth(context) * 0.8,
       backgroundColor: Styles.primaryGreyColor,
       child: ListView(
         // Remove padding
@@ -42,7 +42,7 @@ class NavBar extends StatelessWidget {
             decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.1),
                 borderRadius:
-                    BorderRadius.only(bottomRight: Radius.circular(50))),
+                    BorderRadius.only(bottomRight: Radius.circular(20))),
           ),
           drawerList(
             Icons.home,
