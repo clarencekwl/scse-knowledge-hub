@@ -7,8 +7,10 @@ final FirebaseFirestore db = FirebaseFirestore.instance;
 
 Future<ListOfQuestionReponse?> getQuestionsFromDB() async {
   try {
-    QuerySnapshot<Map<String, dynamic>> snapshot =
-        await db.collection("questions").get();
+    QuerySnapshot<Map<String, dynamic>> snapshot = await db
+        .collection("questions")
+        .orderBy('timestamp', descending: true)
+        .get();
 
     if (snapshot.docs.isNotEmpty) {
       return ListOfQuestionReponse.fromJson(snapshot.docs);

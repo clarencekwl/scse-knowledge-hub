@@ -51,10 +51,20 @@ class _QuestionCardState extends State<QuestionCard> {
               Expanded(
                 child: Text(
                   widget.question.userName,
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12),
                 ),
               ),
-              Text("1h ago", style: TextStyle(color: Colors.grey, fontSize: 10))
+              Text(
+                  Styles.formatTimeDifference(
+                      DateTime.now().difference(widget.question.timestamp)),
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 10,
+                  ))
             ],
           ),
           Expanded(

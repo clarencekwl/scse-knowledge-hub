@@ -8,7 +8,7 @@ class Question {
   String userName;
   int? likes;
   int? replies;
-  //DateTime timestamp;
+  DateTime timestamp;
 
   Question({
     required this.id,
@@ -18,7 +18,7 @@ class Question {
     required this.userName,
     this.likes,
     this.replies,
-    //required this.timestamp,
+    required this.timestamp,
   });
 
   factory Question.fromJson(Map<String, dynamic> json, String docId) {
@@ -30,7 +30,7 @@ class Question {
       description: json['description'],
       replies: json['replies'],
       likes: json['likes'],
-      //timestamp: json['timestamp'],
+      timestamp: json['timestamp'].toDate(),
     );
   }
 
@@ -53,7 +53,7 @@ class Question {
       description: question.description,
       replies: question.replies,
       likes: question.likes,
-      //timestamp: question.timestamp,
+      timestamp: question.timestamp,
     );
   }
 

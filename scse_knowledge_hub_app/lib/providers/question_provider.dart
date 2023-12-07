@@ -32,14 +32,6 @@ class QuestionProvider extends ChangeNotifier {
     } else {
       _listOfQuestions = res.listofQuestions;
     }
-    for (int i = 0; i < _listOfQuestions.length; i++) {
-      if (_listOfQuestions[i].likes == null) {
-        _listOfQuestions[i].likes = math.Random().nextInt(100);
-      }
-      if (_listOfQuestions[i].replies == null) {
-        _listOfQuestions[i].replies = math.Random().nextInt(100);
-      }
-    }
     stopLoading();
   }
 

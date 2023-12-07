@@ -101,4 +101,22 @@ class Styles {
       color: Colors.grey[600],
     ),
   );
+
+  static String formatTimeDifference(Duration difference) {
+    if (difference.inMinutes < 2) {
+      return 'Just now';
+    } else if (difference.inHours < 1) {
+      return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
+    } else if (difference.inDays < 1) {
+      return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+    } else if (difference.inDays < 30) {
+      return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
+    } else if (difference.inDays < 365) {
+      int months = (difference.inDays / 30).floor();
+      return '$months ${months == 1 ? 'month' : 'months'} ago';
+    } else {
+      int years = (difference.inDays / 365).floor();
+      return '$years ${years == 1 ? 'year' : 'years'} ago';
+    }
+  }
 }

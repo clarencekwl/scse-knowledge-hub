@@ -195,7 +195,8 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
               children: [
                 Expanded(
                   child: Text(
-                    "1h ago",
+                    Styles.formatTimeDifference(
+                        DateTime.now().difference(widget.question.timestamp)),
                     style: TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ),
