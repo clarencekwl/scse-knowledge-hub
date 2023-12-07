@@ -18,7 +18,7 @@ class _QuestionCardState extends State<QuestionCard> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 175,
+      height: 160,
       // width: Styles.kScreenWidth(context) * 0.9,
       child: Card(
         elevation: 5,

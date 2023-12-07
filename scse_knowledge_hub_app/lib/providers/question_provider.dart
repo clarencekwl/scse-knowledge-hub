@@ -64,10 +64,11 @@ class QuestionProvider extends ChangeNotifier {
       title: title,
       description: description,
       userID: userID,
-      likes: math.Random().nextInt(100),
-      replies: math.Random().nextInt(100),
+      likes: 0,
+      replies: 0,
     );
     await getQuestions();
+    _listOfUserQuestions.clear();
     stopLoading();
   }
 
@@ -77,6 +78,7 @@ class QuestionProvider extends ChangeNotifier {
     await QuestionAPI.updateQuestion(
         docId: docID, title: title, description: description);
     await getQuestions();
+    _listOfUserQuestions.clear();
     stopLoading();
   }
 
@@ -84,6 +86,7 @@ class QuestionProvider extends ChangeNotifier {
     startLoading();
     await QuestionAPI.deleteQuestion(docId: docId);
     await getQuestions();
+    _listOfUserQuestions.clear();
     stopLoading();
   }
 

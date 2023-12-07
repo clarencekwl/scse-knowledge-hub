@@ -100,6 +100,10 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                                   Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                           builder: (context) => HomePage()));
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Question sucessfully deleted.')));
                                 },
                                 onCancel: () {
                                   Navigator.of(context).pop();
