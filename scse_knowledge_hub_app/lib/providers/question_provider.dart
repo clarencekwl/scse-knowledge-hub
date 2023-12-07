@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:cached_memory_image/cached_image_base64_manager.dart';
@@ -24,25 +23,31 @@ class QuestionProvider extends ChangeNotifier {
     _listOfUserQuestions = listOfUserQuestions;
   }
 
+  List<Question> _listOfUserLikedQuestions = [];
+  List<Question> get listOfUserLikedQuestions => _listOfUserLikedQuestions;
+  set listOfUserLikedQuestions(List<Question> listOfUserLikedQuestions) {
+    _listOfUserLikedQuestions = listOfUserLikedQuestions;
+  }
+
   Future<void> getQuestions() async {
     startLoading();
     ListOfQuestionReponse? res = await QuestionAPI.getQuestionsFromDB();
     if (null == res) {
       _listOfQuestions = [];
     } else {
-      _listOfQuestions = res.listofQuestions;
+      _listOfQuestions = res.listOfQuestions;
     }
     stopLoading();
   }
 
-  void getUserQuestions(String userId) {
+  Future<void> getUserQuestions(String userId) async {
     startLoading();
-    log("user id is: $userId");
-    for (int i = 0; i < _listOfQuestions.length; i++) {
-      log("question's user id is: ${_listOfQuestions[i].userId}");
-      if (userId == _listOfQuestions[i].userId) {
-        _listOfUserQuestions.add(_listOfQuestions[i]);
-      }
+    ListOfUserQuestionReponse? res =
+        await QuestionAPI.getUserQuestionsFromDB(userId: userId);
+    if (null == res) {
+      _listOfUserQuestions = [];
+    } else {
+      _listOfUserQuestions = res.listOfUserQuestions;
     }
     stopLoading();
   }
@@ -80,6 +85,17 @@ class QuestionProvider extends ChangeNotifier {
     await getQuestions();
     _listOfUserQuestions.clear();
     stopLoading();
+  }
+
+  Future<void> likeQuestion(
+      {required String docId, required int numberOfLikes}) async {
+    startLoading();
+    await QuestionAPI.likeQuestion(docId: docId, numberOfLikes: numberOfLikes);
+    Question question = _listOfQuestions.firstWhere(
+      (question) => question.id == docId,
+    );
+
+    question.likes = question.likes! + 1;
   }
 
   List<Uint8List> _listOfAttachments = [];
@@ -161,5 +177,71 @@ class QuestionProvider extends ChangeNotifier {
   stopLoading() {
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> populateUserLikesCollection() async {
+    // Reference to the 'questions' collection
+    final questionsCollection =
+        FirebaseFirestore.instance.collection('questions');
+
+    // Reference to the 'userLikes' collection
+    final userLikesCollection =
+        FirebaseFirestore.instance.collection('userLikes');
+
+    // Get all documents from the 'questions' collection
+    final questionsSnapshot = await questionsCollection.get();
+
+    // Iterate through each question and populate 'userLikes' collection
+    for (final questionDoc in questionsSnapshot.docs) {
+      final questionId = questionDoc.id;
+
+      // You can customize this list with user IDs who liked the question
+      final likedUserIds = [
+        'bmDrMYHQR4YThCLGFOMY',
+        'tePv16GUJzUn5F4LkROW',
+        'XnK9A9EZd0QtuksIhEaD'
+      ];
+
+      // Update 'userLikes' collection for each liked user
+      for (final userId in likedUserIds) {
+        await userLikesCollection
+            .doc(userId)
+            .set({questionId: true}, SetOptions(merge: true));
+      }
+    }
+  }
+
+  Future<void> populateUserSubCollection() async {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    // Get all questions
+    QuerySnapshot questionsSnapshot =
+        await _firestore.collection('questions').get();
+
+// Iterate through each question
+    for (QueryDocumentSnapshot questionDoc in questionsSnapshot.docs) {
+      // Get userId from the question
+      String? userId = questionDoc.get('userId'); // Use get() instead of data()
+
+      // Check if userId is not null
+      if (userId != null) {
+        // Get question data
+        Map<String, dynamic> questionData = {
+          'title': questionDoc.get('title'),
+          'description': questionDoc.get('description'),
+          'likes': questionDoc.get('likes'),
+          'replies': questionDoc.get('replies'),
+          'timestamp': questionDoc.get('timestamp'),
+          'userId': questionDoc.get('userId')
+          // Add any other fields you want to include in the user's subcollection
+        };
+
+        // Add the question to the user's subcollection
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('questions')
+            .add(questionData);
+      }
+    }
   }
 }

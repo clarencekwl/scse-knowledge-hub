@@ -53,8 +53,7 @@ class NavBar extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => HomePage()));
             },
           ),
-          drawerList(
-              Icons.question_answer_rounded, "Your Questions", () => null),
+          drawerList(Icons.thumb_up_sharp, "Liked Questions", () => null),
           drawerList(Icons.check_rounded, "Questions answered", () => null),
         ],
       ),

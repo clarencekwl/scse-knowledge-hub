@@ -23,6 +23,27 @@ Future<ListOfQuestionReponse?> getQuestionsFromDB() async {
   }
 }
 
+Future<ListOfUserQuestionReponse?> getUserQuestionsFromDB(
+    {required String userId}) async {
+  try {
+    // Reference to the user's questions subcollection
+    CollectionReference userQuestionsCollection =
+        db.collection('users').doc(userId).collection('questions');
+
+    // Get documents from the subcollection
+    QuerySnapshot userQuestionsSnapshot = await userQuestionsCollection.get();
+
+    if (userQuestionsSnapshot.docs.isNotEmpty) {
+      return ListOfUserQuestionReponse.fromJson(userQuestionsSnapshot.docs);
+    } else {
+      return null;
+    }
+  } catch (e) {
+    log(e.toString());
+    return null;
+  }
+}
+
 Future<void> createQuestion(
     {required String title,
     required String description,
@@ -48,33 +69,24 @@ Future<void> updateQuestion(
       db.collection("questions").doc(docId);
 
   if (null != title) {
-    documentReference.update({"title": title}).then(
+    await documentReference.update({"title": title}).then(
         (value) => log("Question successfully updated!"),
         onError: (e) => log("Error updating question $e"));
   }
   if (null != description) {
-    documentReference.update({"description": description}).then(
+    await documentReference.update({"description": description}).then(
         (value) => log("Question successfully updated!"),
         onError: (e) => log("Error updating question $e"));
   }
 }
 
 Future<void> deleteQuestion({required String docId}) async {
-  db.collection("questions").doc(docId).delete().then(
+  await db.collection("questions").doc(docId).delete().then(
       (value) => log("Question successfully deleted"),
       onError: (e) => log("Error updating question $e"));
 }
 
-// String generateRandomID() {
-//   final random = math.Random();
-//   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-//   String id = '';
-
-//   for (int i = 0; i < 20; i++) {
-//     final index = random.nextInt(characters.length);
-//     id += characters[index];
-//   }
-
-//   return id;
-// }
+Future<void> likeQuestion(
+    {required String docId, required int numberOfLikes}) async {
+  await db.collection("questions").doc(docId).update({"likes": numberOfLikes});
+}

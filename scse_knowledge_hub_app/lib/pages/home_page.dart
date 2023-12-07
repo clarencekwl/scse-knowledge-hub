@@ -152,12 +152,7 @@ class _HomePageState extends State<HomePage>
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(300))),
-                                    onPressed: () async {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  CreateQuestionPage()));
-                                    },
+                                    onPressed: () async {},
                                     icon: const Icon(Icons.question_mark),
                                     label: Text("Ask")),
                               ),
