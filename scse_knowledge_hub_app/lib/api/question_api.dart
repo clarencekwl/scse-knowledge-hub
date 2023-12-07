@@ -13,6 +13,7 @@ Future<ListOfQuestionReponse?> getQuestionsFromDB() async {
         .get();
 
     if (snapshot.docs.isNotEmpty) {
+      log("snapshot length is: " + snapshot.docs.length.toString());
       return ListOfQuestionReponse.fromJson(snapshot.docs);
     } else {
       return null;
@@ -49,13 +50,15 @@ Future<void> createQuestion(
     required String description,
     required String userID,
     required int likes,
-    required int replies}) async {
+    required int replies,
+    required FieldValue timestamp}) async {
   Map<String, dynamic> data = {
     "title": title,
     "description": description,
     "likes": likes,
     "replies": replies,
     "userId": userID,
+    "timestamp": timestamp,
   };
 
   // ignore: unused_local_variable

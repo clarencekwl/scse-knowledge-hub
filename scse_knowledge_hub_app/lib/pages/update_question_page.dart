@@ -91,7 +91,8 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                             _isLoading = true;
                             setState(() {});
                             await _questionProvider.updateQuestion(
-                              docID: widget.question.id,
+                              docId: widget.question.id,
+                              userId: _userProvider.user!.id,
                               title: _titleTextController.text,
                               description: _descriptionTextController.text,
                             );

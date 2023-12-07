@@ -63,27 +63,32 @@ class QuestionProvider extends ChangeNotifier {
       userID: userID,
       likes: 0,
       replies: 0,
+      timestamp: FieldValue.serverTimestamp(),
     );
     await getQuestions();
-    _listOfUserQuestions.clear();
+    await getUserQuestions(userID);
     stopLoading();
   }
 
   Future<void> updateQuestion(
-      {required String docID, String? title, String? description}) async {
+      {required String docId,
+      required String userId,
+      String? title,
+      String? description}) async {
     startLoading();
     await QuestionAPI.updateQuestion(
-        docId: docID, title: title, description: description);
+        docId: docId, title: title, description: description);
     await getQuestions();
-    _listOfUserQuestions.clear();
+    //await getUserQuestions(userId);
     stopLoading();
   }
 
-  Future<void> deleteQuestion({required String docId}) async {
+  Future<void> deleteQuestion(
+      {required String docId, required String userId}) async {
     startLoading();
     await QuestionAPI.deleteQuestion(docId: docId);
     await getQuestions();
-    _listOfUserQuestions.clear();
+    await getUserQuestions(userId);
     stopLoading();
   }
 

@@ -93,7 +93,9 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                                   _isLoading = true;
                                   setState(() {});
                                   await _questionProvider.deleteQuestion(
-                                      docId: widget.question.id);
+                                    docId: widget.question.id,
+                                    userId: _userProvider.user!.id,
+                                  );
                                   _isLoading = false;
                                   setState(() {});
                                   Navigator.of(context).pop();
