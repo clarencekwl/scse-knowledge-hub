@@ -13,7 +13,6 @@ Future<ListOfQuestionReponse?> getQuestionsFromDB() async {
         .get();
 
     if (snapshot.docs.isNotEmpty) {
-      log("snapshot length is: " + snapshot.docs.length.toString());
       return ListOfQuestionReponse.fromJson(snapshot.docs);
     } else {
       return null;
@@ -61,32 +60,73 @@ Future<void> createQuestion(
     "timestamp": timestamp,
   };
 
-  // ignore: unused_local_variable
-  DocumentReference<Map<String, dynamic>> snapshot =
-      await db.collection("questions").add(data);
+  try {
+    // Add the question to the 'questions' collection
+    DocumentReference<Map<String, dynamic>> questionDocRef =
+        await db.collection("questions").add(data);
+
+    // Add the question to the user's 'questions' subcollection
+    await db
+        .collection("users")
+        .doc(userID)
+        .collection("questions")
+        .doc(questionDocRef.id)
+        .set(data);
+
+    log('Question created successfully with ID: ${questionDocRef.id}');
+  } catch (e) {
+    log('Error creating question: $e');
+  }
 }
 
 Future<void> updateQuestion(
     {required String docId, String? title, String? description}) async {
-  DocumentReference<Map<String, dynamic>> documentReference =
-      db.collection("questions").doc(docId);
-
-  if (null != title) {
-    await documentReference.update({"title": title}).then(
-        (value) => log("Question successfully updated!"),
-        onError: (e) => log("Error updating question $e"));
-  }
-  if (null != description) {
-    await documentReference.update({"description": description}).then(
-        (value) => log("Question successfully updated!"),
-        onError: (e) => log("Error updating question $e"));
+  try {
+    if (null != title) {
+      await db.collection("questions").doc(docId).update({"title": title});
+      await db
+          .collection("users")
+          .doc(docId)
+          .collection('questions')
+          .doc(docId)
+          .update({"title": title});
+    }
+    if (null != description) {
+      await db
+          .collection("questions")
+          .doc(docId)
+          .update({"description": description});
+      await db
+          .collection("users")
+          .doc(docId)
+          .collection('questions')
+          .doc(docId)
+          .update({"description": description});
+    }
+    log('Question updated successfully');
+  } catch (e) {
+    log('Error updating question: $e');
   }
 }
 
-Future<void> deleteQuestion({required String docId}) async {
-  await db.collection("questions").doc(docId).delete().then(
-      (value) => log("Question successfully deleted"),
-      onError: (e) => log("Error updating question $e"));
+Future<void> deleteQuestion(
+    {required String docId, required String userId}) async {
+  try {
+    // Delete from 'questions' collection
+    await db.collection('questions').doc(docId).delete();
+
+    // Delete from user's 'questions' subcollection
+    await db
+        .collection('users')
+        .doc(userId)
+        .collection('questions')
+        .doc(docId)
+        .delete();
+
+    log('Question deleted successfully');
+  } catch (e) {
+    log('Error deleting question: $e');
+  }
 }
 
 Future<void> likeQuestion(

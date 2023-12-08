@@ -17,7 +17,6 @@ class UserProvider extends ChangeNotifier {
     startLoading();
     UserReponse user = await UserAPI.getUser(userID: userID);
     _user = user.user;
-    log(_user.toString());
     stopLoading();
   }
 

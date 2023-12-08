@@ -86,7 +86,7 @@ class QuestionProvider extends ChangeNotifier {
   Future<void> deleteQuestion(
       {required String docId, required String userId}) async {
     startLoading();
-    await QuestionAPI.deleteQuestion(docId: docId);
+    await QuestionAPI.deleteQuestion(docId: docId, userId: userId);
     await getQuestions();
     await getUserQuestions(userId);
     stopLoading();

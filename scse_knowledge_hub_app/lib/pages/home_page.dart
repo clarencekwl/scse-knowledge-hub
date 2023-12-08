@@ -37,7 +37,6 @@ class _HomePageState extends State<HomePage>
     Future.microtask(() async {
       log("user: ${_userProvider.user!.name}");
       _welcomeText = "Hi, ${_userProvider.user!.name}";
-      log("welcome text is: $_welcomeText");
       _titleText = _welcomeText;
       _isLoading = true;
       setState(() {});
@@ -169,7 +168,7 @@ class _HomePageState extends State<HomePage>
                           labelStyle: TextStyle(
                             color: Styles.primaryBlueColor,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 15,
                           ),
                           labelColor: Styles.primaryBlueColor,
                           unselectedLabelColor: Colors.grey,
@@ -280,7 +279,6 @@ class _HomePageState extends State<HomePage>
 
   void _handleTabSelection() {
     _currentTab = _tabController.index;
-    log("current tab: $_currentTab");
     if (_currentTab == 1 && _questionProvider.listOfUserQuestions.isEmpty) {
       _isLoading = true;
       setState(() {});
@@ -306,10 +304,10 @@ class CustomSliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => kToolbarHeight + 10;
+  double get maxExtent => kToolbarHeight;
 
   @override
-  double get minExtent => kToolbarHeight + 10;
+  double get minExtent => kToolbarHeight;
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
