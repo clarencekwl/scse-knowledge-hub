@@ -36,7 +36,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
   void initState() {
     super.initState();
     Future.microtask(() async {
-      log("user is: ${_userProvider.user!.id}");
+      log("user is: ${_userProvider.user.id}");
     });
   }
 
@@ -87,7 +87,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                             await _questionProvider.createQuestion(
                                 title: _titleTextController.text,
                                 description: _descriptionTextController.text,
-                                userID: _userProvider.user!.id);
+                                userID: _userProvider.user.id);
                             _questionProvider.removeAllAttachments();
                             _questionProvider.clearImageCache();
                             _isLoading = false;

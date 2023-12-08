@@ -35,8 +35,8 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     Future.microtask(() async {
-      log("user: ${_userProvider.user!.name}");
-      _welcomeText = "Hi, ${_userProvider.user!.name}";
+      log("user: ${_userProvider.user.name}");
+      _welcomeText = "Hi, ${_userProvider.user.name}";
       _titleText = _welcomeText;
       _isLoading = true;
       setState(() {});
@@ -282,7 +282,7 @@ class _HomePageState extends State<HomePage>
     if (_currentTab == 1 && _questionProvider.listOfUserQuestions.isEmpty) {
       _isLoading = true;
       setState(() {});
-      _questionProvider.getUserQuestions(_userProvider.user!.id);
+      _questionProvider.getUserQuestions(_userProvider.user.id);
       _isLoading = false;
       log("length of list: ${_questionProvider.listOfUserQuestions.length}");
     }

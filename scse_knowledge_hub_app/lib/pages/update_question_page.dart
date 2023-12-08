@@ -40,7 +40,7 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
   void initState() {
     super.initState();
     Future.microtask(() async {
-      log("user is: ${_userProvider.user!.id}");
+      log("user is: ${_userProvider.user.id}");
     });
     _titleTextController.text = widget.question.title;
     _descriptionTextController.text = widget.question.description;
@@ -92,7 +92,7 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                             setState(() {});
                             await _questionProvider.updateQuestion(
                               docId: widget.question.id,
-                              userId: _userProvider.user!.id,
+                              userId: _userProvider.user.id,
                               title: _titleTextController.text,
                               description: _descriptionTextController.text,
                             );

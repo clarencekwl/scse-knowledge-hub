@@ -6,9 +6,9 @@ import 'package:scse_knowledge_hub_app/models/User.dart';
 import 'package:scse_knowledge_hub_app/reponse/user_response.dart';
 
 class UserProvider extends ChangeNotifier {
-  User? _user;
-  User? get user => _user;
-  set user(User? user) {
+  late User _user;
+  User get user => _user;
+  set user(User user) {
     _user = user;
     notifyListeners();
   }

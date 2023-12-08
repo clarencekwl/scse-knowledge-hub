@@ -42,9 +42,9 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
   @override
   void initState() {
     Future.microtask(() async {
-      log("user id: ${_userProvider.user!.id}");
+      log("user id: ${_userProvider.user.id}");
       log("question id: ${widget.question.userId}");
-      if (_userProvider.user!.id == widget.question.userId) {
+      if (_userProvider.user.id == widget.question.userId) {
         _isUserQuestion = true;
         setState(() {});
       }
@@ -110,7 +110,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                           await _questionProvider
                               .deleteQuestion(
                             docId: widget.question.id,
-                            userId: _userProvider.user!.id,
+                            userId: _userProvider.user.id,
                           )
                               .then((_) {
                             _isLoading = false;
