@@ -30,14 +30,33 @@ class _QuestionSuccessPageState extends State<QuestionSuccessPage> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Image.asset(
-                        'assets/images/question_success_image.png',
+                        'assets/images/question_success_image.jpg',
                         height: Styles.kScreenHeight(context) * 0.42,
                         width: Styles.kScreenHeight(context) * 0.4,
                       ),
                       SizedBox(height: 10),
-                      Text("Question sent!", style: Styles.titleTextStyle),
+                      Text(
+                        "Question Posted!",
+                        style: TextStyle(
+                          color: Styles.primaryBlueColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 32,
+                        ),
+                      ),
                       SizedBox(height: 15),
-                      Text("Congratulations")
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 30),
+                        child: Text(
+                          "Congratulations! Your question has been successfully posted. Now, embark on a rewarding learning journey!",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color:
+                                Colors.grey, // Adjust color to your preference
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

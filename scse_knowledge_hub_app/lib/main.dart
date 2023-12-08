@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/firebase_constants.dart';
-import 'package:scse_knowledge_hub_app/pages/email_verfication_page.dart';
 import 'package:scse_knowledge_hub_app/pages/login_page.dart';
 import 'package:scse_knowledge_hub_app/pages/unknown_page.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
