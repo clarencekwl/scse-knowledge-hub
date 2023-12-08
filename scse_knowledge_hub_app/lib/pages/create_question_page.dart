@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:scse_knowledge_hub_app/pages/question_success_page.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
@@ -92,11 +93,11 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                             _isLoading = false;
                             setState(() {});
                             Navigator.pop(context);
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //       builder: (context) => CaseSuccessPage()),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => QuestionSuccessPage()),
+                            );
                           }
                         }),
                         icon: _isFormValid ? Icons.check : null,

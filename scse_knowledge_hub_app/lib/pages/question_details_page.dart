@@ -31,6 +31,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
   late UserProvider _userProvider;
   bool _isUserQuestion = false;
   bool _isLoading = false;
+  bool _isDelete = false;
 
   //! TEMP: Images
   List<String> listOfThumbnailUrls = [
@@ -75,46 +76,64 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                     color: Styles.primaryBlueColor,
                   ),
                   IconButton(
-                      onPressed: () async {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return WarningDialogWidget(
-                                content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: const [
-                                      Text(
-                                          'Question will be permanently removed',
-                                          textAlign: TextAlign.center),
-                                      Text('Are you sure?',
-                                          textAlign: TextAlign.center),
-                                    ]),
-                                onConfirm: () async {
-                                  _isLoading = true;
-                                  setState(() {});
-                                  await _questionProvider.deleteQuestion(
-                                    docId: widget.question.id,
-                                    userId: _userProvider.user!.id,
-                                  );
-                                  _isLoading = false;
-                                  setState(() {});
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                          builder: (context) => HomePage()));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Question sucessfully deleted.')));
-                                },
-                                onCancel: () {
-                                  Navigator.of(context).pop();
-                                },
-                              );
-                            });
-                      },
-                      icon: Icon(Icons.delete_rounded),
-                      color: Colors.red),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return WarningDialogWidget(
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                Text('Question will be permanently removed',
+                                    textAlign: TextAlign.center),
+                                Text('Are you sure?',
+                                    textAlign: TextAlign.center),
+                              ],
+                            ),
+                            onConfirm: () {
+                              _isDelete = true;
+                              Navigator.pop(context);
+                            },
+                            onCancel: () {
+                              _isDelete = false;
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      ).then((value) async {
+                        // The following code will be executed after the dialog is closed
+                        log("isDelete: $_isDelete");
+                        if (_isDelete) {
+                          _isLoading = true;
+                          setState(() {});
+
+                          await _questionProvider
+                              .deleteQuestion(
+                            docId: widget.question.id,
+                            userId: _userProvider.user!.id,
+                          )
+                              .then((_) {
+                            _isLoading = false;
+                            setState(() {});
+
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => HomePage(),
+                              ),
+                            );
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Question successfully deleted.'),
+                              ),
+                            );
+                          });
+                        }
+                      });
+                    },
+                    icon: Icon(Icons.delete_rounded),
+                    color: Colors.red,
+                  ),
                 ]
               : null),
       body: Stack(
