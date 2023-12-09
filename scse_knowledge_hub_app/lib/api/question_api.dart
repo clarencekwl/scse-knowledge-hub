@@ -50,7 +50,8 @@ Future<void> createQuestion(
     required String userID,
     required int likes,
     required int replies,
-    required FieldValue timestamp}) async {
+    required FieldValue timestamp,
+    required bool anonymous}) async {
   Map<String, dynamic> data = {
     "title": title,
     "description": description,
@@ -58,6 +59,7 @@ Future<void> createQuestion(
     "replies": replies,
     "userId": userID,
     "timestamp": timestamp,
+    "anonymous": anonymous,
   };
 
   try {

@@ -55,16 +55,17 @@ class QuestionProvider extends ChangeNotifier {
   Future<void> createQuestion(
       {required String title,
       required String description,
-      required String userID}) async {
+      required String userID,
+      required bool anonymous}) async {
     startLoading();
     await QuestionAPI.createQuestion(
-      title: title,
-      description: description,
-      userID: userID,
-      likes: 0,
-      replies: 0,
-      timestamp: FieldValue.serverTimestamp(),
-    );
+        title: title,
+        description: description,
+        userID: userID,
+        likes: 0,
+        replies: 0,
+        timestamp: FieldValue.serverTimestamp(),
+        anonymous: anonymous);
     await getQuestions();
     await getUserQuestions(userID);
     stopLoading();

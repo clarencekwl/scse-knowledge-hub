@@ -19,7 +19,7 @@ class _ReplyCardState extends State<ReplyCard> {
     return Container(
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(25))),
+          borderRadius: BorderRadius.all(Radius.circular(20))),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Column(
@@ -45,28 +45,28 @@ class _ReplyCardState extends State<ReplyCard> {
     );
   }
 
-  Widget cardDetails() {
-    return Padding(
-      padding: const EdgeInsets.all(15),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Clarence Kway",
-              style: TextStyle(
-                  color: Colors.black,
-                  overflow: TextOverflow.ellipsis,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14)),
-          Text("1h ago", style: TextStyle(color: Colors.grey, fontSize: 10)),
-          Expanded(
-            child: Text(
-              "LMAOOO try harder bro this one so easy.",
-              style: TextStyle(fontSize: 12),
-            ),
-          ),
-          Styles.bottomRowIcons(Icons.thumb_up_alt_rounded, "${40} Likes"),
-        ],
-      ),
-    );
-  }
+  // Widget cardDetails() {
+  //   return Padding(
+  //     padding: const EdgeInsets.all(15),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text("Clarence Kway",
+  //             style: TextStyle(
+  //                 color: Colors.black,
+  //                 overflow: TextOverflow.ellipsis,
+  //                 fontWeight: FontWeight.bold,
+  //                 fontSize: 14)),
+  //         Text("1h ago", style: TextStyle(color: Colors.grey, fontSize: 10)),
+  //         Expanded(
+  //           child: Text(
+  //             "LMAOOO try harder bro this one so easy.",
+  //             style: TextStyle(fontSize: 12),
+  //           ),
+  //         ),
+  //         Styles.bottomRowIcons(Icons.thumb_up_alt_rounded, "${40} Likes"),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

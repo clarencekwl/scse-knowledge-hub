@@ -31,6 +31,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
   bool _isLoading = false;
+  bool _isAnonymous = false;
 
   @override
   void initState() {
@@ -87,7 +88,8 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                             await _questionProvider.createQuestion(
                                 title: _titleTextController.text,
                                 description: _descriptionTextController.text,
-                                userID: _userProvider.user.id);
+                                userID: _userProvider.user.id,
+                                anonymous: _isAnonymous);
                             _questionProvider.removeAllAttachments();
                             _questionProvider.clearImageCache();
                             _isLoading = false;
@@ -239,13 +241,34 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                 userInputField("Description", isDescriptionField: true),
                 Row(
                   children: [
-                    Text("Attachments",
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Text("Attachments",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: Styles.primaryGreyColor)),
+                          SizedBox(width: 5),
+                          Icon(Icons.attachment_outlined),
+                        ],
+                      ),
+                    ),
+                    Text("Post Anonymously",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                             color: Styles.primaryGreyColor)),
-                    SizedBox(width: 5),
-                    Icon(Icons.attachment_outlined)
+                    Switch(
+                      activeTrackColor: Styles.primaryBlueColor,
+                      activeColor: Styles.primaryLightBlueColor,
+                      thumbIcon: thumbIcon,
+                      value: _isAnonymous,
+                      onChanged: (value) async {
+                        _isAnonymous = value;
+                        setState(() {});
+                      },
+                    )
                   ],
                 ),
                 SizedBox(
@@ -350,4 +373,15 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
       ),
     );
   }
+
+  final MaterialStateProperty<Icon?> thumbIcon =
+      MaterialStateProperty.resolveWith<Icon?>(
+    (Set<MaterialState> states) {
+      // Thumb icon when the switch is selected.
+      if (states.contains(MaterialState.selected)) {
+        return const Icon(Icons.check);
+      }
+      return const Icon(Icons.close);
+    },
+  );
 }

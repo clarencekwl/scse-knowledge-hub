@@ -49,13 +49,21 @@ class _QuestionCardState extends State<QuestionCard> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Expanded(
-                child: Text(
-                  widget.question.userName,
-                  style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12),
-                ),
+                child: false == widget.question.anonymous
+                    ? Text(
+                        widget.question.userName,
+                        style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12),
+                      )
+                    : Text(
+                        "Anonymous",
+                        style: TextStyle(
+                            color: Colors.grey,
+                            fontStyle: FontStyle.italic,
+                            fontSize: 12),
+                      ),
               ),
               Text(
                   Styles.formatTimeDifference(

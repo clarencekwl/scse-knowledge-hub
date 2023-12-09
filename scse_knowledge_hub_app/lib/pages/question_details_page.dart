@@ -154,8 +154,8 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                       child: Text(
                         "Replies (${widget.question.replies})",
                         style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
+                            color: Styles.primaryLightBlueColor,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -206,12 +206,19 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.question.userName,
-                style: TextStyle(
-                    color: Colors.black,
-                    overflow: TextOverflow.ellipsis,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14)),
+            false == widget.question.anonymous
+                ? Text(widget.question.userName,
+                    style: TextStyle(
+                        color: Colors.black,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14))
+                : Text("Anonymous",
+                    style: TextStyle(
+                        color: Colors.black87,
+                        fontStyle: FontStyle.italic,
+                        overflow: TextOverflow.ellipsis,
+                        fontSize: 14)),
             Row(
               children: [
                 Expanded(

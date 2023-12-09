@@ -9,6 +9,7 @@ class Question {
   int? likes;
   int? replies;
   DateTime timestamp;
+  bool anonymous;
 
   Question({
     required this.id,
@@ -19,6 +20,7 @@ class Question {
     this.likes,
     this.replies,
     required this.timestamp,
+    required this.anonymous,
   });
 
   factory Question.fromJson(Map<String, dynamic> json, String docId) {
@@ -31,6 +33,7 @@ class Question {
       replies: json['replies'],
       likes: json['likes'],
       timestamp: json['timestamp'].toDate(),
+      anonymous: json['anonymous'],
     );
   }
 
@@ -46,15 +49,15 @@ class Question {
         userSnapshot.exists ? userSnapshot['name'] : 'Unknown User';
 
     return Question(
-      id: question.id,
-      userId: userId,
-      userName: userName,
-      title: question.title,
-      description: question.description,
-      replies: question.replies,
-      likes: question.likes,
-      timestamp: question.timestamp,
-    );
+        id: question.id,
+        userId: userId,
+        userName: userName,
+        title: question.title,
+        description: question.description,
+        replies: question.replies,
+        likes: question.likes,
+        timestamp: question.timestamp,
+        anonymous: question.anonymous);
   }
 
   @override
