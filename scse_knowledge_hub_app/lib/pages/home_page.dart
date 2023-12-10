@@ -66,10 +66,7 @@ class _HomePageState extends State<HomePage>
     return Scaffold(
       floatingActionButton: _isSliverAppBarExpanded
           ? FloatingActionButton(
-              onPressed: () async {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => CreateQuestionPage()));
-              },
+              onPressed: () async {},
               elevation: 6,
               backgroundColor: Styles.primaryBlueColor,
               child: Icon(Icons.add, color: Colors.white),
@@ -151,7 +148,12 @@ class _HomePageState extends State<HomePage>
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(300))),
-                                    onPressed: () async {},
+                                    onPressed: () async {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CreateQuestionPage()));
+                                    },
                                     icon: const Icon(Icons.question_mark),
                                     label: Text("Ask")),
                               ),
