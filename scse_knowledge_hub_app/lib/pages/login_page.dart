@@ -258,7 +258,6 @@ class _LoginPageState extends State<LoginPage> {
                                                   .trim(),
                                             );
                                             if (user != null) {
-                                              log("login user id: $user.uid");
                                               await _userProvider.setUser(
                                                   userID: user.uid);
 

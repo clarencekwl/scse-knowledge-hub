@@ -156,9 +156,9 @@ Future<void> addReply(
     required String userName,
     required String questionId,
     required String content,
-    String? referreduserID}) async {
+    String? taggedUserId}) async {
   try {
-    // Add reply to the "replies" subcollection under the question
+// Add reply to the "replies" subcollection under the question
     DocumentReference questionReplyRef = await db
         .collection('questions')
         .doc(questionId)
@@ -168,9 +168,10 @@ Future<void> addReply(
       'userName': userName,
       'content': content,
       'timestamp': FieldValue.serverTimestamp(),
+      if (taggedUserId != null) 'taggedUserId': taggedUserId,
     });
 
-    //Add reply to the "replies" subcollection under the user
+// Add reply to the "replies" subcollection under the user
     await db
         .collection('users')
         .doc(userId)
@@ -180,6 +181,7 @@ Future<void> addReply(
       'questionId': questionId,
       'content': content,
       'timestamp': FieldValue.serverTimestamp(),
+      if (taggedUserId != null) 'taggedUserId': taggedUserId,
     });
   } catch (e) {
     log('Error creating reply: $e');

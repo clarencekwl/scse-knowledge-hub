@@ -33,8 +33,8 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
   bool _isUserQuestion = false;
   bool _isLoading = false;
   bool _isDelete = false;
-  final FocusNode _replyFocusNode = FocusNode();
-  String userName = "";
+  bool _isTaggedReply = false;
+  String _taggedUser = '';
 
   //! TEMP: Images
   List<String> listOfThumbnailUrls = [
@@ -61,7 +61,6 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
 
   @override
   void dispose() {
-    _replyFocusNode.dispose();
     super.dispose();
   }
 
@@ -122,7 +121,6 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                           },
                         ).then((value) async {
                           // The following code will be executed after the dialog is closed
-                          log("isDelete: $_isDelete");
                           if (_isDelete) {
                             _isLoading = true;
                             setState(() {});
@@ -192,9 +190,9 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                               reply: _questionProvider.listOfReplies[index],
                               questionId: widget.question.id,
                               onReplyButtonPressed: (userName) {
-                                _replyController.text = "@$userName";
-                                FocusScope.of(context)
-                                    .requestFocus(_replyFocusNode);
+                                _isTaggedReply = true;
+                                _taggedUser = userName;
+                                setState(() {});
                               },
                             ),
                           );
@@ -202,7 +200,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                       ),
                       if (MediaQuery.of(context).viewInsets.bottom != 0)
                         SizedBox(
-                          height: 50,
+                          height: 65,
                         )
                     ],
                   ),
@@ -215,43 +213,94 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                 color: Colors.white,
                 padding:
                     EdgeInsets.only(left: 20, right: 10, bottom: 10, top: 0),
-                child: Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: TextField(
-                          focusNode: _replyFocusNode,
-                          controller: _replyController,
-                          maxLines: null,
-                          decoration: InputDecoration(
-                            hintText:
-                                'Write a reply to ${widget.question.userName}...',
+                    if (_isTaggedReply)
+                      Row(
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              style: TextStyle(color: Colors.black),
+                              text: "Replying to ",
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: _taggedUser,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text:
+                                      "  \u00B7 ", // Unicode character for middle dot
+                                ),
+                              ],
+                            ),
                           ),
-                          cursorColor: Styles.primaryLightBlueColor),
-                    ),
-                    SizedBox(width: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Styles.primaryLightBlueColor,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15))),
-                      onPressed: () async {
-                        _isLoading = true;
-                        setState(() {});
-                        await _questionProvider.addReply(
-                            userId: _userProvider.user.id,
-                            userName: _userProvider.user.name,
-                            questionId: widget.question.id,
-                            content: _replyController.text);
-                        _isLoading = false;
-                        setState(() {});
-                        FocusScopeNode currentFocus = FocusScope.of(context);
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                _isTaggedReply = false;
+                                setState(() {});
+                              },
+                              child: Text(
+                                "Cancel",
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                              controller: _replyController,
+                              maxLines: null,
+                              decoration: InputDecoration(
+                                hintText: 'Write a reply...',
+                              ),
+                              cursorColor: Styles.primaryLightBlueColor),
+                        ),
+                        SizedBox(width: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Styles.primaryLightBlueColor,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15))),
+                          onPressed: () async {
+                            _isLoading = true;
+                            setState(() {});
+                            _isTaggedReply
+                                ? await _questionProvider.addReply(
+                                    userId: _userProvider.user.id,
+                                    userName: _userProvider.user.name,
+                                    questionId: widget.question.id,
+                                    content: _replyController.text,
+                                    taggedUserId: _taggedUser)
+                                : await _questionProvider.addReply(
+                                    userId: _userProvider.user.id,
+                                    userName: _userProvider.user.name,
+                                    questionId: widget.question.id,
+                                    content: _replyController.text);
 
-                        if (!currentFocus.hasPrimaryFocus) {
-                          currentFocus.unfocus();
-                        }
-                        _replyController.clear();
-                      },
-                      child: Icon(Icons.send_rounded),
+                            _isLoading = false;
+                            _isTaggedReply = false;
+                            setState(() {});
+                            FocusScopeNode currentFocus =
+                                FocusScope.of(context);
+
+                            if (!currentFocus.hasPrimaryFocus) {
+                              currentFocus.unfocus();
+                            }
+                            _replyController.clear();
+                          },
+                          child: Icon(Icons.send_rounded),
+                        ),
+                      ],
                     ),
                   ],
                 ),

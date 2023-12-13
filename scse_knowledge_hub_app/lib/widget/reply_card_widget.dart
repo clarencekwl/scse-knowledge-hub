@@ -74,6 +74,11 @@ class _ReplyCardState extends State<ReplyCard> {
             SizedBox(height: 10),
             Row(
               children: [
+                if (widget.reply.taggedUserId != null)
+                  Text(
+                    "@${widget.reply.taggedUserId!} ",
+                    style: TextStyle(color: Styles.primaryLightBlueColor),
+                  ),
                 Expanded(
                   child: Text(
                     widget.reply.content,

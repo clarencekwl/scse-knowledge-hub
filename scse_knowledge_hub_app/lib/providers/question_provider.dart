@@ -118,14 +118,21 @@ class QuestionProvider extends ChangeNotifier {
     required String userName,
     required String questionId,
     required String content,
-    String? referreduserID,
+    String? taggedUserId,
   }) async {
     startLoading();
-    await QuestionAPI.addReply(
-        userId: userId,
-        userName: userName,
-        questionId: questionId,
-        content: content);
+    taggedUserId == null
+        ? await QuestionAPI.addReply(
+            userId: userId,
+            userName: userName,
+            questionId: questionId,
+            content: content)
+        : await QuestionAPI.addReply(
+            userId: userId,
+            userName: userName,
+            questionId: questionId,
+            content: content,
+            taggedUserId: taggedUserId);
     await getAllRepliesForQuestion(questionId: questionId);
     stopLoading();
   }
