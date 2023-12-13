@@ -33,6 +33,8 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
   bool _isUserQuestion = false;
   bool _isLoading = false;
   bool _isDelete = false;
+  final FocusNode _replyFocusNode = FocusNode();
+  String userName = "";
 
   //! TEMP: Images
   List<String> listOfThumbnailUrls = [
@@ -55,6 +57,12 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
     });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _replyFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -183,10 +191,19 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                             child: ReplyCard(
                               reply: _questionProvider.listOfReplies[index],
                               questionId: widget.question.id,
+                              onReplyButtonPressed: (userName) {
+                                _replyController.text = "@$userName";
+                                FocusScope.of(context)
+                                    .requestFocus(_replyFocusNode);
+                              },
                             ),
                           );
                         },
-                      )
+                      ),
+                      if (MediaQuery.of(context).viewInsets.bottom != 0)
+                        SizedBox(
+                          height: 50,
+                        )
                     ],
                   ),
                 ),
@@ -196,11 +213,13 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
               alignment: Alignment.bottomCenter,
               child: Container(
                 color: Colors.white,
-                padding: EdgeInsets.all(10),
+                padding:
+                    EdgeInsets.only(left: 20, right: 10, bottom: 10, top: 0),
                 child: Row(
                   children: [
                     Expanded(
                       child: TextField(
+                          focusNode: _replyFocusNode,
                           controller: _replyController,
                           maxLines: null,
                           decoration: InputDecoration(

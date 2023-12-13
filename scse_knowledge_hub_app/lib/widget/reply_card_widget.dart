@@ -10,7 +10,12 @@ import 'package:scse_knowledge_hub_app/utils/styles.dart';
 class ReplyCard extends StatefulWidget {
   final Reply reply;
   final String questionId;
-  const ReplyCard({Key? key, required this.reply, required this.questionId})
+  final Function(String) onReplyButtonPressed;
+  const ReplyCard(
+      {Key? key,
+      required this.reply,
+      required this.questionId,
+      required this.onReplyButtonPressed})
       : super(key: key);
   @override
   State<ReplyCard> createState() => _ReplyCardState();
@@ -45,7 +50,7 @@ class _ReplyCardState extends State<ReplyCard> {
                 ),
                 InkWell(
                   onTap: () {
-                    log("reply!");
+                    widget.onReplyButtonPressed(widget.reply.userName);
                   },
                   child: Row(
                     children: const [
