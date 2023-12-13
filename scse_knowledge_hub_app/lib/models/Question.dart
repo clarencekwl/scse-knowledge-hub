@@ -7,7 +7,7 @@ class Question {
   String userId;
   String userName;
   int? likes;
-  int? replies;
+  int numberOfReplies;
   DateTime timestamp;
   bool anonymous;
 
@@ -18,7 +18,7 @@ class Question {
     required this.userId,
     required this.userName,
     this.likes,
-    this.replies,
+    required this.numberOfReplies,
     required this.timestamp,
     required this.anonymous,
   });
@@ -30,7 +30,7 @@ class Question {
       userName: '', // Default value, will be replaced by async method
       title: json['title'],
       description: json['description'],
-      replies: json['replies'],
+      numberOfReplies: json['number_of_replies'],
       likes: json['likes'],
       timestamp: json['timestamp'].toDate(),
       anonymous: json['anonymous'],
@@ -54,7 +54,7 @@ class Question {
         userName: userName,
         title: question.title,
         description: question.description,
-        replies: question.replies,
+        numberOfReplies: question.numberOfReplies,
         likes: question.likes,
         timestamp: question.timestamp,
         anonymous: question.anonymous);

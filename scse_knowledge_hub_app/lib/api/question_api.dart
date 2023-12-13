@@ -49,14 +49,14 @@ Future<void> createQuestion(
     required String description,
     required String userID,
     required int likes,
-    required int replies,
+    required int numberOfReplies,
     required FieldValue timestamp,
     required bool anonymous}) async {
   Map<String, dynamic> data = {
     "title": title,
     "description": description,
     "likes": likes,
-    "replies": replies,
+    "numberOfReplies": numberOfReplies,
     "userId": userID,
     "timestamp": timestamp,
     "anonymous": anonymous,
@@ -131,7 +131,82 @@ Future<void> deleteQuestion(
   }
 }
 
-Future<void> likeQuestion(
-    {required String docId, required int numberOfLikes}) async {
-  await db.collection("questions").doc(docId).update({"likes": numberOfLikes});
+Future<ListOfQuestionRepliesReponse?> getAllReplies(
+    {required String questionId}) async {
+  try {
+    CollectionReference questionsCollection =
+        FirebaseFirestore.instance.collection('questions');
+    DocumentReference questionRef = questionsCollection.doc(questionId);
+
+    QuerySnapshot replySnapshot = await questionRef.collection('replies').get();
+
+    if (replySnapshot.docs.isNotEmpty) {
+      return ListOfQuestionRepliesReponse.fromJson(replySnapshot.docs);
+    } else {
+      return null;
+    }
+  } catch (e) {
+    log("Error fetching replies");
+    return null;
+  }
+}
+
+Future<void> addReply(
+    {required String userId,
+    required String userName,
+    required String questionId,
+    required String content,
+    String? referreduserID}) async {
+  try {
+    // Add reply to the "replies" subcollection under the question
+    DocumentReference questionReplyRef = await db
+        .collection('questions')
+        .doc(questionId)
+        .collection('replies')
+        .add({
+      'userId': userId,
+      'userName': userName,
+      'content': content,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    //Add reply to the "replies" subcollection under the user
+    await db
+        .collection('users')
+        .doc(userId)
+        .collection('replies')
+        .doc(questionReplyRef.id)
+        .set({
+      'questionId': questionId,
+      'content': content,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  } catch (e) {
+    log('Error creating reply: $e');
+  }
+}
+
+Future<void> deleteReply(
+    {required String userId,
+    required String questionId,
+    required String replyId}) async {
+  try {
+    // Delete reply from the "replies" subcollection under the question
+    await db
+        .collection('questions')
+        .doc(questionId)
+        .collection('replies')
+        .doc(replyId)
+        .delete();
+
+    // Delete reply from the "replies" subcollection under the user
+    await db
+        .collection('users')
+        .doc(userId)
+        .collection('replies')
+        .doc(replyId)
+        .delete();
+  } catch (e) {
+    log('Error deleting reply: $e');
+  }
 }

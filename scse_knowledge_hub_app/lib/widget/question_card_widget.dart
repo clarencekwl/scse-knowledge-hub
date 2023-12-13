@@ -92,8 +92,8 @@ class _QuestionCardState extends State<QuestionCard> {
             children: [
               Styles.bottomRowIcons(
                   Icons.thumb_up_alt_rounded, "${widget.question.likes} Likes"),
-              Styles.bottomRowIcons(
-                  Icons.reply_rounded, "${widget.question.replies} Replies")
+              Styles.bottomRowIcons(Icons.reply_rounded,
+                  "${widget.question.numberOfReplies} Replies")
             ],
           )
         ],

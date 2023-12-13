@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
+import 'package:scse_knowledge_hub_app/models/Reply.dart';
 
 class ListOfQuestionReponse {
   List<Question> listOfQuestions;
@@ -40,5 +41,22 @@ class ListOfUserQuestionReponse {
     }
 
     return ListOfUserQuestionReponse(listOfUserQuestions: listOfUserQuestions);
+  }
+}
+
+class ListOfQuestionRepliesReponse {
+  List<Reply> listOfQuestionReplies;
+
+  ListOfQuestionRepliesReponse({required this.listOfQuestionReplies});
+
+  static Future<ListOfQuestionRepliesReponse> fromJson(
+      List<QueryDocumentSnapshot<Object?>> json) async {
+    List<Reply> listOfQuestionReplies = [];
+    for (QueryDocumentSnapshot<Object?> doc in json) {
+      Reply reply = Reply.fromMap(doc.id, doc.data() as Map<String, dynamic>);
+      listOfQuestionReplies.add(reply);
+    }
+    return ListOfQuestionRepliesReponse(
+        listOfQuestionReplies: listOfQuestionReplies);
   }
 }

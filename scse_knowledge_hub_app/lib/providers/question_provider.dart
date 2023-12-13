@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/api/question_api.dart' as QuestionAPI;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scse_knowledge_hub_app/models/Reply.dart';
 import 'package:scse_knowledge_hub_app/reponse/question_response.dart';
 
 class QuestionProvider extends ChangeNotifier {
@@ -23,10 +24,16 @@ class QuestionProvider extends ChangeNotifier {
     _listOfUserQuestions = listOfUserQuestions;
   }
 
-  List<Question> _listOfUserLikedQuestions = [];
-  List<Question> get listOfUserLikedQuestions => _listOfUserLikedQuestions;
-  set listOfUserLikedQuestions(List<Question> listOfUserLikedQuestions) {
-    _listOfUserLikedQuestions = listOfUserLikedQuestions;
+  // List<Question> _listOfUserLikedQuestions = [];
+  // List<Question> get listOfUserLikedQuestions => _listOfUserLikedQuestions;
+  // set listOfUserLikedQuestions(List<Question> listOfUserLikedQuestions) {
+  //   _listOfUserLikedQuestions = listOfUserLikedQuestions;
+  // }
+
+  List<Reply> _listOfReplies = [];
+  List<Reply> get listOfReplies => _listOfReplies;
+  set listOfReplies(List<Reply> listOfReplies) {
+    _listOfReplies = listOfReplies;
   }
 
   Future<void> getQuestions() async {
@@ -52,18 +59,19 @@ class QuestionProvider extends ChangeNotifier {
     stopLoading();
   }
 
-  Future<void> createQuestion(
-      {required String title,
-      required String description,
-      required String userID,
-      required bool anonymous}) async {
+  Future<void> createQuestion({
+    required String title,
+    required String description,
+    required String userID,
+    required bool anonymous,
+  }) async {
     startLoading();
     await QuestionAPI.createQuestion(
         title: title,
         description: description,
         userID: userID,
         likes: 0,
-        replies: 0,
+        numberOfReplies: 0,
         timestamp: FieldValue.serverTimestamp(),
         anonymous: anonymous);
     await getQuestions();
@@ -71,11 +79,12 @@ class QuestionProvider extends ChangeNotifier {
     stopLoading();
   }
 
-  Future<void> updateQuestion(
-      {required String docId,
-      required String userId,
-      String? title,
-      String? description}) async {
+  Future<void> updateQuestion({
+    required String docId,
+    required String userId,
+    String? title,
+    String? description,
+  }) async {
     startLoading();
     await QuestionAPI.updateQuestion(
         docId: docId, title: title, description: description);
@@ -93,15 +102,44 @@ class QuestionProvider extends ChangeNotifier {
     stopLoading();
   }
 
-  Future<void> likeQuestion(
-      {required String docId, required int numberOfLikes}) async {
-    startLoading();
-    await QuestionAPI.likeQuestion(docId: docId, numberOfLikes: numberOfLikes);
-    Question question = _listOfQuestions.firstWhere(
-      (question) => question.id == docId,
-    );
+  Future<void> getAllRepliesForQuestion({required String questionId}) async {
+    listOfReplies = [];
+    ListOfQuestionRepliesReponse? res =
+        await QuestionAPI.getAllReplies(questionId: questionId);
+    if (res != null) {
+      listOfReplies = res.listOfQuestionReplies;
+    } else {
+      listOfReplies = [];
+    }
+  }
 
-    question.likes = question.likes! + 1;
+  Future<void> addReply({
+    required String userId,
+    required String userName,
+    required String questionId,
+    required String content,
+    String? referreduserID,
+  }) async {
+    startLoading();
+    await QuestionAPI.addReply(
+        userId: userId,
+        userName: userName,
+        questionId: questionId,
+        content: content);
+    await getAllRepliesForQuestion(questionId: questionId);
+    stopLoading();
+  }
+
+  Future<void> deleteReply({
+    required String userId,
+    required String questionId,
+    required String replyId,
+  }) async {
+    startLoading();
+    await QuestionAPI.deleteReply(
+        userId: userId, questionId: questionId, replyId: replyId);
+    await getAllRepliesForQuestion(questionId: questionId);
+    stopLoading();
   }
 
   List<Uint8List> _listOfAttachments = [];
@@ -135,6 +173,17 @@ class QuestionProvider extends ChangeNotifier {
       log("e: $e");
     }
   }
+
+  // Future<void> likeQuestion(
+  //     {required String docId, required int numberOfLikes}) async {
+  //   startLoading();
+  //   await QuestionAPI.likeQuestion(docId: docId, numberOfLikes: numberOfLikes);
+  //   Question question = _listOfQuestions.firstWhere(
+  //     (question) => question.id == docId,
+  //   );
+
+  //   question.likes = question.likes! + 1;
+  // }
 
   // Future<void> getAllQuestions() async {
   //   for (int i = 0; i < 15; i++) {
@@ -250,4 +299,54 @@ class QuestionProvider extends ChangeNotifier {
 //       }
 //     }
 //   }
+
+  Future<void> updateField() async {
+    // Update "questions" collection
+    CollectionReference questionsRef =
+        FirebaseFirestore.instance.collection('questions');
+    QuerySnapshot questionsSnapshot = await questionsRef.get();
+
+    for (QueryDocumentSnapshot question in questionsSnapshot.docs) {
+      Map<String, dynamic> data = question.data() as Map<String, dynamic>;
+      int number_of_replies = data['replies'] ?? 0;
+
+      // Update the document
+      await questionsRef.doc(question.id).update({
+        'number_of_replies': number_of_replies,
+      });
+
+      // Delete the old field
+      await questionsRef.doc(question.id).update({
+        'replies': FieldValue.delete(),
+      });
+    }
+
+    // Update "questions" subcollections under each user
+    CollectionReference usersRef =
+        FirebaseFirestore.instance.collection('users');
+    QuerySnapshot usersSnapshot = await usersRef.get();
+
+    for (QueryDocumentSnapshot user in usersSnapshot.docs) {
+      CollectionReference userQuestionsRef =
+          usersRef.doc(user.id).collection('questions');
+      QuerySnapshot userQuestionsSnapshot = await userQuestionsRef.get();
+
+      for (QueryDocumentSnapshot userQuestion in userQuestionsSnapshot.docs) {
+        Map<String, dynamic> data = userQuestion.data() as Map<String, dynamic>;
+        int number_of_replies = data['replies'] ?? 0;
+
+        // Update the document in the subcollection
+        await userQuestionsRef.doc(userQuestion.id).update({
+          'number_of_replies': number_of_replies,
+        });
+
+        // Delete the old field
+        await userQuestionsRef.doc(userQuestion.id).update({
+          'replies': FieldValue.delete(),
+        });
+      }
+    }
+
+    print('Field name update completed.');
+  }
 }

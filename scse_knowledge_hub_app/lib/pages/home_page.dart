@@ -66,7 +66,9 @@ class _HomePageState extends State<HomePage>
     return Scaffold(
       floatingActionButton: _isSliverAppBarExpanded
           ? FloatingActionButton(
-              onPressed: () async {},
+              onPressed: () async {
+                await _questionProvider.updateField();
+              },
               elevation: 6,
               backgroundColor: Styles.primaryBlueColor,
               child: Icon(Icons.add, color: Colors.white),

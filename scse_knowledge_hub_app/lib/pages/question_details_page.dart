@@ -27,6 +27,7 @@ class QuestionDetailsPage extends StatefulWidget {
 }
 
 class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
+  final TextEditingController _replyController = TextEditingController();
   late QuestionProvider _questionProvider;
   late UserProvider _userProvider;
   bool _isUserQuestion = false;
@@ -42,12 +43,15 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
   @override
   void initState() {
     Future.microtask(() async {
-      log("user id: ${_userProvider.user.id}");
-      log("question id: ${widget.question.userId}");
+      _isLoading = true;
+      setState(() {});
+      await _questionProvider.getAllRepliesForQuestion(
+          questionId: widget.question.id);
       if (_userProvider.user.id == widget.question.userId) {
         _isUserQuestion = true;
-        setState(() {});
       }
+      _isLoading = false;
+      setState(() {});
     });
 
     super.initState();
@@ -57,138 +61,197 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
   Widget build(BuildContext context) {
     _questionProvider = Provider.of(context);
     _userProvider = Provider.of(context);
-    return Scaffold(
-      backgroundColor: Styles.primaryBackgroundColor,
-      appBar: AppBar(
-          elevation: _isUserQuestion ? 2 : 0,
-          iconTheme: IconThemeData(color: Colors.black),
-          backgroundColor: Styles.primaryBackgroundColor,
-          actions: _isUserQuestion
-              ? <Widget>[
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => UpdateQuestionPage(
-                                question: widget.question,
-                              )));
-                    },
-                    icon: Icon(Icons.edit_document),
-                    color: Styles.primaryBlueColor,
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return WarningDialogWidget(
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: const [
-                                Text('Question will be permanently removed',
-                                    textAlign: TextAlign.center),
-                                Text('Are you sure?',
-                                    textAlign: TextAlign.center),
-                              ],
-                            ),
-                            onConfirm: () {
-                              _isDelete = true;
-                              Navigator.pop(context);
-                            },
-                            onCancel: () {
-                              _isDelete = false;
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      ).then((value) async {
-                        // The following code will be executed after the dialog is closed
-                        log("isDelete: $_isDelete");
-                        if (_isDelete) {
-                          _isLoading = true;
-                          setState(() {});
+    return GestureDetector(
+      onTap: () {
+        FocusScopeNode currentFocus = FocusScope.of(context);
 
-                          await _questionProvider
-                              .deleteQuestion(
-                            docId: widget.question.id,
-                            userId: _userProvider.user.id,
-                          )
-                              .then((_) {
-                            _isLoading = false;
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Styles.primaryBackgroundColor,
+        appBar: AppBar(
+            elevation: _isUserQuestion ? 2 : 0,
+            iconTheme: IconThemeData(color: Colors.black),
+            backgroundColor: Styles.primaryBackgroundColor,
+            actions: _isUserQuestion
+                ? <Widget>[
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => UpdateQuestionPage(
+                                  question: widget.question,
+                                )));
+                      },
+                      icon: Icon(Icons.edit_document),
+                      color: Styles.primaryBlueColor,
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return WarningDialogWidget(
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Text('Question will be permanently removed',
+                                      textAlign: TextAlign.center),
+                                  Text('Are you sure?',
+                                      textAlign: TextAlign.center),
+                                ],
+                              ),
+                              onConfirm: () {
+                                _isDelete = true;
+                                Navigator.pop(context);
+                              },
+                              onCancel: () {
+                                _isDelete = false;
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        ).then((value) async {
+                          // The following code will be executed after the dialog is closed
+                          log("isDelete: $_isDelete");
+                          if (_isDelete) {
+                            _isLoading = true;
                             setState(() {});
 
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => HomePage(),
-                              ),
-                            );
+                            await _questionProvider
+                                .deleteQuestion(
+                              docId: widget.question.id,
+                              userId: _userProvider.user.id,
+                            )
+                                .then((_) {
+                              _isLoading = false;
+                              setState(() {});
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Question successfully deleted.'),
-                              ),
-                            );
-                          });
-                        }
-                      });
-                    },
-                    icon: Icon(Icons.delete_rounded),
-                    color: Colors.red,
-                  ),
-                ]
-              : null),
-      body: Stack(
-        children: [
-          ScrollConfiguration(
-            behavior: NoGlowScrollBehavior(),
-            child: StretchingOverscrollIndicator(
-              axisDirection: AxisDirection.down,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    questionDetails(),
-                    SizedBox(height: 25),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Text(
-                        "Replies (${widget.question.replies})",
-                        style: TextStyle(
-                            color: Styles.primaryLightBlueColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: 10,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: ReplyCard(),
-                        );
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) => HomePage(),
+                                ),
+                              );
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('Question successfully deleted.'),
+                                ),
+                              );
+                            });
+                          }
+                        });
                       },
-                    )
+                      icon: Icon(Icons.delete_rounded),
+                      color: Colors.red,
+                    ),
+                  ]
+                : null),
+        body: Stack(
+          children: [
+            ScrollConfiguration(
+              behavior: NoGlowScrollBehavior(),
+              child: StretchingOverscrollIndicator(
+                axisDirection: AxisDirection.down,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      questionDetails(),
+                      SizedBox(height: 25),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Text(
+                          "Replies (${widget.question.numberOfReplies})",
+                          style: TextStyle(
+                              color: Styles.primaryLightBlueColor,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: _questionProvider.listOfReplies.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: ReplyCard(
+                              reply: _questionProvider.listOfReplies[index],
+                              questionId: widget.question.id,
+                            ),
+                          );
+                        },
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                color: Colors.white,
+                padding: EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                          controller: _replyController,
+                          maxLines: null,
+                          decoration: InputDecoration(
+                            hintText:
+                                'Write a reply to ${widget.question.userName}...',
+                          ),
+                          cursorColor: Styles.primaryLightBlueColor),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Styles.primaryLightBlueColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15))),
+                      onPressed: () async {
+                        _isLoading = true;
+                        setState(() {});
+                        await _questionProvider.addReply(
+                            userId: _userProvider.user.id,
+                            userName: _userProvider.user.name,
+                            questionId: widget.question.id,
+                            content: _replyController.text);
+                        _isLoading = false;
+                        setState(() {});
+                        FocusScopeNode currentFocus = FocusScope.of(context);
+
+                        if (!currentFocus.hasPrimaryFocus) {
+                          currentFocus.unfocus();
+                        }
+                        _replyController.clear();
+                      },
+                      child: Icon(Icons.send_rounded),
+                    ),
                   ],
                 ),
               ),
             ),
-          ),
-          if (_isLoading)
-            Container(
-                height: double.infinity,
-                width: double.infinity,
-                color: Colors.black.withOpacity(0.3),
-                child: Center(
-                  child: SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: CircularProgressIndicator(
-                          color: Styles.primaryBlueColor)),
-                ))
-        ],
+            if (_isLoading)
+              Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  color: Colors.black.withOpacity(0.3),
+                  child: Center(
+                    child: SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: CircularProgressIndicator(
+                            color: Styles.primaryBlueColor)),
+                  ))
+          ],
+        ),
       ),
     );
   }
