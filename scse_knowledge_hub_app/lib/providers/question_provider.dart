@@ -116,7 +116,7 @@ class QuestionProvider extends ChangeNotifier {
   Future<void> addReply({
     required String userId,
     required String userName,
-    required String questionId,
+    required Question question,
     required String content,
     String? taggedUserId,
   }) async {
@@ -125,27 +125,40 @@ class QuestionProvider extends ChangeNotifier {
         ? await QuestionAPI.addReply(
             userId: userId,
             userName: userName,
-            questionId: questionId,
+            question: question,
             content: content)
         : await QuestionAPI.addReply(
             userId: userId,
             userName: userName,
-            questionId: questionId,
+            question: question,
             content: content,
             taggedUserId: taggedUserId);
-    await getAllRepliesForQuestion(questionId: questionId);
+    await QuestionAPI.incrementReplies(question.id, question.userId);
+    // Update the List<Question> with the updated number_of_replies
+    final updatedQuestionIndex =
+        listOfQuestions.indexWhere((q) => q.id == question.id);
+    if (updatedQuestionIndex != -1) {
+      listOfQuestions[updatedQuestionIndex].numberOfReplies += 1;
+    }
     stopLoading();
   }
 
   Future<void> deleteReply({
     required String userId,
-    required String questionId,
+    required Question question,
     required String replyId,
   }) async {
     startLoading();
     await QuestionAPI.deleteReply(
-        userId: userId, questionId: questionId, replyId: replyId);
-    await getAllRepliesForQuestion(questionId: questionId);
+        userId: userId, question: question, replyId: replyId);
+    await QuestionAPI.decrementReplies(question.id, question.userId);
+    await getAllRepliesForQuestion(questionId: question.id);
+    // Update the List<Question> with the updated number_of_replies
+    final updatedQuestionIndex =
+        listOfQuestions.indexWhere((q) => q.id == question.id);
+    if (updatedQuestionIndex != -1) {
+      listOfQuestions[updatedQuestionIndex].numberOfReplies -= 1;
+    }
     stopLoading();
   }
 
@@ -307,53 +320,53 @@ class QuestionProvider extends ChangeNotifier {
 //     }
 //   }
 
-  Future<void> updateField() async {
-    // Update "questions" collection
-    CollectionReference questionsRef =
-        FirebaseFirestore.instance.collection('questions');
-    QuerySnapshot questionsSnapshot = await questionsRef.get();
+  // Future<void> updateField() async {
+  //   // Update "questions" collection
+  //   CollectionReference questionsRef =
+  //       FirebaseFirestore.instance.collection('questions');
+  //   QuerySnapshot questionsSnapshot = await questionsRef.get();
 
-    for (QueryDocumentSnapshot question in questionsSnapshot.docs) {
-      Map<String, dynamic> data = question.data() as Map<String, dynamic>;
-      int number_of_replies = data['replies'] ?? 0;
+  //   for (QueryDocumentSnapshot question in questionsSnapshot.docs) {
+  //     Map<String, dynamic> data = question.data() as Map<String, dynamic>;
+  //     int number_of_replies = data['replies'] ?? 0;
 
-      // Update the document
-      await questionsRef.doc(question.id).update({
-        'number_of_replies': number_of_replies,
-      });
+  //     // Update the document
+  //     await questionsRef.doc(question.id).update({
+  //       'number_of_replies': number_of_replies,
+  //     });
 
-      // Delete the old field
-      await questionsRef.doc(question.id).update({
-        'replies': FieldValue.delete(),
-      });
-    }
+  //     // Delete the old field
+  //     await questionsRef.doc(question.id).update({
+  //       'replies': FieldValue.delete(),
+  //     });
+  //   }
 
-    // Update "questions" subcollections under each user
-    CollectionReference usersRef =
-        FirebaseFirestore.instance.collection('users');
-    QuerySnapshot usersSnapshot = await usersRef.get();
+  //   // Update "questions" subcollections under each user
+  //   CollectionReference usersRef =
+  //       FirebaseFirestore.instance.collection('users');
+  //   QuerySnapshot usersSnapshot = await usersRef.get();
 
-    for (QueryDocumentSnapshot user in usersSnapshot.docs) {
-      CollectionReference userQuestionsRef =
-          usersRef.doc(user.id).collection('questions');
-      QuerySnapshot userQuestionsSnapshot = await userQuestionsRef.get();
+  //   for (QueryDocumentSnapshot user in usersSnapshot.docs) {
+  //     CollectionReference userQuestionsRef =
+  //         usersRef.doc(user.id).collection('questions');
+  //     QuerySnapshot userQuestionsSnapshot = await userQuestionsRef.get();
 
-      for (QueryDocumentSnapshot userQuestion in userQuestionsSnapshot.docs) {
-        Map<String, dynamic> data = userQuestion.data() as Map<String, dynamic>;
-        int number_of_replies = data['replies'] ?? 0;
+  //     for (QueryDocumentSnapshot userQuestion in userQuestionsSnapshot.docs) {
+  //       Map<String, dynamic> data = userQuestion.data() as Map<String, dynamic>;
+  //       int number_of_replies = data['replies'] ?? 0;
 
-        // Update the document in the subcollection
-        await userQuestionsRef.doc(userQuestion.id).update({
-          'number_of_replies': number_of_replies,
-        });
+  //       // Update the document in the subcollection
+  //       await userQuestionsRef.doc(userQuestion.id).update({
+  //         'number_of_replies': number_of_replies,
+  //       });
 
-        // Delete the old field
-        await userQuestionsRef.doc(userQuestion.id).update({
-          'replies': FieldValue.delete(),
-        });
-      }
-    }
+  //       // Delete the old field
+  //       await userQuestionsRef.doc(userQuestion.id).update({
+  //         'replies': FieldValue.delete(),
+  //       });
+  //     }
+  //   }
 
-    print('Field name update completed.');
-  }
+  //   log('Field name update completed.');
+  // }
 }

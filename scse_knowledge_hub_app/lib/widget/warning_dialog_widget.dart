@@ -23,7 +23,7 @@ class WarningDialogWidget extends StatelessWidget {
       title: Center(
         child: Text(
           title ?? "Warning",
-          style: TextStyle(color: Styles.primaryBlueColor),
+          style: TextStyle(color: Colors.redAccent),
         ),
       ),
       titlePadding: EdgeInsets.only(top: 20),

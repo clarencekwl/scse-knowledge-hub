@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/reponse/question_response.dart';
 
 final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -138,7 +139,10 @@ Future<ListOfQuestionRepliesReponse?> getAllReplies(
         FirebaseFirestore.instance.collection('questions');
     DocumentReference questionRef = questionsCollection.doc(questionId);
 
-    QuerySnapshot replySnapshot = await questionRef.collection('replies').get();
+    QuerySnapshot replySnapshot = await questionRef
+        .collection('replies')
+        .orderBy('timestamp', descending: false)
+        .get();
 
     if (replySnapshot.docs.isNotEmpty) {
       return ListOfQuestionRepliesReponse.fromJson(replySnapshot.docs);
@@ -154,14 +158,14 @@ Future<ListOfQuestionRepliesReponse?> getAllReplies(
 Future<void> addReply(
     {required String userId,
     required String userName,
-    required String questionId,
+    required Question question,
     required String content,
     String? taggedUserId}) async {
   try {
 // Add reply to the "replies" subcollection under the question
     DocumentReference questionReplyRef = await db
         .collection('questions')
-        .doc(questionId)
+        .doc(question.id)
         .collection('replies')
         .add({
       'userId': userId,
@@ -178,7 +182,7 @@ Future<void> addReply(
         .collection('replies')
         .doc(questionReplyRef.id)
         .set({
-      'questionId': questionId,
+      'questionId': question.id,
       'content': content,
       'timestamp': FieldValue.serverTimestamp(),
       if (taggedUserId != null) 'taggedUserId': taggedUserId,
@@ -190,13 +194,13 @@ Future<void> addReply(
 
 Future<void> deleteReply(
     {required String userId,
-    required String questionId,
+    required Question question,
     required String replyId}) async {
   try {
     // Delete reply from the "replies" subcollection under the question
     await db
         .collection('questions')
-        .doc(questionId)
+        .doc(question.id)
         .collection('replies')
         .doc(replyId)
         .delete();
@@ -211,4 +215,45 @@ Future<void> deleteReply(
   } catch (e) {
     log('Error deleting reply: $e');
   }
+}
+
+Future<void> incrementReplies(String questionId, String userId) async {
+  await _updateReplies(questionId, userId, 1);
+}
+
+Future<void> decrementReplies(String questionId, String userId) async {
+  await _updateReplies(questionId, userId, -1);
+}
+
+Future<void> _updateReplies(
+    String questionId, String userId, int change) async {
+  // Update 'questions' collection
+  final questionRef = db.collection('questions').doc(questionId);
+  await db.runTransaction((transaction) async {
+    final questionDoc = await transaction.get(questionRef);
+    if (questionDoc.exists) {
+      final currentReplies = questionDoc['number_of_replies'] ?? 0;
+      transaction.update(
+        questionRef,
+        {'number_of_replies': currentReplies + change},
+      );
+    }
+  });
+
+  // Update 'users' subcollection
+  final userRef = db
+      .collection('users')
+      .doc(userId)
+      .collection('questions')
+      .doc(questionId);
+  await db.runTransaction((transaction) async {
+    final userQuestionDoc = await transaction.get(userRef);
+    if (userQuestionDoc.exists) {
+      final currentReplies = userQuestionDoc['number_of_replies'] ?? 0;
+      transaction.update(
+        userRef,
+        {'number_of_replies': currentReplies + change},
+      );
+    }
+  });
 }

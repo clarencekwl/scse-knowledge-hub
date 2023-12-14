@@ -180,6 +180,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                       ),
                       SizedBox(height: 15),
                       ListView.builder(
+                        padding: EdgeInsets.only(bottom: 60),
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         itemCount: _questionProvider.listOfReplies.length,
@@ -188,7 +189,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                             padding: const EdgeInsets.only(bottom: 10),
                             child: ReplyCard(
                               reply: _questionProvider.listOfReplies[index],
-                              questionId: widget.question.id,
+                              question: widget.question,
                               onReplyButtonPressed: (userName) {
                                 _isTaggedReply = true;
                                 _taggedUser = userName;
@@ -198,10 +199,6 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                           );
                         },
                       ),
-                      if (MediaQuery.of(context).viewInsets.bottom != 0)
-                        SizedBox(
-                          height: 65,
-                        )
                     ],
                   ),
                 ),
@@ -278,18 +275,19 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                                 ? await _questionProvider.addReply(
                                     userId: _userProvider.user.id,
                                     userName: _userProvider.user.name,
-                                    questionId: widget.question.id,
+                                    question: widget.question,
                                     content: _replyController.text,
                                     taggedUserId: _taggedUser)
                                 : await _questionProvider.addReply(
                                     userId: _userProvider.user.id,
                                     userName: _userProvider.user.name,
-                                    questionId: widget.question.id,
+                                    question: widget.question,
                                     content: _replyController.text);
-
+                            await _questionProvider.getAllRepliesForQuestion(
+                                questionId: widget.question.id);
                             _isLoading = false;
                             _isTaggedReply = false;
-                            setState(() {});
+
                             FocusScopeNode currentFocus =
                                 FocusScope.of(context);
 
@@ -297,6 +295,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                               currentFocus.unfocus();
                             }
                             _replyController.clear();
+                            setState(() {});
                           },
                           child: Icon(Icons.send_rounded),
                         ),

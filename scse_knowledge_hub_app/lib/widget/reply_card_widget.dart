@@ -2,19 +2,21 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/models/Reply.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
+import 'package:scse_knowledge_hub_app/widget/warning_dialog_widget.dart';
 
 class ReplyCard extends StatefulWidget {
   final Reply reply;
-  final String questionId;
+  final Question question;
   final Function(String) onReplyButtonPressed;
   const ReplyCard(
       {Key? key,
       required this.reply,
-      required this.questionId,
+      required this.question,
       required this.onReplyButtonPressed})
       : super(key: key);
   @override
@@ -24,6 +26,18 @@ class ReplyCard extends StatefulWidget {
 class _ReplyCardState extends State<ReplyCard> {
   late QuestionProvider _questionProvider;
   late UserProvider _userProvider;
+  bool _isUserReply = false;
+
+  @override
+  void initState() {
+    Future.microtask(() async {
+      if (_userProvider.user.id == widget.reply.userId) {
+        _isUserReply = true;
+        setState(() {});
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +50,7 @@ class _ReplyCardState extends State<ReplyCard> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -85,15 +100,41 @@ class _ReplyCardState extends State<ReplyCard> {
                     style: TextStyle(fontSize: 12),
                   ),
                 ),
-                IconButton(
-                    onPressed: () async {
-                      log("question id is: ${widget.questionId}");
-                      _questionProvider.deleteReply(
-                          userId: _userProvider.user.id,
-                          questionId: widget.questionId,
-                          replyId: widget.reply.id);
-                    },
-                    icon: Icon(Icons.remove_rounded))
+                if (_isUserReply)
+                  IconButton(
+                      padding: EdgeInsets.all(0),
+                      onPressed: () async {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return WarningDialogWidget(
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Text('Your reply will be permanently removed',
+                                      textAlign: TextAlign.center),
+                                  Text('Are you sure?',
+                                      textAlign: TextAlign.center),
+                                ],
+                              ),
+                              onConfirm: () async {
+                                await _questionProvider.deleteReply(
+                                    userId: _userProvider.user.id,
+                                    question: widget.question,
+                                    replyId: widget.reply.id);
+                                Navigator.pop(context);
+                              },
+                              onCancel: () {
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        );
+                      },
+                      icon: Icon(
+                        Icons.remove,
+                        color: Colors.redAccent,
+                      ))
               ],
             ),
             // SizedBox(height: 10),
