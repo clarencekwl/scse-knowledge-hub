@@ -26,7 +26,7 @@ class Question {
   factory Question.fromJson(Map<String, dynamic> json, String docId) {
     return Question(
       id: docId,
-      userId: json['userId'],
+      userId: json['userId'] ?? '',
       userName: '', // Default value, will be replaced by async method
       title: json['title'],
       description: json['description'],

@@ -32,7 +32,9 @@ Future<ListOfUserQuestionReponse?> getUserQuestionsFromDB(
         db.collection('users').doc(userId).collection('questions');
 
     // Get documents from the subcollection
-    QuerySnapshot userQuestionsSnapshot = await userQuestionsCollection.get();
+    QuerySnapshot userQuestionsSnapshot = await userQuestionsCollection
+        .orderBy('timestamp', descending: true)
+        .get();
 
     if (userQuestionsSnapshot.docs.isNotEmpty) {
       return ListOfUserQuestionReponse.fromJson(userQuestionsSnapshot.docs);
@@ -41,6 +43,51 @@ Future<ListOfUserQuestionReponse?> getUserQuestionsFromDB(
     }
   } catch (e) {
     log(e.toString());
+    return null;
+  }
+}
+
+Future<ListOfUserRepliedQuestionReponse?> getQuestionsRepliedByUserFromDB(
+    {required String userId}) async {
+  try {
+    // Get user document
+    DocumentSnapshot userDoc = await db.collection('users').doc(userId).get();
+
+    // Check if user document exists
+    if (userDoc.exists) {
+      // Get replies subcollection
+      QuerySnapshot repliesSnapshot = await userDoc.reference
+          .collection('replies')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      // Compile a list of question documents (DocumentSnapshot)
+      List<DocumentSnapshot> listOfQuestionDocs = [];
+
+      for (QueryDocumentSnapshot replyDoc in repliesSnapshot.docs) {
+        String questionId = replyDoc['questionId'];
+
+        // Check if the question ID is already present in the list
+        bool questionExists =
+            listOfQuestionDocs.any((doc) => doc.id == questionId);
+
+        if (!questionExists) {
+          // Get question document and add to the list
+          DocumentSnapshot questionDoc =
+              await db.collection('questions').doc(questionId).get();
+
+          if (questionDoc.exists && questionDoc['userId'] != userId) {
+            listOfQuestionDocs.add(questionDoc);
+          }
+        }
+      }
+      if (listOfQuestionDocs.isNotEmpty) {
+        return ListOfUserRepliedQuestionReponse.fromJson(listOfQuestionDocs);
+      }
+    }
+    return null;
+  } catch (e) {
+    log('Error fetching questions: $e');
     return null;
   }
 }

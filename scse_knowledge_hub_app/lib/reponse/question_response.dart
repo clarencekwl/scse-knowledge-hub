@@ -44,6 +44,30 @@ class ListOfUserQuestionReponse {
   }
 }
 
+class ListOfUserRepliedQuestionReponse {
+  List<Question> listOfUserRepliedQuestions;
+
+  ListOfUserRepliedQuestionReponse({required this.listOfUserRepliedQuestions});
+
+  static Future<ListOfUserRepliedQuestionReponse> fromJson(
+      List<DocumentSnapshot> json) async {
+    List<Question> listOfUserRepliedQuestions = [];
+
+    for (DocumentSnapshot questionDoc in json) {
+      // Create a Question object from the question document data
+      Question question = Question.fromJson(
+          questionDoc.data() as Map<String, dynamic>, questionDoc.id);
+
+      // Asynchronously fetch user name
+      Question questionWithUserName =
+          await Question.createWithUserName(question);
+      listOfUserRepliedQuestions.add(questionWithUserName);
+    }
+    return ListOfUserRepliedQuestionReponse(
+        listOfUserRepliedQuestions: listOfUserRepliedQuestions);
+  }
+}
+
 class ListOfQuestionRepliesReponse {
   List<Reply> listOfQuestionReplies;
 

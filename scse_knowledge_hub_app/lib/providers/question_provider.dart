@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:cached_memory_image/cached_image_base64_manager.dart';
-import 'package:flutter/material.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/api/question_api.dart' as QuestionAPI;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,6 +21,12 @@ class QuestionProvider extends ChangeNotifier {
   List<Question> get listOfUserQuestions => _listOfUserQuestions;
   set listOfUserQuestions(List<Question> listOfUserQuestions) {
     _listOfUserQuestions = listOfUserQuestions;
+  }
+
+  List<Question> _listOfUserRepliedQuestions = [];
+  List<Question> get listOfUserRepliedQuestions => _listOfUserRepliedQuestions;
+  set listOfUserRepliedQuestions(List<Question> listOfUserQuestions) {
+    _listOfUserRepliedQuestions = listOfUserQuestions;
   }
 
   // List<Question> _listOfUserLikedQuestions = [];
@@ -57,6 +62,17 @@ class QuestionProvider extends ChangeNotifier {
       _listOfUserQuestions = res.listOfUserQuestions;
     }
     stopLoading();
+  }
+
+  Future<void> getUserRepliedQuestions(String userId) async {
+    startLoading();
+    ListOfUserRepliedQuestionReponse? res =
+        await QuestionAPI.getQuestionsRepliedByUserFromDB(userId: userId);
+    if (null == res) {
+      _listOfUserRepliedQuestions = [];
+    } else {
+      _listOfUserRepliedQuestions = res.listOfUserRepliedQuestions;
+    }
   }
 
   Future<void> createQuestion({
