@@ -10,19 +10,7 @@ import 'package:scse_knowledge_hub_app/widget/no_glow_scroll.dart';
 
 class NavBar extends StatelessWidget {
   NavBar({super.key});
-  final List<String> _listOfTopics = [
-    "Algorithms",
-    "Artificial Intelligence",
-    "Cyber Security",
-    "Data Analytics",
-    "Database Management",
-    "Hardware",
-    "Machine Learning",
-    "Networking",
-    "Object-Oriented Programming",
-    "Software Development",
-    "Others",
-  ];
+
   late UserProvider _userProvider;
   @override
   Widget build(BuildContext context) {
@@ -108,7 +96,7 @@ class NavBar extends StatelessWidget {
                     "Filter by Topics",
                     style: TextStyle(color: Colors.white),
                   ),
-                  children: _listOfTopics.map((String value) {
+                  children: Styles.listOfTopics.map((String value) {
                     return ListTile(
                       title: Text(
                         value,

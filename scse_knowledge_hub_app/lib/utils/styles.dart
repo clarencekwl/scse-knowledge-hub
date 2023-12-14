@@ -10,6 +10,19 @@ class Styles {
   static Color primaryGreyColor = const Color.fromRGBO(58, 66, 86, 1.0);
   static Color titleTextColor = Color.fromRGBO(48, 121, 210, 1);
   static Color titleDetailsTextColor = Color.fromRGBO(48, 81, 210, 1);
+  static List<String> listOfTopics = [
+    "Algorithms",
+    "Artificial Intelligence",
+    "Cyber Security",
+    "Data Analytics",
+    "Database Management",
+    "Hardware",
+    "Machine Learning",
+    "Networking",
+    "Object-Oriented Programming",
+    "Software Development",
+    "Others",
+  ];
 
   static Row bottomRowIcons(IconData icon, String text) {
     return Row(

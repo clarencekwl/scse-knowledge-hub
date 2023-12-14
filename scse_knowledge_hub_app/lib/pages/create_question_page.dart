@@ -32,6 +32,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
   bool _isFormValid = false;
   bool _isLoading = false;
   bool _isAnonymous = false;
+  String _selectedTopic = "Algorithms";
 
   @override
   void initState() {
@@ -236,7 +237,45 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // TASK TITLE
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Topic",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Styles.primaryGreyColor,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          DropdownButtonFormField<String>(
+                            value: null,
+                            hint: Text("Select a Topic..."),
+                            onChanged: (value) {
+                              _selectedTopic = value!;
+                            },
+                            items: Styles.listOfTopics.map((String topic) {
+                              return DropdownMenuItem<String>(
+                                value: topic,
+                                child: Text(topic),
+                              );
+                            }).toList(),
+                            decoration:
+                                Styles.inputTextFieldStyle("Select Topic"),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 15),
                 userInputField("Title", isDescriptionField: false),
                 userInputField("Description", isDescriptionField: true),
                 Row(
