@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/pages/home_page.dart';
 import 'package:scse_knowledge_hub_app/pages/profile_page.dart';
-import 'package:scse_knowledge_hub_app/pages/user_replied_question.dart';
+import 'package:scse_knowledge_hub_app/pages/user_replied_question_page.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/no_glow_scroll.dart';
