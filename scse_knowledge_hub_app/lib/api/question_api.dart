@@ -104,7 +104,7 @@ Future<void> createQuestion(
     "title": title,
     "description": description,
     "likes": likes,
-    "numberOfReplies": numberOfReplies,
+    "number_of_replies": numberOfReplies,
     "userId": userID,
     "timestamp": timestamp,
     "anonymous": anonymous,
