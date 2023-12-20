@@ -188,16 +188,19 @@ class QuestionProvider extends ChangeNotifier {
   //! TEMP: FUNCTIONS FOR ATTACHEMENTS
   addAttachment(Uint8List annotatedImage) {
     _listOfAttachments.add(annotatedImage);
+    log("image added, size of listOfAttachments: ${_listOfAttachments.length}");
     notifyListeners();
   }
 
   removeAttachment(int imageIndex) {
     _listOfAttachments.removeAt(imageIndex);
+    log("image removed, size of listOfAttachments: ${_listOfAttachments.length}");
     notifyListeners();
   }
 
   removeAllAttachments() {
     _listOfAttachments = [];
+    log("all image removed, size of listOfAttachments: ${_listOfAttachments.length}");
     notifyListeners();
   }
 

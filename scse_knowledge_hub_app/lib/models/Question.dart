@@ -31,7 +31,7 @@ class Question {
       title: json['title'],
       description: json['description'],
       numberOfReplies: json['number_of_replies'],
-      likes: json['likes'],
+      likes: json['likes'] ?? 0,
       timestamp: json['timestamp'].toDate(),
       anonymous: json['anonymous'],
     );

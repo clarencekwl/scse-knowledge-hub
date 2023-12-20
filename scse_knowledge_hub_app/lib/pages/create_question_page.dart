@@ -61,6 +61,16 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
             "Ask a Question!",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
+          leading: IconButton(
+              onPressed: (() async {
+                _questionProvider.removeAllAttachments();
+                await _questionProvider.clearImageCache();
+                Navigator.of(context).pop();
+              }),
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.white,
+              )),
           elevation: 0,
           iconTheme: IconThemeData(color: Colors.white),
           backgroundColor: Styles.primaryBlueColor,
@@ -95,6 +105,8 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                             _questionProvider.clearImageCache();
                             _isLoading = false;
                             setState(() {});
+                            _questionProvider.removeAllAttachments();
+                            _questionProvider.clearImageCache();
                             Navigator.pop(context);
                             Navigator.push(
                               context,
@@ -381,9 +393,9 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                                                         TextAlign.center),
                                               ]),
                                           onConfirm: () {
-                                            _questionProvider.listOfAttachments
-                                                .clear();
-                                            _questionProvider.clearImageCache();
+                                            _questionProvider
+                                                .removeAttachment(index - 1);
+
                                             Navigator.of(context).pop();
                                             setState(() {});
                                           },
