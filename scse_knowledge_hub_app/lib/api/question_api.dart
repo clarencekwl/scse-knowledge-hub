@@ -2,11 +2,13 @@ import 'dart:developer';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/reponse/question_response.dart';
 
 final FirebaseFirestore db = FirebaseFirestore.instance;
 
+//! START <<CRUD FOR QUESTIONS>> START
 Future<ListOfQuestionReponse?> getQuestionsFromDB() async {
   try {
     QuerySnapshot<Map<String, dynamic>> snapshot = await db
@@ -93,14 +95,17 @@ Future<ListOfUserRepliedQuestionReponse?> getQuestionsRepliedByUserFromDB(
   }
 }
 
-Future<void> createQuestion(
-    {required String title,
-    required String description,
-    required String userID,
-    required int likes,
-    required int numberOfReplies,
-    required FieldValue timestamp,
-    required bool anonymous}) async {
+Future<void> createQuestion({
+  required String title,
+  required String description,
+  required String userID,
+  required int likes,
+  required int numberOfReplies,
+  required FieldValue timestamp,
+  required bool anonymous,
+  required List<Uint8List> images,
+}) async {
+  log("size of image: ${images.length}");
   Map<String, dynamic> data = {
     "title": title,
     "description": description,
@@ -125,6 +130,14 @@ Future<void> createQuestion(
         .set(data);
 
     log('Question created successfully with ID: ${questionDocRef.id}');
+
+    if (images.isNotEmpty) {
+      // Call uploadImages with the question ID and images
+      List<String> imageUrls = await uploadImages(questionDocRef.id, images);
+
+      // Call updateQuestionWithImageUrls to update the Firestore document with image URLs
+      await updateQuestionWithImageUrls(userID, questionDocRef.id, imageUrls);
+    }
   } catch (e) {
     log('Error creating question: $e');
   }
@@ -163,6 +176,15 @@ Future<void> updateQuestion(
 Future<void> deleteQuestion(
     {required String docId, required String userId}) async {
   try {
+    // Get the list of image URLs associated with the question
+    final questionDoc = await db.collection('questions').doc(docId).get();
+    final List<dynamic>? imageUrls = questionDoc['image_urls'];
+
+    // Delete images from Firebase Cloud Storage
+    if (imageUrls != null && imageUrls.isNotEmpty) {
+      await deleteImagesFromStorage(imageUrls);
+    }
+
     // Delete from 'questions' collection
     await db.collection('questions').doc(docId).delete();
 
@@ -174,12 +196,15 @@ Future<void> deleteQuestion(
         .doc(docId)
         .delete();
 
-    log('Question deleted successfully');
+    log('Question and associated images deleted successfully');
   } catch (e) {
     log('Error deleting question: $e');
   }
 }
 
+//! END <<CRUD FOR QUESTIONS>> END
+
+//! START <<FUCNTIONS FOR REPLY>> START
 Future<ListOfQuestionRepliesReponse?> getAllReplies(
     {required String questionId}) async {
   try {
@@ -305,3 +330,75 @@ Future<void> _updateReplies(
     }
   });
 }
+//! END <<FUCNTIONS FOR REPLY>> END
+
+//! START <<FUNCTIONS FOR ATTACHMENTS>> START
+Future<List<String>> uploadImages(
+    String questionId, List<Uint8List> images) async {
+  List<String> imageUrls = [];
+
+  for (var i = 0; i < images.length; i++) {
+    final Uint8List imageBytes = images[i];
+    final List<int> byteList = imageBytes.cast<int>().toList();
+    final String filePath = 'question_images/$questionId/image_$i.jpg';
+
+    try {
+      final storageRef =
+          firebase_storage.FirebaseStorage.instance.ref().child(filePath);
+
+      // Upload image data to Firebase Cloud Storage
+      await storageRef.putData(Uint8List.fromList(byteList));
+
+      // Get the download URL for the uploaded image
+      final imageUrl = await storageRef.getDownloadURL();
+      imageUrls.add(imageUrl);
+    } catch (e) {
+      log('Error uploading image $i: $e');
+      // Handle error, you might want to throw an exception or log the error
+    }
+  }
+
+  log('Images uploaded successfully.');
+
+  return imageUrls;
+}
+
+Future<void> updateQuestionWithImageUrls(
+    String userId, String questionId, List<String> imageUrls) async {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  try {
+    await firestore
+        .collection('questions')
+        .doc(questionId)
+        .update({'image_urls': imageUrls});
+    log('Question updated with image URLs.');
+
+    await firestore
+        .collection('users')
+        .doc(userId) // Replace with the appropriate user ID
+        .collection('questions')
+        .doc(questionId)
+        .update({'image_urls': imageUrls});
+  } catch (e) {
+    log('Error updating question with image URLs: $e');
+    // Handle error, you might want to throw an exception or log the error
+  }
+}
+
+Future<void> deleteImagesFromStorage(List<dynamic> imageUrls) async {
+  try {
+    final firebase_storage.FirebaseStorage storage =
+        firebase_storage.FirebaseStorage.instance;
+
+    for (String imageUrl in imageUrls) {
+      final firebase_storage.Reference imageRef = storage.refFromURL(imageUrl);
+      await imageRef.delete();
+      log('Image deleted successfully: $imageUrl');
+    }
+  } catch (e) {
+    log('Error deleting images from storage: $e');
+    // Handle error, you might want to throw an exception or log the error
+  }
+}
+//! END <<FUNCTIONS FOR ATTACHMENTS>> END

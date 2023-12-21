@@ -10,6 +10,7 @@ class Question {
   int numberOfReplies;
   DateTime timestamp;
   bool anonymous;
+  List<String> imageUrls;
 
   Question({
     required this.id,
@@ -21,9 +22,13 @@ class Question {
     required this.numberOfReplies,
     required this.timestamp,
     required this.anonymous,
+    required this.imageUrls,
   });
 
   factory Question.fromJson(Map<String, dynamic> json, String docId) {
+    // Use the null-aware coalescing operator (??) to provide a default empty list
+    final List<String> imageUrls = List<String>.from(json['image_urls'] ?? []);
+
     return Question(
       id: docId,
       userId: json['userId'] ?? '',
@@ -34,6 +39,7 @@ class Question {
       likes: json['likes'] ?? 0,
       timestamp: json['timestamp'].toDate(),
       anonymous: json['anonymous'],
+      imageUrls: imageUrls,
     );
   }
 
@@ -49,19 +55,21 @@ class Question {
         userSnapshot.exists ? userSnapshot['name'] : 'Unknown User';
 
     return Question(
-        id: question.id,
-        userId: userId,
-        userName: userName,
-        title: question.title,
-        description: question.description,
-        numberOfReplies: question.numberOfReplies,
-        likes: question.likes,
-        timestamp: question.timestamp,
-        anonymous: question.anonymous);
+      id: question.id,
+      userId: userId,
+      userName: userName,
+      title: question.title,
+      description: question.description,
+      numberOfReplies: question.numberOfReplies,
+      likes: question.likes,
+      timestamp: question.timestamp,
+      anonymous: question.anonymous,
+      imageUrls: question.imageUrls,
+    );
   }
 
   @override
   String toString() {
-    return "{id: $id, user: $userId, title: $title}";
+    return "{id: $id, user: $userId, title: $title, imageUrls: $imageUrls}";
   }
 }

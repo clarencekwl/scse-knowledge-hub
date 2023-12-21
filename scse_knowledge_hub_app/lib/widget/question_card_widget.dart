@@ -90,10 +90,10 @@ class _QuestionCardState extends State<QuestionCard> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              Styles.bottomRowIcons(Icons.image,
+                  "${widget.question.imageUrls.length} Attachments"),
               Styles.bottomRowIcons(
-                  Icons.thumb_up_alt_rounded, "${widget.question.likes} Likes"),
-              Styles.bottomRowIcons(Icons.reply_rounded,
-                  "${widget.question.numberOfReplies} Replies")
+                  Icons.reply, "${widget.question.numberOfReplies} Replies")
             ],
           )
         ],

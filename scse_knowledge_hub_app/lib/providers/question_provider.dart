@@ -89,7 +89,8 @@ class QuestionProvider extends ChangeNotifier {
         likes: 0,
         numberOfReplies: 0,
         timestamp: FieldValue.serverTimestamp(),
-        anonymous: anonymous);
+        anonymous: anonymous,
+        images: _listOfAttachments);
     await getQuestions();
     await getUserQuestions(userID);
     stopLoading();
@@ -185,7 +186,7 @@ class QuestionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //! TEMP: FUNCTIONS FOR ATTACHEMENTS
+  //! FUNCTIONS FOR ATTACHEMENTS
   addAttachment(Uint8List annotatedImage) {
     _listOfAttachments.add(annotatedImage);
     log("image added, size of listOfAttachments: ${_listOfAttachments.length}");
@@ -204,7 +205,7 @@ class QuestionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  clearImageCache() async {
+  Future clearImageCache() async {
     try {
       await CachedImageBase64Manager.instance().clearCache();
       log('delete cache!');

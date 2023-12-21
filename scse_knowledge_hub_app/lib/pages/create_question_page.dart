@@ -102,11 +102,9 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                                 userID: _userProvider.user.id,
                                 anonymous: _isAnonymous);
                             _questionProvider.removeAllAttachments();
-                            _questionProvider.clearImageCache();
+                            await _questionProvider.clearImageCache();
                             _isLoading = false;
                             setState(() {});
-                            _questionProvider.removeAllAttachments();
-                            _questionProvider.clearImageCache();
                             Navigator.pop(context);
                             Navigator.push(
                               context,

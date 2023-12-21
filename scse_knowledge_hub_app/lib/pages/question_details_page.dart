@@ -336,30 +336,30 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            false == widget.question.anonymous
-                ? Text(widget.question.userName,
-                    style: TextStyle(
-                        color: Colors.black,
-                        overflow: TextOverflow.ellipsis,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14))
-                : Text("Anonymous",
-                    style: TextStyle(
-                        color: Colors.black87,
-                        fontStyle: FontStyle.italic,
-                        overflow: TextOverflow.ellipsis,
-                        fontSize: 14)),
             Row(
               children: [
-                Expanded(
-                  child: Text(
-                    Styles.formatTimeDifference(
-                        DateTime.now().difference(widget.question.timestamp)),
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
+                false == widget.question.anonymous
+                    ? Expanded(
+                        child: Text(widget.question.userName,
+                            style: TextStyle(
+                                color: Colors.black,
+                                overflow: TextOverflow.ellipsis,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14)),
+                      )
+                    : Expanded(
+                        child: Text("Anonymous",
+                            style: TextStyle(
+                                color: Colors.black87,
+                                fontStyle: FontStyle.italic,
+                                overflow: TextOverflow.ellipsis,
+                                fontSize: 14)),
+                      ),
+                Text(
+                  Styles.formatTimeDifference(
+                      DateTime.now().difference(widget.question.timestamp)),
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
-                Styles.bottomRowIcons(Icons.thumb_up_alt_rounded,
-                    "${widget.question.likes} Likes"),
               ],
             ),
             SizedBox(
@@ -380,28 +380,36 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
             SizedBox(
               height: 10,
             ),
-            SizedBox(
-              height: 80,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: listOfThumbnailUrls.length,
-                itemBuilder: (context, index) {
-                  return ImagePreviewBoxWidget(
-                    displayOnly: true,
-                    image: DisplayImage(
-                        imageUrl: listOfThumbnailUrls[index],
-                        hasBorderRadius: true),
-                    onTap: () {
-                      OpenImages(
-                              context: context,
-                              index: index,
-                              images: listOfThumbnailUrls)
-                          .imageOpenTransition();
-                    },
-                  );
-                },
-              ),
-            ),
+            widget.question.imageUrls.isNotEmpty
+                ? SizedBox(
+                    height: 80,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: widget.question.imageUrls.length,
+                      itemBuilder: (context, index) {
+                        return ImagePreviewBoxWidget(
+                          displayOnly: true,
+                          image: DisplayImage(
+                              imageUrl: widget.question.imageUrls[index],
+                              hasBorderRadius: true),
+                          onTap: () {
+                            OpenImages(
+                                    context: context,
+                                    index: index,
+                                    images: widget.question.imageUrls)
+                                .imageOpenTransition();
+                          },
+                        );
+                      },
+                    ),
+                  )
+                : Text(
+                    "No Attachments/Images",
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey,
+                        fontStyle: FontStyle.italic),
+                  ),
           ],
         ),
       ),

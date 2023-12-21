@@ -6,7 +6,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_painter/image_painter.dart';
-// import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
@@ -48,12 +48,12 @@ class _ImagePainterPageState extends State<ImagePainterPage> {
     return image.width > image.height;
   }
 
-  // Future<Uint8List> compressImage(Uint8List img) async {
-  //   return await FlutterImageCompress.compressWithList(img,
-  //       minHeight: _isLandscape ? 1500 : 2000,
-  //       minWidth: _isLandscape ? 2000 : 1500,
-  //       quality: 90);
-  // }
+  Future<Uint8List> compressImage(Uint8List img) async {
+    return await FlutterImageCompress.compressWithList(img,
+        minHeight: _isLandscape ? 1500 : 2000,
+        minWidth: _isLandscape ? 2000 : 1500,
+        quality: 80);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,12 +84,12 @@ class _ImagePainterPageState extends State<ImagePainterPage> {
                         _isLoading = true;
                         setState(() {});
 
-                        // Uint8List compressedAnnotatedImage =
-                        //     await compressImage(
-                        //         (await _imagekey.currentState!.exportImage())!);
+                        Uint8List compressedAnnotatedImage =
+                            await compressImage(
+                                (await _imagekey.currentState!.exportImage())!);
 
-                        _questionProvider.addAttachment(
-                            (await _imagekey.currentState!.exportImage())!);
+                        _questionProvider
+                            .addAttachment((compressedAnnotatedImage));
 
                         // Uint8List compressedOriginalImage = await compressImage(
                         //     widget.imageFile.readAsBytesSync());
