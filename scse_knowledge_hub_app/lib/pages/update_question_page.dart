@@ -104,8 +104,8 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                             widget.question.description =
                                 _descriptionTextController.text;
                             widget.question.anonymous = _isAnonymous;
-                            _questionProvider.removeAllAttachments();
-                            _questionProvider.clearImageCache();
+                            // _questionProvider.removeAllAttachments();
+                            // _questionProvider.clearImageCache();
                             _isLoading = false;
                             setState(() {});
                             Navigator.pop(context);
@@ -277,19 +277,19 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                 userInputField("Description", isDescriptionField: true),
                 Row(
                   children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Text("Attachments",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: Styles.primaryGreyColor)),
-                          SizedBox(width: 5),
-                          Icon(Icons.attachment_outlined),
-                        ],
-                      ),
-                    ),
+                    // Expanded(
+                    //   child: Row(
+                    //     children: [
+                    //       Text("Attachments",
+                    //           style: TextStyle(
+                    //               fontWeight: FontWeight.bold,
+                    //               fontSize: 14,
+                    //               color: Styles.primaryGreyColor)),
+                    //       SizedBox(width: 5),
+                    //       Icon(Icons.attachment_outlined),
+                    //     ],
+                    //   ),
+                    // ),
                     Text("Post Anonymously",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,

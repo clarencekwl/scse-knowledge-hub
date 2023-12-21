@@ -330,90 +330,150 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                   children: [
                     Container(
                         height: 80,
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount:
-                                _questionProvider.listOfAttachments.length + 1,
-                            itemBuilder: (context, index) {
-                              if (index == 0 ||
-                                  _questionProvider.listOfAttachments.isEmpty) {
-                                return ImagePreviewBoxWidget(
-                                  displayOnly: false,
-                                  onTap: () async {
-                                    return showModalBottomSheet(
-                                        context: context,
-                                        shape: const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(25),
-                                                topRight: Radius.circular(25))),
-                                        builder: ((context) => SafeArea(
-                                              child: Container(
-                                                  height: 150,
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 10),
-                                                  child: Column(
-                                                    children: [
-                                                      attachmentSelection(
-                                                          context,
-                                                          fromCamera: false),
-                                                      const Divider(),
-                                                      attachmentSelection(
-                                                          context,
-                                                          fromCamera: true)
-                                                    ],
-                                                  )),
-                                            )));
-                                  },
-                                );
-                              }
-                              return ImagePreviewBoxWidget(
-                                displayOnly: false,
-                                image: Image.memory(
-                                  _questionProvider
-                                      .listOfAttachments[index - 1],
-                                  fit: BoxFit.cover,
-                                ),
-                                onRemove: () async {
-                                  FocusScope.of(context).unfocus();
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return WarningDialogWidget(
-                                          content: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: const [
-                                                Text(
-                                                    'Image will be removed permanently',
-                                                    textAlign:
-                                                        TextAlign.center),
-                                                Text('Are you sure?',
-                                                    textAlign:
-                                                        TextAlign.center),
-                                              ]),
-                                          onConfirm: () {
-                                            _questionProvider
-                                                .removeAttachment(index - 1);
-
-                                            Navigator.of(context).pop();
-                                            setState(() {});
-                                          },
-                                          onCancel: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        );
-                                      });
-                                },
-                                onTap: () {
-                                  OpenImages(
+                        child: _questionProvider.listOfAttachments.length != 3
+                            ? ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount:
+                                    _questionProvider.listOfAttachments.length +
+                                        1,
+                                itemBuilder: (context, index) {
+                                  if (index == 0 ||
+                                      _questionProvider
+                                          .listOfAttachments.isEmpty) {
+                                    return ImagePreviewBoxWidget(
+                                      displayOnly: false,
+                                      onTap: () async {
+                                        return showModalBottomSheet(
+                                            context: context,
+                                            shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(25),
+                                                    topRight:
+                                                        Radius.circular(25))),
+                                            builder: ((context) => SafeArea(
+                                                  child: Container(
+                                                      height: 150,
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 10),
+                                                      child: Column(
+                                                        children: [
+                                                          attachmentSelection(
+                                                              context,
+                                                              fromCamera:
+                                                                  false),
+                                                          const Divider(),
+                                                          attachmentSelection(
+                                                              context,
+                                                              fromCamera: true)
+                                                        ],
+                                                      )),
+                                                )));
+                                      },
+                                    );
+                                  }
+                                  return ImagePreviewBoxWidget(
+                                    displayOnly: false,
+                                    image: Image.memory(
+                                      _questionProvider
+                                          .listOfAttachments[index - 1],
+                                      fit: BoxFit.cover,
+                                    ),
+                                    onRemove: () async {
+                                      FocusScope.of(context).unfocus();
+                                      showDialog(
                                           context: context,
-                                          index: index,
-                                          images: _questionProvider
-                                              .listOfAttachments)
-                                      .imageOpenTransition();
-                                },
-                              );
-                            })),
+                                          builder: (BuildContext context) {
+                                            return WarningDialogWidget(
+                                              content: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: const [
+                                                    Text(
+                                                        'Image will be removed permanently',
+                                                        textAlign:
+                                                            TextAlign.center),
+                                                    Text('Are you sure?',
+                                                        textAlign:
+                                                            TextAlign.center),
+                                                  ]),
+                                              onConfirm: () {
+                                                _questionProvider
+                                                    .removeAttachment(
+                                                        index - 1);
+
+                                                Navigator.of(context).pop();
+                                                setState(() {});
+                                              },
+                                              onCancel: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            );
+                                          });
+                                    },
+                                    onTap: () {
+                                      OpenImages(
+                                              context: context,
+                                              index: index,
+                                              images: _questionProvider
+                                                  .listOfAttachments)
+                                          .imageOpenTransition();
+                                    },
+                                  );
+                                })
+                            : ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount:
+                                    _questionProvider.listOfAttachments.length,
+                                itemBuilder: (context, index) {
+                                  return ImagePreviewBoxWidget(
+                                    displayOnly: false,
+                                    image: Image.memory(
+                                      _questionProvider
+                                          .listOfAttachments[index],
+                                      fit: BoxFit.cover,
+                                    ),
+                                    onRemove: () async {
+                                      FocusScope.of(context).unfocus();
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return WarningDialogWidget(
+                                              content: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: const [
+                                                    Text(
+                                                        'Image will be removed permanently',
+                                                        textAlign:
+                                                            TextAlign.center),
+                                                    Text('Are you sure?',
+                                                        textAlign:
+                                                            TextAlign.center),
+                                                  ]),
+                                              onConfirm: () {
+                                                _questionProvider
+                                                    .removeAttachment(index);
+                                                Navigator.of(context).pop();
+                                                setState(() {});
+                                              },
+                                              onCancel: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            );
+                                          });
+                                    },
+                                    onTap: () {
+                                      OpenImages(
+                                              context: context,
+                                              index: index,
+                                              images: _questionProvider
+                                                  .listOfAttachments)
+                                          .imageOpenTransition();
+                                    },
+                                  );
+                                })),
                   ],
                 ),
               ],
