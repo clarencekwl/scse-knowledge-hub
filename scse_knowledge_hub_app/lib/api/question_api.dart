@@ -144,29 +144,25 @@ Future<void> createQuestion({
 }
 
 Future<void> updateQuestion(
-    {required String docId, String? title, String? description}) async {
+    {required String questionId,
+    required String userId,
+    required String title,
+    required String description,
+    required bool anonymous}) async {
   try {
-    if (null != title) {
-      await db.collection("questions").doc(docId).update({"title": title});
-      await db
-          .collection("users")
-          .doc(docId)
-          .collection('questions')
-          .doc(docId)
-          .update({"title": title});
-    }
-    if (null != description) {
-      await db
-          .collection("questions")
-          .doc(docId)
-          .update({"description": description});
-      await db
-          .collection("users")
-          .doc(docId)
-          .collection('questions')
-          .doc(docId)
-          .update({"description": description});
-    }
+    await db.collection("questions").doc(questionId).update(
+        {"title": title, "description": description, "anonymous": anonymous});
+    await db
+        .collection("users")
+        .doc(userId)
+        .collection('questions')
+        .doc(questionId)
+        .update({
+      "title": title,
+      "description": description,
+      "anonymous": anonymous
+    });
+
     log('Question updated successfully');
   } catch (e) {
     log('Error updating question: $e');

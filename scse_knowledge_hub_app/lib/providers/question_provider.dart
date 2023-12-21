@@ -97,16 +97,21 @@ class QuestionProvider extends ChangeNotifier {
   }
 
   Future<void> updateQuestion({
-    required String docId,
+    required String questionId,
     required String userId,
-    String? title,
-    String? description,
+    required String title,
+    required String description,
+    required bool anonymous,
   }) async {
     startLoading();
     await QuestionAPI.updateQuestion(
-        docId: docId, title: title, description: description);
+        questionId: questionId,
+        userId: userId,
+        title: title,
+        description: description,
+        anonymous: anonymous);
     await getQuestions();
-    //await getUserQuestions(userId);
+    await getUserQuestions(userId);
     stopLoading();
   }
 

@@ -32,7 +32,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
   bool _isFormValid = false;
   bool _isLoading = false;
   bool _isAnonymous = false;
-  String _selectedTopic = "Algorithms";
+  late String _selectedTopic;
 
   @override
   void initState() {
@@ -269,6 +269,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                             hint: Text("Select a Topic..."),
                             onChanged: (value) {
                               _selectedTopic = value!;
+                              log("selected topic is: $_selectedTopic");
                             },
                             items: Styles.listOfTopics.map((String topic) {
                               return DropdownMenuItem<String>(

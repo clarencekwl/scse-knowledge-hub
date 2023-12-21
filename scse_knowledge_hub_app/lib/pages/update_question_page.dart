@@ -35,6 +35,8 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = true;
   bool _isLoading = false;
+  late bool _isAnonymous;
+  late String _selectedTopic;
 
   @override
   void initState() {
@@ -44,6 +46,7 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
     });
     _titleTextController.text = widget.question.title;
     _descriptionTextController.text = widget.question.description;
+    _isAnonymous = widget.question.anonymous;
   }
 
   @override
@@ -91,21 +94,21 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                             _isLoading = true;
                             setState(() {});
                             await _questionProvider.updateQuestion(
-                              docId: widget.question.id,
+                              questionId: widget.question.id,
                               userId: _userProvider.user.id,
                               title: _titleTextController.text,
                               description: _descriptionTextController.text,
+                              anonymous: _isAnonymous,
                             );
+                            widget.question.title = _titleTextController.text;
+                            widget.question.description =
+                                _descriptionTextController.text;
+                            widget.question.anonymous = _isAnonymous;
                             _questionProvider.removeAllAttachments();
                             _questionProvider.clearImageCache();
                             _isLoading = false;
                             setState(() {});
                             Navigator.pop(context);
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //       builder: (context) => CaseSuccessPage()),
-                            // );
                           }
                         }),
                         icon: _isFormValid ? Icons.check : null,
@@ -242,115 +245,163 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(
+                  "Topic",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Styles.primaryGreyColor,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                DropdownButtonFormField<String>(
+                  value: null,
+                  hint: Text("Select a Topic..."),
+                  onChanged: (value) {
+                    _selectedTopic = value!;
+                    log("selected topic is: $_selectedTopic");
+                  },
+                  items: Styles.listOfTopics.map((String topic) {
+                    return DropdownMenuItem<String>(
+                      value: topic,
+                      child: Text(topic),
+                    );
+                  }).toList(),
+                  decoration: Styles.inputTextFieldStyle("Select Topic"),
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 // TASK TITLE
                 userInputField("Title", isDescriptionField: false),
                 userInputField("Description", isDescriptionField: true),
                 Row(
                   children: [
-                    Text("Attachments",
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Text("Attachments",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: Styles.primaryGreyColor)),
+                          SizedBox(width: 5),
+                          Icon(Icons.attachment_outlined),
+                        ],
+                      ),
+                    ),
+                    Text("Post Anonymously",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                             color: Styles.primaryGreyColor)),
-                    SizedBox(width: 5),
-                    Icon(Icons.attachment_outlined)
+                    Switch(
+                      activeTrackColor: Styles.primaryBlueColor,
+                      activeColor: Styles.primaryLightBlueColor,
+                      thumbIcon: thumbIcon,
+                      value: _isAnonymous,
+                      onChanged: (value) async {
+                        _isAnonymous = value;
+                        setState(() {});
+                      },
+                    )
                   ],
                 ),
                 SizedBox(
                   height: 10,
                 ),
                 // ATTACHMENT FIELD
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                        height: 80,
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount:
-                                _questionProvider.listOfAttachments.length + 1,
-                            itemBuilder: (context, index) {
-                              if (index == 0 ||
-                                  _questionProvider.listOfAttachments.isEmpty) {
-                                return ImagePreviewBoxWidget(
-                                  displayOnly: false,
-                                  onTap: () async {
-                                    return showModalBottomSheet(
-                                        context: context,
-                                        shape: const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(25),
-                                                topRight: Radius.circular(25))),
-                                        builder: ((context) => SafeArea(
-                                              child: Container(
-                                                  height: 150,
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 10),
-                                                  child: Column(
-                                                    children: [
-                                                      attachmentSelection(
-                                                          context,
-                                                          fromCamera: false),
-                                                      const Divider(),
-                                                      attachmentSelection(
-                                                          context,
-                                                          fromCamera: true)
-                                                    ],
-                                                  )),
-                                            )));
-                                  },
-                                );
-                              }
-                              return ImagePreviewBoxWidget(
-                                displayOnly: false,
-                                image: Image.memory(
-                                  _questionProvider
-                                      .listOfAttachments[index - 1],
-                                  fit: BoxFit.cover,
-                                ),
-                                onRemove: () async {
-                                  FocusScope.of(context).unfocus();
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return WarningDialogWidget(
-                                          content: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: const [
-                                                Text(
-                                                    'Image will be removed permanently',
-                                                    textAlign:
-                                                        TextAlign.center),
-                                                Text('Are you sure?',
-                                                    textAlign:
-                                                        TextAlign.center),
-                                              ]),
-                                          onConfirm: () {
-                                            _questionProvider.listOfAttachments
-                                                .clear();
-                                            _questionProvider.clearImageCache();
-                                            Navigator.of(context).pop();
-                                            setState(() {});
-                                          },
-                                          onCancel: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        );
-                                      });
-                                },
-                                onTap: () {
-                                  OpenImages(
-                                          context: context,
-                                          index: index,
-                                          images: _questionProvider
-                                              .listOfAttachments)
-                                      .imageOpenTransition();
-                                },
-                              );
-                            })),
-                  ],
-                ),
+                // Column(
+                //   crossAxisAlignment: CrossAxisAlignment.start,
+                //   children: [
+                //     Container(
+                //         height: 80,
+                //         child: ListView.builder(
+                //             scrollDirection: Axis.horizontal,
+                //             itemCount:
+                //                 _questionProvider.listOfAttachments.length + 1,
+                //             itemBuilder: (context, index) {
+                //               if (index == 0 ||
+                //                   _questionProvider.listOfAttachments.isEmpty) {
+                //                 return ImagePreviewBoxWidget(
+                //                   displayOnly: false,
+                //                   onTap: () async {
+                //                     return showModalBottomSheet(
+                //                         context: context,
+                //                         shape: const RoundedRectangleBorder(
+                //                             borderRadius: BorderRadius.only(
+                //                                 topLeft: Radius.circular(25),
+                //                                 topRight: Radius.circular(25))),
+                //                         builder: ((context) => SafeArea(
+                //                               child: Container(
+                //                                   height: 150,
+                //                                   padding:
+                //                                       const EdgeInsets.only(
+                //                                           top: 10),
+                //                                   child: Column(
+                //                                     children: [
+                //                                       attachmentSelection(
+                //                                           context,
+                //                                           fromCamera: false),
+                //                                       const Divider(),
+                //                                       attachmentSelection(
+                //                                           context,
+                //                                           fromCamera: true)
+                //                                     ],
+                //                                   )),
+                //                             )));
+                //                   },
+                //                 );
+                //               }
+                //               return ImagePreviewBoxWidget(
+                //                 displayOnly: false,
+                //                 image: Image.memory(
+                //                   _questionProvider
+                //                       .listOfAttachments[index - 1],
+                //                   fit: BoxFit.cover,
+                //                 ),
+                //                 onRemove: () async {
+                //                   FocusScope.of(context).unfocus();
+                //                   showDialog(
+                //                       context: context,
+                //                       builder: (BuildContext context) {
+                //                         return WarningDialogWidget(
+                //                           content: Column(
+                //                               mainAxisSize: MainAxisSize.min,
+                //                               children: const [
+                //                                 Text(
+                //                                     'Image will be removed permanently',
+                //                                     textAlign:
+                //                                         TextAlign.center),
+                //                                 Text('Are you sure?',
+                //                                     textAlign:
+                //                                         TextAlign.center),
+                //                               ]),
+                //                           onConfirm: () {
+                //                             _questionProvider.listOfAttachments
+                //                                 .clear();
+                //                             _questionProvider.clearImageCache();
+                //                             Navigator.of(context).pop();
+                //                             setState(() {});
+                //                           },
+                //                           onCancel: () {
+                //                             Navigator.of(context).pop();
+                //                           },
+                //                         );
+                //                       });
+                //                 },
+                //                 onTap: () {
+                //                   OpenImages(
+                //                           context: context,
+                //                           index: index,
+                //                           images: _questionProvider
+                //                               .listOfAttachments)
+                //                       .imageOpenTransition();
+                //                 },
+                //               );
+                //             })),
+                //   ],
+                // ),
               ],
             ),
           ),
@@ -358,4 +409,15 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
       ),
     );
   }
+
+  final MaterialStateProperty<Icon?> thumbIcon =
+      MaterialStateProperty.resolveWith<Icon?>(
+    (Set<MaterialState> states) {
+      // Thumb icon when the switch is selected.
+      if (states.contains(MaterialState.selected)) {
+        return const Icon(Icons.check);
+      }
+      return const Icon(Icons.close);
+    },
+  );
 }

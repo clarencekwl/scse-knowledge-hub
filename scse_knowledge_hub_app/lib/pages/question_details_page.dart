@@ -86,7 +86,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                 ? <Widget>[
                     IconButton(
                       onPressed: () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => UpdateQuestionPage(
                                   question: widget.question,
                                 )));
