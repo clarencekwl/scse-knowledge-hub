@@ -29,11 +29,17 @@ class QuestionProvider extends ChangeNotifier {
     _listOfUserRepliedQuestions = listOfUserQuestions;
   }
 
-  // List<Question> _listOfUserLikedQuestions = [];
-  // List<Question> get listOfUserLikedQuestions => _listOfUserLikedQuestions;
-  // set listOfUserLikedQuestions(List<Question> listOfUserLikedQuestions) {
-  //   _listOfUserLikedQuestions = listOfUserLikedQuestions;
-  // }
+  List<String> _selectedTopic = [];
+  List<String> get selectedTopic => _selectedTopic;
+  set selectedTopic(List<String> selectedTopic) {
+    _selectedTopic = selectedTopic;
+  }
+
+  List<Question> _listOfFilteredQuestions = [];
+  List<Question> get listOfFilteredQuestions => _listOfFilteredQuestions;
+  set listOfFilteredQuestions(List<Question> listOfFilteredQuestions) {
+    _listOfFilteredQuestions = listOfFilteredQuestions;
+  }
 
   List<Reply> _listOfReplies = [];
   List<Reply> get listOfReplies => _listOfReplies;
@@ -64,6 +70,18 @@ class QuestionProvider extends ChangeNotifier {
     stopLoading();
   }
 
+  bool getFilteredQuestions(List<String>? selectedTopics) {
+    startLoading();
+    if (selectedTopics != null) {
+      listOfFilteredQuestions = listOfQuestions
+          .where((question) => selectedTopics.contains(question.topic))
+          .toList();
+      return true;
+    }
+    stopLoading();
+    return false;
+  }
+
   Future<void> getUserRepliedQuestions(String userId) async {
     startLoading();
     ListOfUserRepliedQuestionReponse? res =
@@ -73,6 +91,7 @@ class QuestionProvider extends ChangeNotifier {
     } else {
       _listOfUserRepliedQuestions = res.listOfUserRepliedQuestions;
     }
+    stopLoading();
   }
 
   Future<void> createQuestion({
@@ -130,6 +149,7 @@ class QuestionProvider extends ChangeNotifier {
   }
 
   Future<void> getAllRepliesForQuestion({required String questionId}) async {
+    startLoading();
     listOfReplies = [];
     ListOfQuestionRepliesReponse? res =
         await QuestionAPI.getAllReplies(questionId: questionId);
@@ -138,6 +158,7 @@ class QuestionProvider extends ChangeNotifier {
     } else {
       listOfReplies = [];
     }
+    stopLoading();
   }
 
   Future<void> addReply({
@@ -385,12 +406,10 @@ class QuestionProvider extends ChangeNotifier {
   //       Map<String, dynamic> data = userQuestion.data() as Map<String, dynamic>;
   //       int number_of_replies = data['replies'] ?? 0;
 
-  //       // Update the document in the subcollection
   //       await userQuestionsRef.doc(userQuestion.id).update({
   //         'number_of_replies': number_of_replies,
   //       });
 
-  //       // Delete the old field
   //       await userQuestionsRef.doc(userQuestion.id).update({
   //         'replies': FieldValue.delete(),
   //       });

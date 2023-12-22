@@ -4,17 +4,26 @@ import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/pages/home_page.dart';
 import 'package:scse_knowledge_hub_app/pages/profile_page.dart';
 import 'package:scse_knowledge_hub_app/pages/user_replied_question_page.dart';
+import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/no_glow_scroll.dart';
 
-class NavBar extends StatelessWidget {
-  NavBar({super.key});
+class NavBar extends StatefulWidget {
+  const NavBar({super.key});
 
+  @override
+  State<NavBar> createState() => _NavBarState();
+}
+
+class _NavBarState extends State<NavBar> {
   late UserProvider _userProvider;
+  late QuestionProvider _questionProvider;
+
   @override
   Widget build(BuildContext context) {
     _userProvider = Provider.of(context);
+    _questionProvider = Provider.of(context);
     return Drawer(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -96,19 +105,82 @@ class NavBar extends StatelessWidget {
                     "Filter by Topics",
                     style: TextStyle(color: Colors.white),
                   ),
-                  children: Styles.listOfTopics.map((String value) {
-                    return ListTile(
-                      title: Text(
-                        value,
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onTap: () {
-                        // Handle the selected value, you can use it as needed
-                        print('Selected topic: $value');
-                        // Add your logic here based on the selected value
+                  children: [
+                    // Filter button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blueGrey,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15))),
+                          onPressed: () {
+                            log('Selected topics: ${_questionProvider.selectedTopic}');
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => HomePage(
+                                      selectedTopics:
+                                          _questionProvider.selectedTopic)),
+                            );
+                          },
+                          child: Text("Filter"),
+                        ),
+                        if (_questionProvider.selectedTopic.isNotEmpty)
+                          Container(
+                            margin: EdgeInsets.only(left: 10),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blueGrey,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15))),
+                              onPressed: () {
+                                _questionProvider.selectedTopic.clear();
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => HomePage()),
+                                );
+                              },
+                              child: Text("Clear All"),
+                            ),
+                          ),
+                      ],
+                    ),
+
+                    Divider(color: Colors.white),
+
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: Styles.listOfTopics.length,
+                      itemBuilder: (context, index) {
+                        final topic = Styles.listOfTopics[index];
+                        return CheckboxListTile(
+                          title: Text(
+                            topic,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          value:
+                              _questionProvider.selectedTopic.contains(topic),
+                          onChanged: (value) {
+                            if (value != null) {
+                              if (value) {
+                                _questionProvider.selectedTopic.add(topic);
+                              } else {
+                                _questionProvider.selectedTopic.remove(topic);
+                              }
+                            }
+                            setState(() {});
+                          },
+                          activeColor: Colors.blueGrey,
+                          tileColor:
+                              _questionProvider.selectedTopic.contains(topic)
+                                  ? Colors.blueGrey.withOpacity(0.3)
+                                  : null,
+                        );
                       },
-                    );
-                  }).toList(),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -117,18 +189,18 @@ class NavBar extends StatelessWidget {
       ),
     );
   }
+}
 
-  ListTile drawerList(IconData icon, String title, Function()? onTap) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: Colors.white,
-      ),
-      title: Text(
-        title,
-        style: const TextStyle(color: Colors.white),
-      ),
-      onTap: onTap,
-    );
-  }
+ListTile drawerList(IconData icon, String title, Function()? onTap) {
+  return ListTile(
+    leading: Icon(
+      icon,
+      color: Colors.white,
+    ),
+    title: Text(
+      title,
+      style: const TextStyle(color: Colors.white),
+    ),
+    onTap: onTap,
+  );
 }

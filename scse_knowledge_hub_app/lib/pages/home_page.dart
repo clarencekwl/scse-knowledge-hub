@@ -12,7 +12,11 @@ import 'package:scse_knowledge_hub_app/widget/no_glow_scroll.dart';
 import 'package:scse_knowledge_hub_app/widget/question_card_widget.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final List<String>? selectedTopics;
+  const HomePage({
+    Key? key,
+    this.selectedTopics,
+  }) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -30,6 +34,7 @@ class _HomePageState extends State<HomePage>
   bool _isSliverAppBarExpanded = false;
   bool _isLoading = false;
   int _currentTab = 0;
+  bool _isFilter = false;
 
   @override
   void initState() {
@@ -39,9 +44,11 @@ class _HomePageState extends State<HomePage>
       _welcomeText = "Hi, ${_userProvider.user.name}";
       _titleText = _welcomeText;
       _isLoading = true;
+
       setState(() {});
       await _questionProvider.getQuestions();
       log("Number of questions: ${_questionProvider.listOfQuestions.length}");
+      _isFilter = _questionProvider.getFilteredQuestions(widget.selectedTopics);
       _isLoading = false;
       setState(() {});
     });
@@ -217,24 +224,31 @@ class _HomePageState extends State<HomePage>
                                   return Padding(
                                       padding: const EdgeInsets.all(10),
                                       child: QuestionCard(
-                                        question: _questionProvider
-                                            .listOfQuestions[index],
+                                        question: _isFilter
+                                            ? _questionProvider
+                                                .listOfFilteredQuestions[index]
+                                            : _questionProvider
+                                                .listOfQuestions[index],
                                         onTap: () {
                                           {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        QuestionDetailsPage(
-                                                            question:
-                                                                _questionProvider
-                                                                        .listOfQuestions[
-                                                                    index])));
+                                            Navigator.of(context).push(MaterialPageRoute(
+                                                builder: (context) =>
+                                                    QuestionDetailsPage(
+                                                        question: _isFilter
+                                                            ? _questionProvider
+                                                                    .listOfFilteredQuestions[
+                                                                index]
+                                                            : _questionProvider
+                                                                    .listOfQuestions[
+                                                                index])));
                                           }
                                         },
                                       ));
                                 },
-                                childCount:
-                                    _questionProvider.listOfQuestions.length,
+                                childCount: _isFilter
+                                    ? _questionProvider
+                                        .listOfFilteredQuestions.length
+                                    : _questionProvider.listOfQuestions.length,
                               )
                             : SliverChildBuilderDelegate(
                                 (BuildContext context, int index) {
