@@ -29,10 +29,10 @@ class QuestionProvider extends ChangeNotifier {
     _listOfUserRepliedQuestions = listOfUserQuestions;
   }
 
-  List<String> _selectedTopic = [];
-  List<String> get selectedTopic => _selectedTopic;
-  set selectedTopic(List<String> selectedTopic) {
-    _selectedTopic = selectedTopic;
+  List<String> _selectedTopics = [];
+  List<String> get selectedTopics => _selectedTopics;
+  set selectedTopics(List<String> selectedTopics) {
+    _selectedTopics = selectedTopics;
   }
 
   List<Question> _listOfFilteredQuestions = [];

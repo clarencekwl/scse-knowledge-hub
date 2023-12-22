@@ -19,6 +19,15 @@ class NavBar extends StatefulWidget {
 class _NavBarState extends State<NavBar> {
   late UserProvider _userProvider;
   late QuestionProvider _questionProvider;
+  List<String> _tempSelectedTopics = [];
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      _tempSelectedTopics = _questionProvider.selectedTopics;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,17 +125,16 @@ class _NavBarState extends State<NavBar> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15))),
                           onPressed: () {
-                            log('Selected topics: ${_questionProvider.selectedTopic}');
+                            log('Selected topics: $_tempSelectedTopics');
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                   builder: (context) => HomePage(
-                                      selectedTopics:
-                                          _questionProvider.selectedTopic)),
+                                      selectedTopics: _tempSelectedTopics)),
                             );
                           },
                           child: Text("Filter"),
                         ),
-                        if (_questionProvider.selectedTopic.isNotEmpty)
+                        if (_questionProvider.selectedTopics.isNotEmpty)
                           Container(
                             margin: EdgeInsets.only(left: 10),
                             child: ElevatedButton(
@@ -135,7 +143,8 @@ class _NavBarState extends State<NavBar> {
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15))),
                               onPressed: () {
-                                _questionProvider.selectedTopic.clear();
+                                _tempSelectedTopics = [];
+                                _questionProvider.selectedTopics = [];
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (context) => HomePage()),
@@ -161,20 +170,20 @@ class _NavBarState extends State<NavBar> {
                             style: TextStyle(color: Colors.white),
                           ),
                           value:
-                              _questionProvider.selectedTopic.contains(topic),
+                              _questionProvider.selectedTopics.contains(topic),
                           onChanged: (value) {
                             if (value != null) {
                               if (value) {
-                                _questionProvider.selectedTopic.add(topic);
+                                _tempSelectedTopics.add(topic);
                               } else {
-                                _questionProvider.selectedTopic.remove(topic);
+                                _tempSelectedTopics.remove(topic);
                               }
                             }
                             setState(() {});
                           },
                           activeColor: Colors.blueGrey,
                           tileColor:
-                              _questionProvider.selectedTopic.contains(topic)
+                              _questionProvider.selectedTopics.contains(topic)
                                   ? Colors.blueGrey.withOpacity(0.3)
                                   : null,
                         );

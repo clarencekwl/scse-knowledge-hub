@@ -67,6 +67,12 @@ class _HomePageState extends State<HomePage>
   }
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _questionProvider = Provider.of(context);
     _userProvider = Provider.of(context);
