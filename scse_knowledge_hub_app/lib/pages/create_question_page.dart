@@ -100,7 +100,8 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                                 title: _titleTextController.text,
                                 description: _descriptionTextController.text,
                                 userID: _userProvider.user.id,
-                                anonymous: _isAnonymous);
+                                anonymous: _isAnonymous,
+                                topic: _selectedTopic);
                             _questionProvider.removeAllAttachments();
                             await _questionProvider.clearImageCache();
                             _isLoading = false;
@@ -265,6 +266,14 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                             height: 10,
                           ),
                           DropdownButtonFormField<String>(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please select a topic";
+                              }
+                              return null;
+                            },
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             value: null,
                             hint: Text("Select a Topic..."),
                             onChanged: (value) {

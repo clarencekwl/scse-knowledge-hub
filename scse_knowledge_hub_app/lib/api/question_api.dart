@@ -22,7 +22,7 @@ Future<ListOfQuestionReponse?> getQuestionsFromDB() async {
       return null;
     }
   } catch (e) {
-    log(e.toString());
+    log('Error fetching questions: $e');
     return null;
   }
 }
@@ -45,7 +45,7 @@ Future<ListOfUserQuestionReponse?> getUserQuestionsFromDB(
       return null;
     }
   } catch (e) {
-    log(e.toString());
+    log('Error fetching questions: $e');
     return null;
   }
 }
@@ -103,9 +103,9 @@ Future<void> createQuestion({
   required int numberOfReplies,
   required FieldValue timestamp,
   required bool anonymous,
+  required String topic,
   required List<Uint8List> images,
 }) async {
-  log("size of image: ${images.length}");
   Map<String, dynamic> data = {
     "title": title,
     "description": description,
@@ -114,6 +114,7 @@ Future<void> createQuestion({
     "userId": userID,
     "timestamp": timestamp,
     "anonymous": anonymous,
+    "topic": topic,
   };
 
   try {
@@ -143,15 +144,21 @@ Future<void> createQuestion({
   }
 }
 
-Future<void> updateQuestion(
-    {required String questionId,
-    required String userId,
-    required String title,
-    required String description,
-    required bool anonymous}) async {
+Future<void> updateQuestion({
+  required String questionId,
+  required String userId,
+  required String title,
+  required String description,
+  required bool anonymous,
+  required String topic,
+}) async {
   try {
-    await db.collection("questions").doc(questionId).update(
-        {"title": title, "description": description, "anonymous": anonymous});
+    await db.collection("questions").doc(questionId).update({
+      "title": title,
+      "description": description,
+      "anonymous": anonymous,
+      "topic": topic,
+    });
     await db
         .collection("users")
         .doc(userId)
@@ -160,7 +167,8 @@ Future<void> updateQuestion(
         .update({
       "title": title,
       "description": description,
-      "anonymous": anonymous
+      "anonymous": anonymous,
+      "topic": topic,
     });
 
     log('Question updated successfully');

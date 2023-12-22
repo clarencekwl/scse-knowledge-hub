@@ -13,10 +13,13 @@ class Styles {
   static List<String> listOfTopics = [
     "Algorithms",
     "Artificial Intelligence",
+    "Coding Challenges",
     "Cyber Security",
     "Data Analytics",
     "Database Management",
+    "Data Science",
     "Hardware",
+    "Internships/Jobs",
     "Machine Learning",
     "Networking",
     "Object-Oriented Programming",

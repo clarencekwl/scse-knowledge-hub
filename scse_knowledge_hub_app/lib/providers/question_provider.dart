@@ -80,17 +80,20 @@ class QuestionProvider extends ChangeNotifier {
     required String description,
     required String userID,
     required bool anonymous,
+    required String topic,
   }) async {
     startLoading();
     await QuestionAPI.createQuestion(
-        title: title,
-        description: description,
-        userID: userID,
-        likes: 0,
-        numberOfReplies: 0,
-        timestamp: FieldValue.serverTimestamp(),
-        anonymous: anonymous,
-        images: _listOfAttachments);
+      title: title,
+      description: description,
+      userID: userID,
+      likes: 0,
+      numberOfReplies: 0,
+      timestamp: FieldValue.serverTimestamp(),
+      anonymous: anonymous,
+      topic: topic,
+      images: _listOfAttachments,
+    );
     await getQuestions();
     await getUserQuestions(userID);
     stopLoading();
@@ -102,6 +105,7 @@ class QuestionProvider extends ChangeNotifier {
     required String title,
     required String description,
     required bool anonymous,
+    required String topic,
   }) async {
     startLoading();
     await QuestionAPI.updateQuestion(
@@ -109,7 +113,8 @@ class QuestionProvider extends ChangeNotifier {
         userId: userId,
         title: title,
         description: description,
-        anonymous: anonymous);
+        anonymous: anonymous,
+        topic: topic);
     await getQuestions();
     await getUserQuestions(userId);
     stopLoading();

@@ -1,4 +1,4 @@
-import 'dart:developer';
+// import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -355,10 +355,19 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                                 overflow: TextOverflow.ellipsis,
                                 fontSize: 14)),
                       ),
-                Text(
-                  Styles.formatTimeDifference(
-                      DateTime.now().difference(widget.question.timestamp)),
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      Styles.formatTimeDifference(
+                          DateTime.now().difference(widget.question.timestamp)),
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                    Text(
+                      widget.question.topic,
+                      style: TextStyle(color: Colors.blueGrey, fontSize: 12),
+                    ),
+                  ],
                 ),
               ],
             ),

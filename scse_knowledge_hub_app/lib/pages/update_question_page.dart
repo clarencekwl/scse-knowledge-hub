@@ -10,10 +10,10 @@ import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/default_button.dart';
 import 'package:scse_knowledge_hub_app/widget/image_painter_page.dart';
-import 'package:scse_knowledge_hub_app/widget/image_preview_box_widget.dart';
 import 'package:scse_knowledge_hub_app/widget/no_glow_scroll.dart';
-import 'package:scse_knowledge_hub_app/widget/open_images.dart';
-import 'package:scse_knowledge_hub_app/widget/warning_dialog_widget.dart';
+// import 'package:scse_knowledge_hub_app/widget/image_preview_box_widget.dart';
+// import 'package:scse_knowledge_hub_app/widget/open_images.dart';
+// import 'package:scse_knowledge_hub_app/widget/warning_dialog_widget.dart';
 
 class UpdateQuestionPage extends StatefulWidget {
   final Question question;
@@ -36,7 +36,7 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
   bool _isFormValid = true;
   bool _isLoading = false;
   late bool _isAnonymous;
-  late String _selectedTopic;
+  String _selectedTopic = '';
 
   @override
   void initState() {
@@ -47,6 +47,7 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
     _titleTextController.text = widget.question.title;
     _descriptionTextController.text = widget.question.description;
     _isAnonymous = widget.question.anonymous;
+    _selectedTopic = widget.question.topic;
   }
 
   @override
@@ -99,11 +100,13 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                               title: _titleTextController.text,
                               description: _descriptionTextController.text,
                               anonymous: _isAnonymous,
+                              topic: _selectedTopic,
                             );
                             widget.question.title = _titleTextController.text;
                             widget.question.description =
                                 _descriptionTextController.text;
                             widget.question.anonymous = _isAnonymous;
+                            widget.question.topic = _selectedTopic;
                             // _questionProvider.removeAllAttachments();
                             // _questionProvider.clearImageCache();
                             _isLoading = false;
@@ -127,10 +130,11 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                   color: Colors.black.withOpacity(0.3),
                   child: Center(
                     child: SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: CircularProgressIndicator(
-                            color: Styles.primaryBlueColor)),
+                      height: 50,
+                      width: 50,
+                      child: CircularProgressIndicator(
+                          color: Styles.primaryBlueColor),
+                    ),
                   ))
           ],
         ));
@@ -257,7 +261,14 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                   height: 10,
                 ),
                 DropdownButtonFormField<String>(
-                  value: null,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please select a topic";
+                    }
+                    return null;
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  value: _selectedTopic == '' ? null : _selectedTopic,
                   hint: Text("Select a Topic..."),
                   onChanged: (value) {
                     _selectedTopic = value!;

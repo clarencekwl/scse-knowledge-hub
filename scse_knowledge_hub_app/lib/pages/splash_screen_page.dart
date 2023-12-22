@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:scse_knowledge_hub_app/pages/home_page.dart';
+// import 'package:scse_knowledge_hub_app/pages/home_page.dart';
 
 class SplashScreenPage extends StatefulWidget {
   static const String routeName = '/splash';

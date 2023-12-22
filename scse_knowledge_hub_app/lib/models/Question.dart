@@ -11,6 +11,7 @@ class Question {
   DateTime timestamp;
   bool anonymous;
   List<String> imageUrls;
+  String topic;
 
   Question({
     required this.id,
@@ -23,6 +24,7 @@ class Question {
     required this.timestamp,
     required this.anonymous,
     required this.imageUrls,
+    required this.topic,
   });
 
   factory Question.fromJson(Map<String, dynamic> json, String docId) {
@@ -40,6 +42,7 @@ class Question {
       timestamp: json['timestamp'].toDate(),
       anonymous: json['anonymous'],
       imageUrls: imageUrls,
+      topic: json['topic'] ?? '',
     );
   }
 
@@ -65,6 +68,7 @@ class Question {
       timestamp: question.timestamp,
       anonymous: question.anonymous,
       imageUrls: question.imageUrls,
+      topic: question.topic,
     );
   }
 
