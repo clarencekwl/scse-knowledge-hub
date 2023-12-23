@@ -127,7 +127,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
 
                             await _questionProvider
                                 .deleteQuestion(
-                              docId: widget.question.id,
+                              questionId: widget.question.id,
                               userId: _userProvider.user.id,
                             )
                                 .then((_) {

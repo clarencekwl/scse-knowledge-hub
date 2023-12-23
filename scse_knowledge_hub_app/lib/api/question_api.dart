@@ -106,6 +106,7 @@ Future<void> createQuestion({
   required String topic,
   required List<Uint8List> images,
 }) async {
+  List<String> imageUrls = [];
   Map<String, dynamic> data = {
     "title": title,
     "description": description,
@@ -134,11 +135,10 @@ Future<void> createQuestion({
 
     if (images.isNotEmpty) {
       // Call uploadImages with the question ID and images
-      List<String> imageUrls = await uploadImages(questionDocRef.id, images);
-
-      // Call updateQuestionWithImageUrls to update the Firestore document with image URLs
-      await updateQuestionWithImageUrls(userID, questionDocRef.id, imageUrls);
+      imageUrls = await uploadImages(questionDocRef.id, images);
     }
+    // Call updateQuestionWithImageUrls to update the Firestore document with image URLs
+    await updateQuestionWithImageUrls(userID, questionDocRef.id, imageUrls);
   } catch (e) {
     log('Error creating question: $e');
   }
@@ -178,10 +178,10 @@ Future<void> updateQuestion({
 }
 
 Future<void> deleteQuestion(
-    {required String docId, required String userId}) async {
+    {required String questionId, required String userId}) async {
   try {
     // Get the list of image URLs associated with the question
-    final questionDoc = await db.collection('questions').doc(docId).get();
+    final questionDoc = await db.collection('questions').doc(questionId).get();
     final List<dynamic>? imageUrls = questionDoc['image_urls'];
 
     // Delete images from Firebase Cloud Storage
@@ -190,14 +190,14 @@ Future<void> deleteQuestion(
     }
 
     // Delete from 'questions' collection
-    await db.collection('questions').doc(docId).delete();
+    await db.collection('questions').doc(questionId).delete();
 
     // Delete from user's 'questions' subcollection
     await db
         .collection('users')
         .doc(userId)
         .collection('questions')
-        .doc(docId)
+        .doc(questionId)
         .delete();
 
     log('Question and associated images deleted successfully');
