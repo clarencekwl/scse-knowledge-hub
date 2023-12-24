@@ -1,5 +1,5 @@
 import 'dart:developer';
-
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/pages/create_question_page.dart';
@@ -27,7 +27,9 @@ class _HomePageState extends State<HomePage>
   late QuestionProvider _questionProvider;
   late UserProvider _userProvider;
   ScrollController _scrollController = ScrollController();
+  SearchController _searchController = SearchController();
   late TabController _tabController;
+
   late String _welcomeText = "";
   late String _titleText = "";
   late bool _currentSliverAppBarExpandedStatus;
@@ -177,7 +179,61 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
                     ),
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _SliverAppBarDelegate(
+                        minHeight: 55,
+                        maxHeight: 55,
+                        child: Container(
+                          padding: const EdgeInsets.only(
+                              left: 10.0, top: 10, bottom: 6),
+                          color: Colors.white,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchController,
+                                  decoration: InputDecoration(
+                                    labelText: _questionProvider
+                                            .listOfFilteredQuestions.isEmpty
+                                        ? 'Search'
+                                        : 'Search filtered questions',
+                                    prefixIcon: Icon(Icons.search),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                          width: 1.5,
+                                          color: Styles.primaryLightBlueColor,
+                                        )),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1.5,
+                                          color: Styles.primaryLightBlueColor),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.clear),
+                                onPressed: () {
+                                  _searchController.clear();
 
+                                  FocusScopeNode currentFocus =
+                                      FocusScope.of(context);
+
+                                  if (!currentFocus.hasPrimaryFocus) {
+                                    currentFocus.unfocus();
+                                  }
+
+                                  // Implement your logic to clear the search results or reload the original data
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                     // TabBar
                     SliverPersistentHeader(
                       pinned: true,
@@ -223,6 +279,7 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
                     ),
+
                     SliverList(
                         delegate: _currentTab == 0
                             ? SliverChildBuilderDelegate(
@@ -337,5 +394,36 @@ class CustomSliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
     return false;
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => math.max(maxHeight, minHeight);
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight ||
+        child != oldDelegate.child;
   }
 }

@@ -111,7 +111,7 @@ class _NavBarState extends State<NavBar> {
                     color: Colors.white,
                   ),
                   title: Text(
-                    "Filter by Topics",
+                    "View by Topics",
                     style: TextStyle(color: Colors.white),
                   ),
                   children: [
