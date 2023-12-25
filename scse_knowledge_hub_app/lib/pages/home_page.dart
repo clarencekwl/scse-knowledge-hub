@@ -78,282 +78,290 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     _questionProvider = Provider.of(context);
     _userProvider = Provider.of(context);
-    return Scaffold(
-      floatingActionButton: _isSliverAppBarExpanded
-          ? FloatingActionButton(
-              onPressed: () async {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => CreateQuestionPage()));
-              },
-              elevation: 6,
-              backgroundColor: Styles.primaryBlueColor,
-              child: Icon(Icons.add, color: Colors.white),
-            )
-          : null,
-      drawer: NavBar(),
-      body: SafeArea(
-        top: false,
-        child: Stack(
-          children: [
-            ScrollConfiguration(
-              behavior: NoGlowScrollBehavior(),
-              child: StretchingOverscrollIndicator(
-                axisDirection: AxisDirection.down,
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  slivers: <Widget>[
-                    SliverAppBar(
-                      pinned: true,
-                      backgroundColor: Styles.primaryBlueColor,
-                      expandedHeight: Styles.kScreenHeight(context) * 0.16,
-                      flexibleSpace: FlexibleSpaceBar(
-                        centerTitle: false,
-                        titlePadding: _isSliverAppBarExpanded
-                            ? EdgeInsets.only(top: 10, bottom: 15, left: 50)
-                            : EdgeInsets.only(bottom: 20, left: 25),
-                        title: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _titleText,
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
-                              overflow: TextOverflow.ellipsis,
-                              textScaleFactor: 1,
-                            ),
-                            SizedBox(height: 2.5),
-                            if (false == _isSliverAppBarExpanded)
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        floatingActionButton: _isSliverAppBarExpanded
+            ? FloatingActionButton(
+                onPressed: () async {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => CreateQuestionPage()));
+                },
+                elevation: 6,
+                backgroundColor: Styles.primaryBlueColor,
+                child: Icon(Icons.add, color: Colors.white),
+              )
+            : null,
+        drawer: NavBar(),
+        body: SafeArea(
+          top: false,
+          child: Stack(
+            children: [
+              ScrollConfiguration(
+                behavior: NoGlowScrollBehavior(),
+                child: StretchingOverscrollIndicator(
+                  axisDirection: AxisDirection.down,
+                  child: CustomScrollView(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: <Widget>[
+                      SliverAppBar(
+                        pinned: true,
+                        backgroundColor: Styles.primaryBlueColor,
+                        expandedHeight: Styles.kScreenHeight(context) * 0.16,
+                        flexibleSpace: FlexibleSpaceBar(
+                          centerTitle: false,
+                          titlePadding: _isSliverAppBarExpanded
+                              ? EdgeInsets.only(top: 10, bottom: 15, left: 50)
+                              : EdgeInsets.only(bottom: 20, left: 25),
+                          title: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               Text(
-                                "Share your knowledge or ask for help!",
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.5),
-                                  fontSize: 8,
-                                ),
+                                _titleText,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis,
                                 textScaleFactor: 1,
                               ),
-                          ],
-                        ),
-                        background: Stack(
-                          children: [
-                            Container(
-                              color: Styles.primaryBlueColor,
-                            ),
-                            Positioned(
-                                top: 0,
-                                right: 0,
-                                child: Container(
-                                  width: Styles.kScreenWidth(context) * 0.4,
-                                  height: Styles.kScreenHeight(context) * 0.15,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.withOpacity(0.1),
-                                    borderRadius: BorderRadius.only(
-                                        bottomLeft: Radius.circular(50)),
+                              SizedBox(height: 2.5),
+                              if (false == _isSliverAppBarExpanded)
+                                Text(
+                                  "Share your knowledge or ask for help!",
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.5),
+                                    fontSize: 8,
                                   ),
-                                )),
-                            if (false == _isSliverAppBarExpanded)
-                              Positioned(
-                                top: 40,
-                                right: 20,
-                                child: ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                        elevation: 6,
-                                        backgroundColor:
-                                            Styles.primaryGreyColor,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(300))),
-                                    onPressed: () async {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  CreateQuestionPage()));
-                                    },
-                                    icon: const Icon(Icons.question_mark),
-                                    label: Text("Ask")),
+                                  textScaleFactor: 1,
+                                ),
+                            ],
+                          ),
+                          background: Stack(
+                            children: [
+                              Container(
+                                color: Styles.primaryBlueColor,
                               ),
-                          ],
+                              Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: Styles.kScreenWidth(context) * 0.4,
+                                    height:
+                                        Styles.kScreenHeight(context) * 0.15,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.withOpacity(0.1),
+                                      borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(50)),
+                                    ),
+                                  )),
+                              if (false == _isSliverAppBarExpanded)
+                                Positioned(
+                                  top: 40,
+                                  right: 20,
+                                  child: ElevatedButton.icon(
+                                      style: ElevatedButton.styleFrom(
+                                          elevation: 6,
+                                          backgroundColor:
+                                              Styles.primaryGreyColor,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(300))),
+                                      onPressed: () async {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    CreateQuestionPage()));
+                                      },
+                                      icon: const Icon(Icons.question_mark),
+                                      label: Text("Ask")),
+                                ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _SliverAppBarDelegate(
-                        minHeight: 55,
-                        maxHeight: 55,
-                        child: Container(
-                          padding: const EdgeInsets.only(
-                              left: 10.0, top: 10, bottom: 6),
-                          color: Colors.white,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: _searchController,
-                                  decoration: InputDecoration(
-                                    labelText: _questionProvider
-                                            .listOfFilteredQuestions.isEmpty
-                                        ? 'Search'
-                                        : 'Search filtered questions',
-                                    prefixIcon: Icon(Icons.search),
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _SliverAppBarDelegate(
+                          minHeight: 55,
+                          maxHeight: 55,
+                          child: Container(
+                            padding: const EdgeInsets.only(
+                                left: 10.0, top: 10.0, bottom: 6.0),
+                            color: Colors.white,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: _searchController,
+                                    decoration: InputDecoration(
+                                      labelText: _questionProvider
+                                              .listOfFilteredQuestions.isEmpty
+                                          ? 'Search'
+                                          : 'Search filtered questions',
+                                      prefixIcon: Icon(Icons.search),
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide: BorderSide(
+                                            width: 1.5,
+                                            color: Styles.primaryLightBlueColor,
+                                          )),
+                                      focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                          width: 1.5,
-                                          color: Styles.primaryLightBlueColor,
-                                        )),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          width: 1.5,
-                                          color: Styles.primaryLightBlueColor),
-                                      borderRadius: BorderRadius.circular(15),
+                                            width: 1.5,
+                                            color:
+                                                Styles.primaryLightBlueColor),
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
                                     ),
                                   ),
                                 ),
+                                IconButton(
+                                  icon: Icon(Icons.clear),
+                                  onPressed: () {
+                                    _searchController.clear();
+
+                                    FocusScopeNode currentFocus =
+                                        FocusScope.of(context);
+
+                                    if (!currentFocus.hasPrimaryFocus) {
+                                      currentFocus.unfocus();
+                                    }
+
+                                    // Implement your logic to clear the search results or reload the original data
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      // TabBar
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: CustomSliverAppBarDelegate(
+                          tabBar: TabBar(
+                            labelStyle: TextStyle(
+                              color: Styles.primaryBlueColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                            labelColor: Styles.primaryBlueColor,
+                            unselectedLabelColor: Colors.grey,
+                            indicatorColor: Styles.primaryBlueColor,
+                            controller: _tabController,
+                            tabs: const [
+                              Tab(
+                                icon: Icon(Icons.person,
+                                    color: Colors.transparent, size: 0),
+                                iconMargin: EdgeInsets.all(0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.home_outlined),
+                                    SizedBox(width: 8),
+                                    Text('Home'),
+                                  ],
+                                ),
                               ),
-                              IconButton(
-                                icon: Icon(Icons.clear),
-                                onPressed: () {
-                                  _searchController.clear();
-
-                                  FocusScopeNode currentFocus =
-                                      FocusScope.of(context);
-
-                                  if (!currentFocus.hasPrimaryFocus) {
-                                    currentFocus.unfocus();
-                                  }
-
-                                  // Implement your logic to clear the search results or reload the original data
-                                },
+                              Tab(
+                                icon: Icon(Icons.person,
+                                    color: Colors.transparent, size: 0),
+                                iconMargin: EdgeInsets.all(0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.person_outlined),
+                                    SizedBox(width: 8),
+                                    Text('Your Questions'),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                    ),
-                    // TabBar
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: CustomSliverAppBarDelegate(
-                        tabBar: TabBar(
-                          labelStyle: TextStyle(
-                            color: Styles.primaryBlueColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                          labelColor: Styles.primaryBlueColor,
-                          unselectedLabelColor: Colors.grey,
-                          indicatorColor: Styles.primaryBlueColor,
-                          controller: _tabController,
-                          tabs: const [
-                            Tab(
-                              icon: Icon(Icons.person,
-                                  color: Colors.transparent, size: 0),
-                              iconMargin: EdgeInsets.all(0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.home_outlined),
-                                  SizedBox(width: 8),
-                                  Text('Home'),
-                                ],
-                              ),
-                            ),
-                            Tab(
-                              icon: Icon(Icons.person,
-                                  color: Colors.transparent, size: 0),
-                              iconMargin: EdgeInsets.all(0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.person_outlined),
-                                  SizedBox(width: 8),
-                                  Text('Your Questions'),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
 
-                    SliverList(
-                        delegate: _currentTab == 0
-                            ? SliverChildBuilderDelegate(
-                                (BuildContext context, int index) {
-                                  return Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: QuestionCard(
-                                        question: _isFilter
-                                            ? _questionProvider
-                                                .listOfFilteredQuestions[index]
-                                            : _questionProvider
-                                                .listOfQuestions[index],
-                                        onTap: () {
-                                          {
-                                            Navigator.of(context).push(MaterialPageRoute(
-                                                builder: (context) =>
-                                                    QuestionDetailsPage(
-                                                        question: _isFilter
-                                                            ? _questionProvider
-                                                                    .listOfFilteredQuestions[
-                                                                index]
-                                                            : _questionProvider
-                                                                    .listOfQuestions[
-                                                                index])));
-                                          }
-                                        },
-                                      ));
-                                },
-                                childCount: _isFilter
-                                    ? _questionProvider
-                                        .listOfFilteredQuestions.length
-                                    : _questionProvider.listOfQuestions.length,
-                              )
-                            : SliverChildBuilderDelegate(
-                                (BuildContext context, int index) {
-                                  return Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: QuestionCard(
-                                        question: _questionProvider
-                                            .listOfUserQuestions[index],
-                                        onTap: () {
-                                          {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        QuestionDetailsPage(
-                                                            question:
-                                                                _questionProvider
-                                                                        .listOfUserQuestions[
-                                                                    index])));
-                                          }
-                                        },
-                                      ));
-                                },
-                                childCount: _questionProvider
-                                    .listOfUserQuestions.length,
-                              )),
-                  ],
+                      SliverList(
+                          delegate: _currentTab == 0
+                              ? SliverChildBuilderDelegate(
+                                  (BuildContext context, int index) {
+                                    return Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: QuestionCard(
+                                          question: _isFilter
+                                              ? _questionProvider
+                                                      .listOfFilteredQuestions[
+                                                  index]
+                                              : _questionProvider
+                                                  .listOfQuestions[index],
+                                          onTap: () {
+                                            {
+                                              Navigator.of(context).push(MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      QuestionDetailsPage(
+                                                          question: _isFilter
+                                                              ? _questionProvider
+                                                                      .listOfFilteredQuestions[
+                                                                  index]
+                                                              : _questionProvider
+                                                                      .listOfQuestions[
+                                                                  index])));
+                                            }
+                                          },
+                                        ));
+                                  },
+                                  childCount: _isFilter
+                                      ? _questionProvider
+                                          .listOfFilteredQuestions.length
+                                      : _questionProvider
+                                          .listOfQuestions.length,
+                                )
+                              : SliverChildBuilderDelegate(
+                                  (BuildContext context, int index) {
+                                    return Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: QuestionCard(
+                                          question: _questionProvider
+                                              .listOfUserQuestions[index],
+                                          onTap: () {
+                                            {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          QuestionDetailsPage(
+                                                              question:
+                                                                  _questionProvider
+                                                                          .listOfUserQuestions[
+                                                                      index])));
+                                            }
+                                          },
+                                        ));
+                                  },
+                                  childCount: _questionProvider
+                                      .listOfUserQuestions.length,
+                                )),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            if (_isLoading)
-              Container(
-                  height: double.infinity,
-                  width: double.infinity,
-                  color: Colors.black.withOpacity(0.3),
-                  child: Center(
-                    child: SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: CircularProgressIndicator(
-                            color: Styles.primaryBlueColor)),
-                  ))
-          ],
+              if (_isLoading)
+                Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    color: Colors.black.withOpacity(0.3),
+                    child: Center(
+                      child: SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: CircularProgressIndicator(
+                              color: Styles.primaryBlueColor)),
+                    ))
+            ],
+          ),
         ),
       ),
     );
@@ -368,6 +376,8 @@ class _HomePageState extends State<HomePage>
       _isLoading = false;
       log("length of list: ${_questionProvider.listOfUserQuestions.length}");
     }
+    FocusManager.instance.primaryFocus?.unfocus();
+    _searchController.clear();
     _scrollController.animateTo(0,
         duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
     setState(() {});
@@ -386,10 +396,10 @@ class CustomSliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => kToolbarHeight;
+  double get maxExtent => 40;
 
   @override
-  double get minExtent => kToolbarHeight;
+  double get minExtent => 40;
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
