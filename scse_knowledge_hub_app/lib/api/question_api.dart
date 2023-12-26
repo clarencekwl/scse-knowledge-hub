@@ -212,8 +212,7 @@ Future<void> deleteQuestion(
 Future<ListOfQuestionRepliesReponse?> getAllReplies(
     {required String questionId}) async {
   try {
-    CollectionReference questionsCollection =
-        FirebaseFirestore.instance.collection('questions');
+    CollectionReference questionsCollection = db.collection('questions');
     DocumentReference questionRef = questionsCollection.doc(questionId);
 
     QuerySnapshot replySnapshot = await questionRef
@@ -335,6 +334,34 @@ Future<void> _updateReplies(
   });
 }
 //! END <<FUCNTIONS FOR REPLY>> END
+
+//! START <<FUNCTIONS FOR SEARCH>> END
+
+Future<ListOfSearchReponse?> searchQuestions(
+    {required String searchString}) async {
+  try {
+    // Use 'where' clause to filter based on search term
+    QuerySnapshot snapshot = await db
+        .collection('questions')
+        .where('likes', isGreaterThanOrEqualTo: 0)
+        .get();
+    for (var doc in snapshot.docs) {
+      log('Document ID: ${doc.id}');
+      log('Title: ${doc['title']}');
+    }
+
+    if (snapshot.docs.isNotEmpty) {
+      return ListOfSearchReponse.fromJson(snapshot.docs);
+    } else {
+      return null;
+    }
+  } catch (e) {
+    log('Error fetching questions: $e');
+    return null;
+  }
+}
+
+//! END <<FUNCTIONS FOR SEARCH>> END
 
 //! START <<FUNCTIONS FOR ATTACHMENTS>> START
 Future<List<String>> uploadImages(

@@ -41,6 +41,12 @@ class QuestionProvider extends ChangeNotifier {
     _listOfFilteredQuestions = listOfFilteredQuestions;
   }
 
+  List<Question> _listOfSearchQuestions = [];
+  List<Question> get listOfSearchQuestions => _listOfSearchQuestions;
+  set listOfSearchQuestions(List<Question> listOfSearchQuestions) {
+    _listOfSearchQuestions = listOfSearchQuestions;
+  }
+
   List<Reply> _listOfReplies = [];
   List<Reply> get listOfReplies => _listOfReplies;
   set listOfReplies(List<Reply> listOfReplies) {
@@ -210,6 +216,21 @@ class QuestionProvider extends ChangeNotifier {
     stopLoading();
   }
 
+  Future<void> searchQuestions({required String searchString}) async {
+    startLoading();
+
+// Convert the search input to lowercase for case-insensitive search
+    String searchTermLower = searchString.toLowerCase();
+
+    // Use the where method to filter the list based on the search input
+    _listOfSearchQuestions = _listOfQuestions.where((question) {
+      // Check if the title contains the search input
+      return question.title.toLowerCase().contains(searchTermLower);
+    }).toList();
+    stopLoading();
+  }
+
+  //! FUNCTIONS FOR ATTACHEMENTS
   List<Uint8List> _listOfAttachments = [];
   List<Uint8List> get listOfAttachments => _listOfAttachments;
   set listOfAttachments(List<Uint8List> listOfAttachements) {
@@ -217,7 +238,6 @@ class QuestionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //! FUNCTIONS FOR ATTACHEMENTS
   addAttachment(Uint8List annotatedImage) {
     _listOfAttachments.add(annotatedImage);
     log("image added, size of listOfAttachments: ${_listOfAttachments.length}");

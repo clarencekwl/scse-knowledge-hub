@@ -11,8 +11,8 @@ class ListOfQuestionReponse {
       List<QueryDocumentSnapshot<Map<String, dynamic>>> json) async {
     final List<Question> listOfQuestions = [];
 
-    for (QueryDocumentSnapshot<Map<String, dynamic>> e in json) {
-      final Question question = Question.fromJson(e.data(), e.id);
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc in json) {
+      final Question question = Question.fromJson(doc.data(), doc.id);
       final Question questionWithUserName =
           await Question.createWithUserName(question);
       listOfQuestions.add(questionWithUserName);
@@ -82,5 +82,22 @@ class ListOfQuestionRepliesReponse {
     }
     return ListOfQuestionRepliesReponse(
         listOfQuestionReplies: listOfQuestionReplies);
+  }
+}
+
+class ListOfSearchReponse {
+  List<Question> listOfSearchQuestions;
+
+  ListOfSearchReponse({required this.listOfSearchQuestions});
+
+  static Future<ListOfSearchReponse> fromJson(var json) async {
+    List<Question> listOfSearchQuestions = [];
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc in json) {
+      Question question = Question.fromJson(doc.data(), doc.id);
+      Question questionWithUserName =
+          await Question.createWithUserName(question);
+      listOfSearchQuestions.add(questionWithUserName);
+    }
+    return ListOfSearchReponse(listOfSearchQuestions: listOfSearchQuestions);
   }
 }
