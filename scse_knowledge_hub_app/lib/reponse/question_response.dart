@@ -4,11 +4,13 @@ import 'package:scse_knowledge_hub_app/models/Reply.dart';
 
 class ListOfQuestionReponse {
   List<Question> listOfQuestions;
-
-  ListOfQuestionReponse({required this.listOfQuestions});
+  DocumentSnapshot lastDocument;
+  ListOfQuestionReponse(
+      {required this.listOfQuestions, required this.lastDocument});
 
   static Future<ListOfQuestionReponse> fromJson(
-      List<QueryDocumentSnapshot<Map<String, dynamic>>> json) async {
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> json,
+      DocumentSnapshot lastDocument) async {
     final List<Question> listOfQuestions = [];
 
     for (QueryDocumentSnapshot<Map<String, dynamic>> doc in json) {
@@ -18,7 +20,8 @@ class ListOfQuestionReponse {
       listOfQuestions.add(questionWithUserName);
     }
 
-    return ListOfQuestionReponse(listOfQuestions: listOfQuestions);
+    return ListOfQuestionReponse(
+        listOfQuestions: listOfQuestions, lastDocument: lastDocument);
   }
 }
 

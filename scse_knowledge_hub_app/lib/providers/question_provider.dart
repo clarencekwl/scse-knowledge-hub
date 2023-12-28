@@ -53,14 +53,25 @@ class QuestionProvider extends ChangeNotifier {
     _listOfReplies = listOfReplies;
   }
 
-  Future<void> getQuestions() async {
+  DocumentSnapshot? _lastDocument;
+
+  bool _isLastPage = false;
+  bool get isLastPage => _isLastPage;
+
+  Future<void> getQuestions({bool onRefreshed = false}) async {
     startLoading();
-    ListOfQuestionReponse? res = await QuestionAPI.getQuestionsFromDB();
-    if (null == res) {
-      _listOfQuestions = [];
-    } else {
-      _listOfQuestions = res.listOfQuestions;
+    if (onRefreshed) {
+      resetListPage();
     }
+    ListOfQuestionReponse? res =
+        await QuestionAPI.getQuestionsFromDB(lastDocument: _lastDocument);
+    if (!_isLastPage && res != null) {
+      _handlePagination(res);
+    } else {
+      _isLastPage = true;
+      log("there are no other questions to be fetched");
+    }
+
     stopLoading();
   }
 
@@ -74,6 +85,15 @@ class QuestionProvider extends ChangeNotifier {
       _listOfUserQuestions = res.listOfUserQuestions;
     }
     stopLoading();
+  }
+
+  void _handlePagination(var res) {
+    _lastDocument = res.lastDocument;
+    if (_listOfQuestions.isEmpty) {
+      _listOfQuestions = res.listOfQuestions;
+    } else {
+      _listOfQuestions.addAll(res.listOfQuestions);
+    }
   }
 
   bool getFilteredQuestions(List<String>? selectedTopics) {
@@ -323,6 +343,13 @@ class QuestionProvider extends ChangeNotifier {
   stopLoading() {
     _isLoading = false;
     notifyListeners();
+  }
+
+  resetListPage() {
+    _listOfQuestions = [];
+    _lastDocument = null;
+    _isLastPage = false;
+    stopLoading();
   }
 
   // Future<void> populateUserLikesCollection() async {
