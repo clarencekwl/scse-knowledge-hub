@@ -7,25 +7,24 @@ import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/reponse/question_response.dart';
 
 final FirebaseFirestore db = FirebaseFirestore.instance;
-const int _perPage = 10;
 List<dynamic> listOfResponse = [];
 
 //! START <<CRUD FOR QUESTIONS>> START
 Future<ListOfQuestionReponse?> getQuestionsFromDB(
-    {required DocumentSnapshot? lastDocument}) async {
+    {required DocumentSnapshot? lastDocument, required int limit}) async {
   QuerySnapshot<Map<String, dynamic>> snapshot;
   try {
     lastDocument == null
         ? snapshot = await db
             .collection("questions")
             .orderBy('timestamp', descending: true)
-            .limit(_perPage)
+            .limit(limit)
             .get()
         : snapshot = await db
             .collection("questions")
             .orderBy('timestamp', descending: true)
             .startAfterDocument(lastDocument)
-            .limit(_perPage)
+            .limit(limit)
             .get();
 
     if (snapshot.docs.isNotEmpty) {

@@ -47,6 +47,12 @@ class QuestionProvider extends ChangeNotifier {
     _listOfSearchQuestions = listOfSearchQuestions;
   }
 
+  List<Question> _listOfTempSearchQuestions = [];
+  List<Question> get listOfTempSearchQuestions => _listOfTempSearchQuestions;
+  set listOfTempSearchQuestions(List<Question> listOfTempSearchQuestions) {
+    _listOfTempSearchQuestions = listOfTempSearchQuestions;
+  }
+
   List<Reply> _listOfReplies = [];
   List<Reply> get listOfReplies => _listOfReplies;
   set listOfReplies(List<Reply> listOfReplies) {
@@ -54,6 +60,14 @@ class QuestionProvider extends ChangeNotifier {
   }
 
   DocumentSnapshot? _lastDocument;
+  set lastDocument(DocumentSnapshot? lastDocument) {
+    _lastDocument = lastDocument;
+  }
+
+  DocumentSnapshot? _lastSearchDocument;
+  set lastSearchDocument(DocumentSnapshot? lastSearchDocument) {
+    _lastSearchDocument = lastSearchDocument;
+  }
 
   bool _isLastPage = false;
   bool get isLastPage => _isLastPage;
@@ -63,8 +77,8 @@ class QuestionProvider extends ChangeNotifier {
     if (onRefreshed) {
       resetListPage();
     }
-    ListOfQuestionReponse? res =
-        await QuestionAPI.getQuestionsFromDB(lastDocument: _lastDocument);
+    ListOfQuestionReponse? res = await QuestionAPI.getQuestionsFromDB(
+        lastDocument: _lastDocument, limit: 10);
     if (!_isLastPage && res != null) {
       _handlePagination(res);
     } else {
@@ -139,7 +153,7 @@ class QuestionProvider extends ChangeNotifier {
       topic: topic,
       images: _listOfAttachments,
     );
-    await getQuestions();
+    await getQuestions(onRefreshed: true);
     await getUserQuestions(userID);
     stopLoading();
   }
@@ -160,7 +174,7 @@ class QuestionProvider extends ChangeNotifier {
         description: description,
         anonymous: anonymous,
         topic: topic);
-    await getQuestions();
+    await getQuestions(onRefreshed: true);
     await getUserQuestions(userId);
     stopLoading();
   }
@@ -169,7 +183,7 @@ class QuestionProvider extends ChangeNotifier {
       {required String questionId, required String userId}) async {
     startLoading();
     await QuestionAPI.deleteQuestion(questionId: questionId, userId: userId);
-    await getQuestions();
+    await getQuestions(onRefreshed: true);
     await getUserQuestions(userId);
     stopLoading();
   }
@@ -238,15 +252,29 @@ class QuestionProvider extends ChangeNotifier {
 
   Future<void> searchQuestions({required String searchString}) async {
     startLoading();
+    String searchStringLower = searchString.toLowerCase();
+    ListOfQuestionReponse? res;
 
-// Convert the search input to lowercase for case-insensitive search
-    String searchTermLower = searchString.toLowerCase();
+    do {
+      log("search");
+      res = await QuestionAPI.getQuestionsFromDB(
+        lastDocument: _lastSearchDocument,
+        limit: 10,
+      );
 
-    // Use the where method to filter the list based on the search input
-    _listOfSearchQuestions = _listOfQuestions.where((question) {
-      // Check if the title contains the search input
-      return question.title.toLowerCase().contains(searchTermLower);
-    }).toList();
+      if (res != null) {
+        _lastSearchDocument = res.lastDocument;
+        _listOfSearchQuestions.addAll(res.listOfQuestions);
+        _listOfSearchQuestions = _listOfSearchQuestions.where((question) {
+          return question.title.toLowerCase().contains(searchStringLower);
+        }).toList();
+      } else {
+        break;
+      }
+    } while (_listOfSearchQuestions.length < 10);
+
+    //! MIGHT NEED TO HANDLE PAGINATION
+
     stopLoading();
   }
 

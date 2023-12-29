@@ -16,6 +16,7 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
+  List<String> _selectedSearchTopics = [];
   bool _isLoading = false;
   late QuestionProvider _questionProvider;
   String _searchQuery = "";
@@ -62,12 +63,10 @@ class _SearchPageState extends State<SearchPage> {
                     _isLoading = true;
                     _searchQuery = value;
                     setState(() {});
-                    log("search string is: $value");
                     await _questionProvider.searchQuestions(
                         searchString: value);
                     _isLoading = false;
                     setState(() {});
-                    log("list of questions: ${_questionProvider.listOfSearchQuestions}");
                   },
                 ),
               ),
@@ -75,7 +74,9 @@ class _SearchPageState extends State<SearchPage> {
                 icon: Icon(Icons.clear),
                 onPressed: () {
                   _searchController.clear();
+                  _questionProvider.lastSearchDocument = null;
                   _questionProvider.listOfSearchQuestions.clear();
+                  _questionProvider.listOfTempSearchQuestions.clear();
                   setState(() {});
                 },
               ),
@@ -109,7 +110,40 @@ class _SearchPageState extends State<SearchPage> {
                               fontSize: 16,
                             ),
                           ),
-                        )
+                        ),
+                        PopupMenuButton(
+                          offset: Offset(0, 30),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          icon: Icon(Icons.filter_list),
+                          itemBuilder: (BuildContext context) {
+                            return Styles.listOfTopics.map((String topic) {
+                              return PopupMenuItem(
+                                value: topic,
+                                child: CheckboxListTile(
+                                  title: Text(topic),
+                                  value: _selectedSearchTopics.contains(topic),
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      if (value) {
+                                        _selectedSearchTopics.add(topic);
+                                      } else {
+                                        _selectedSearchTopics.remove(topic);
+                                      }
+                                    }
+                                    log("selected topic is: $_selectedSearchTopics");
+                                    setState(() {});
+                                  },
+                                ),
+                              );
+                            }).toList();
+                          },
+                          onSelected: (String selectedTopic) {
+                            // Handle the selected topic if needed
+                            log("Selected Topic: $selectedTopic");
+                          },
+                        ),
                       ],
                     ),
                   ),

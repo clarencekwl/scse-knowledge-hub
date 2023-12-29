@@ -181,7 +181,7 @@ class _HomePageState extends State<HomePage>
                                   )),
                               if (false == _isSliverAppBarExpanded)
                                 Positioned(
-                                  top: 40,
+                                  top: 35,
                                   right: 20,
                                   child: ElevatedButton.icon(
                                       style: ElevatedButton.styleFrom(
@@ -221,7 +221,6 @@ class _HomePageState extends State<HomePage>
                                 Expanded(
                                   child: GestureDetector(
                                     onTap: () {
-                                      // Navigate to the new search page
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
