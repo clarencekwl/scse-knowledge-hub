@@ -119,21 +119,25 @@ class _NavBarState extends State<NavBar> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blueGrey,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15))),
-                          onPressed: () {
-                            log('Selected topics: $_tempSelectedTopics');
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (context) => HomePage(
-                                      selectedTopics: _tempSelectedTopics)),
-                            );
-                          },
-                          child: Text("Filter"),
-                        ),
+                        if (_tempSelectedTopics.isNotEmpty)
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blueGrey,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15))),
+                            onPressed: () {
+                              log('Selected topics: $_tempSelectedTopics');
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => HomePage(
+                                        selectedTopics:
+                                            _tempSelectedTopics.isEmpty
+                                                ? null
+                                                : _tempSelectedTopics)),
+                              );
+                            },
+                            child: Text("Filter"),
+                          ),
                         if (_questionProvider.selectedTopics.isNotEmpty)
                           Container(
                             margin: EdgeInsets.only(left: 10),
@@ -150,7 +154,7 @@ class _NavBarState extends State<NavBar> {
                                       builder: (context) => HomePage()),
                                 );
                               },
-                              child: Text("Clear All"),
+                              child: Text("Clear"),
                             ),
                           ),
                       ],

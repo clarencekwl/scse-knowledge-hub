@@ -47,6 +47,14 @@ class QuestionProvider extends ChangeNotifier {
     _listOfSearchQuestions = listOfSearchQuestions;
   }
 
+  List<Question> _listOfFilteredSearchQuestions = [];
+  List<Question> get listOfFilteredSearchQuestion =>
+      _listOfFilteredSearchQuestions;
+  set listOfFilteredSearchQuestion(
+      List<Question> listOfFilteredSearchQuestion) {
+    _listOfFilteredSearchQuestions = listOfFilteredSearchQuestion;
+  }
+
   List<Question> _listOfTempSearchQuestions = [];
   List<Question> get listOfTempSearchQuestions => _listOfTempSearchQuestions;
   set listOfTempSearchQuestions(List<Question> listOfTempSearchQuestions) {
@@ -110,12 +118,17 @@ class QuestionProvider extends ChangeNotifier {
     }
   }
 
-  bool getFilteredQuestions(List<String>? selectedTopics) {
+  bool getFilteredQuestions(List<String>? selectedTopics,
+      {bool isSearch = false}) {
     startLoading();
     if (selectedTopics != null) {
-      listOfFilteredQuestions = listOfQuestions
-          .where((question) => selectedTopics.contains(question.topic))
-          .toList();
+      !isSearch
+          ? listOfFilteredQuestions = listOfQuestions
+              .where((question) => selectedTopics.contains(question.topic))
+              .toList()
+          : listOfFilteredSearchQuestion = listOfSearchQuestions
+              .where((question) => selectedTopics.contains(question.topic))
+              .toList();
       return true;
     }
     stopLoading();
