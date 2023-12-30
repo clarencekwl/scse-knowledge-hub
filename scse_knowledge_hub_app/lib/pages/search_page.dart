@@ -49,56 +49,7 @@ class _SearchPageState extends State<SearchPage> {
                 color: Colors.white,
               )),
           backgroundColor: Styles.primaryBlueColor,
-          title: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  textInputAction: TextInputAction.search,
-                  keyboardType: TextInputType.text,
-                  style: TextStyle(color: Colors.white),
-                  controller: _searchController,
-                  cursorColor: Colors.white,
-                  decoration: InputDecoration(
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.transparent), // Underline color
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.white), // Focus underline color
-                    ),
-                    prefixIconColor: Colors.white,
-                    hintText: 'Search',
-                    hintStyle: TextStyle(color: Colors.grey),
-                    prefixIcon: Icon(Icons.search),
-                  ),
-                  onSubmitted: (value) async {
-                    _isLoading = true;
-
-                    setState(() {});
-                    await _questionProvider.searchQuestions(
-                        searchString: value);
-                    _isLoading = false;
-                    setState(() {});
-                    _searchQuery = value;
-                  },
-                ),
-              ),
-              IconButton(
-                icon: Icon(Icons.clear),
-                onPressed: () {
-                  _searchController.clear();
-                  _tempSelectedTopics.clear();
-                  _isFilter = false;
-                  _searchQuery = "";
-                  _questionProvider.lastSearchDocument = null;
-                  _questionProvider.listOfSearchQuestions.clear();
-                  _questionProvider.listOfTempSearchQuestions.clear();
-                  setState(() {});
-                },
-              ),
-            ],
-          ),
+          title: _searchBar(),
         ),
         body: Stack(
           children: [
@@ -236,6 +187,58 @@ class _SearchPageState extends State<SearchPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Row _searchBar() {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            textInputAction: TextInputAction.search,
+            keyboardType: TextInputType.text,
+            style: TextStyle(color: Colors.white),
+            controller: _searchController,
+            cursorColor: Colors.white,
+            decoration: InputDecoration(
+              enabledBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Colors.transparent), // Underline color
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Colors.white), // Focus underline color
+              ),
+              prefixIconColor: Colors.white,
+              hintText: 'Search',
+              hintStyle: TextStyle(color: Colors.grey),
+              prefixIcon: Icon(Icons.search),
+            ),
+            onSubmitted: (value) async {
+              _isLoading = true;
+
+              setState(() {});
+              await _questionProvider.searchQuestions(searchString: value);
+              _isLoading = false;
+              setState(() {});
+              _searchQuery = value;
+            },
+          ),
+        ),
+        IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: () {
+            _searchController.clear();
+            _tempSelectedTopics.clear();
+            _isFilter = false;
+            _searchQuery = "";
+            _questionProvider.lastSearchDocument = null;
+            _questionProvider.listOfSearchQuestions.clear();
+            _questionProvider.listOfTempSearchQuestions.clear();
+            setState(() {});
+          },
+        ),
+      ],
     );
   }
 

@@ -102,104 +102,104 @@ class _NavBarState extends State<NavBar> {
                     ),
                   );
                 }),
-                // Use ExpansionTile for the dropdown menu
-                ExpansionTile(
-                  collapsedIconColor: Colors.white,
-                  iconColor: Colors.white,
-                  leading: Icon(
-                    Icons.filter_list,
-                    color: Colors.white,
-                  ),
-                  title: Text(
-                    "View by Topics",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  children: [
-                    // Filter button
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (_tempSelectedTopics.isNotEmpty)
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueGrey,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15))),
-                            onPressed: () {
-                              log('Selected topics: $_tempSelectedTopics');
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => HomePage(
-                                        selectedTopics:
-                                            _tempSelectedTopics.isEmpty
-                                                ? null
-                                                : _tempSelectedTopics)),
-                              );
-                            },
-                            child: Text("Filter"),
-                          ),
-                        if (_questionProvider.selectedTopics.isNotEmpty)
-                          Container(
-                            margin: EdgeInsets.only(left: 10),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blueGrey,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15))),
-                              onPressed: () {
-                                _tempSelectedTopics = [];
-                                _questionProvider.selectedTopics = [];
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (context) => HomePage()),
-                                );
-                              },
-                              child: Text("Clear"),
-                            ),
-                          ),
-                      ],
-                    ),
-
-                    Divider(color: Colors.white),
-
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: Styles.listOfTopics.length,
-                      itemBuilder: (context, index) {
-                        final topic = Styles.listOfTopics[index];
-                        return CheckboxListTile(
-                          title: Text(
-                            topic,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          value:
-                              _questionProvider.selectedTopics.contains(topic),
-                          onChanged: (value) {
-                            if (value != null) {
-                              if (value) {
-                                _tempSelectedTopics.add(topic);
-                              } else {
-                                _tempSelectedTopics.remove(topic);
-                              }
-                            }
-                            setState(() {});
-                          },
-                          activeColor: Colors.blueGrey,
-                          tileColor:
-                              _questionProvider.selectedTopics.contains(topic)
-                                  ? Colors.blueGrey.withOpacity(0.3)
-                                  : null,
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                _dropDownFilterList(context),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  ExpansionTile _dropDownFilterList(BuildContext context) {
+    // Use ExpansionTile for the dropdown menu
+    return ExpansionTile(
+      collapsedIconColor: Colors.white,
+      iconColor: Colors.white,
+      leading: Icon(
+        Icons.filter_list,
+        color: Colors.white,
+      ),
+      title: Text(
+        "View by Topics",
+        style: TextStyle(color: Colors.white),
+      ),
+      children: [
+        // Filter button
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (_tempSelectedTopics.isNotEmpty)
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueGrey,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15))),
+                onPressed: () {
+                  log('Selected topics: $_tempSelectedTopics');
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                        builder: (context) => HomePage(
+                            selectedTopics: _tempSelectedTopics.isEmpty
+                                ? null
+                                : _tempSelectedTopics)),
+                  );
+                },
+                child: Text("Filter"),
+              ),
+            if (_questionProvider.selectedTopics.isNotEmpty)
+              Container(
+                margin: EdgeInsets.only(left: 10),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueGrey,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15))),
+                  onPressed: () {
+                    _tempSelectedTopics = [];
+                    _questionProvider.selectedTopics = [];
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => HomePage()),
+                    );
+                  },
+                  child: Text("Clear"),
+                ),
+              ),
+          ],
+        ),
+
+        Divider(color: Colors.white),
+
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: Styles.listOfTopics.length,
+          itemBuilder: (context, index) {
+            final topic = Styles.listOfTopics[index];
+            return CheckboxListTile(
+              title: Text(
+                topic,
+                style: TextStyle(color: Colors.white),
+              ),
+              value: _questionProvider.selectedTopics.contains(topic),
+              onChanged: (value) {
+                if (value != null) {
+                  if (value) {
+                    _tempSelectedTopics.add(topic);
+                  } else {
+                    _tempSelectedTopics.remove(topic);
+                  }
+                }
+                setState(() {});
+              },
+              activeColor: Colors.blueGrey,
+              tileColor: _questionProvider.selectedTopics.contains(topic)
+                  ? Colors.blueGrey.withOpacity(0.3)
+                  : null,
+            );
+          },
+        ),
+      ],
     );
   }
 }
