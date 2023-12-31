@@ -286,9 +286,9 @@ class QuestionProvider extends ChangeNotifier {
       }
     } while (_listOfSearchQuestions.length < 10);
 
-    //! MIGHT NEED TO HANDLE PAGINATION
-
     stopLoading();
+
+    //! MIGHT NEED TO HANDLE PAGINATION
   }
 
   //! FUNCTIONS FOR ATTACHEMENTS

@@ -66,8 +66,11 @@ class _SearchPageState extends State<SearchPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              RichText(
-                                text: TextSpan(
+                              if (_searchQuery.isNotEmpty &&
+                                  _questionProvider
+                                      .listOfSearchQuestions.isNotEmpty)
+                                RichText(
+                                    text: TextSpan(
                                   style: TextStyle(
                                     color: Styles.primaryBlueColor,
                                     fontSize: 18,
@@ -85,11 +88,22 @@ class _SearchPageState extends State<SearchPage> {
                                       ),
                                     ),
                                   ],
-                                ),
-                              ),
-                              if (_isFilter)
+                                )),
+                              if (_isFilter &&
+                                  _questionProvider
+                                      .listOfFilteredSearchQuestion.isNotEmpty)
                                 Text(
                                   "Filtered Results",
+                                  style: TextStyle(
+                                      color: Styles.primaryBlueColor,
+                                      fontSize: 12,
+                                      fontStyle: FontStyle.italic),
+                                ),
+                              if (_isFilter &&
+                                  _questionProvider
+                                      .listOfFilteredSearchQuestion.isEmpty)
+                                Text(
+                                  "There are no revelant filtered results",
                                   style: TextStyle(
                                       color: Styles.primaryBlueColor,
                                       fontSize: 12,
@@ -120,6 +134,41 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                           ),
                       ],
+                    ),
+                  ),
+                if (_searchQuery.isNotEmpty &&
+                    _questionProvider.listOfSearchQuestions.isEmpty)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          top: 5.0, bottom: 0, left: 10, right: 10),
+                      child: RichText(
+                          text: TextSpan(
+                        style: TextStyle(
+                          color: Styles.primaryBlueColor,
+                          fontSize: 18,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "We found nothing found for: ",
+                          ),
+                          TextSpan(
+                            text: _searchQuery,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              overflow: TextOverflow.ellipsis,
+                              fontSize: 18,
+                            ),
+                          ),
+                          TextSpan(
+                            text: "\nTry something else!",
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      )),
                     ),
                   ),
                 Expanded(
@@ -215,8 +264,8 @@ class _SearchPageState extends State<SearchPage> {
               prefixIcon: Icon(Icons.search),
             ),
             onSubmitted: (value) async {
+              _clearSearch();
               _isLoading = true;
-
               setState(() {});
               await _questionProvider.searchQuestions(searchString: value);
               _isLoading = false;
@@ -229,17 +278,21 @@ class _SearchPageState extends State<SearchPage> {
           icon: Icon(Icons.clear),
           onPressed: () {
             _searchController.clear();
-            _tempSelectedTopics.clear();
-            _isFilter = false;
-            _searchQuery = "";
-            _questionProvider.lastSearchDocument = null;
-            _questionProvider.listOfSearchQuestions.clear();
-            _questionProvider.listOfTempSearchQuestions.clear();
+            _clearSearch();
             setState(() {});
           },
         ),
       ],
     );
+  }
+
+  void _clearSearch() {
+    _tempSelectedTopics.clear();
+    _isFilter = false;
+    _searchQuery = "";
+    _questionProvider.lastSearchDocument = null;
+    _questionProvider.listOfSearchQuestions.clear();
+    _questionProvider.listOfTempSearchQuestions.clear();
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -292,8 +345,9 @@ class _SearchPageState extends State<SearchPage> {
           actions: [
             TextButton(
               onPressed: () {
-                _isFilter = _questionProvider
-                    .getFilteredQuestions(_tempSelectedTopics, isSearch: true);
+                _isFilter = _questionProvider.getFilteredQuestions(
+                    _tempSelectedTopics.isEmpty ? null : _tempSelectedTopics,
+                    isSearch: true);
                 setState(() {});
                 Navigator.pop(context);
               },

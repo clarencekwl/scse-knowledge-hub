@@ -18,11 +18,15 @@ class UserRepliedQuestionPage extends StatefulWidget {
 class _UserRepliedQuestionPageState extends State<UserRepliedQuestionPage> {
   late UserProvider _userProvider;
   late QuestionProvider _questionProvider;
+  bool _isLoading = false;
 
   @override
   void initState() {
     Future.microtask(() async {
+      _isLoading = true;
+      setState(() {});
       await _questionProvider.getUserRepliedQuestions(_userProvider.user.id);
+      _isLoading = false;
       setState(() {});
     });
 
@@ -51,13 +55,29 @@ class _UserRepliedQuestionPageState extends State<UserRepliedQuestionPage> {
           backgroundColor: Styles.primaryBlueColor,
         ),
         body: _questionProvider.listOfUserRepliedQuestions.isEmpty
-            ? Center(
-                child: Text("You Haven't Replied to Any Questions",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    )),
+            ? Stack(
+                children: [
+                  Center(
+                    child: Text("You Haven't Replied to Any Questions",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        )),
+                  ),
+                  if (_isLoading)
+                    Container(
+                        height: double.infinity,
+                        width: double.infinity,
+                        color: Colors.white,
+                        child: Center(
+                          child: SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: CircularProgressIndicator(
+                                  color: Styles.primaryBlueColor)),
+                        ))
+                ],
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
