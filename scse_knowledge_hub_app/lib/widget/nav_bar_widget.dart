@@ -94,7 +94,7 @@ class _NavBarState extends State<NavBar> {
                     );
                   },
                 ),
-                drawerList(Icons.thumb_up_sharp, "Liked Questions", () => null),
+                drawerList(Icons.notifications, "Notifications", () => null),
                 drawerList(Icons.check_rounded, "Questions answered", () {
                   Navigator.of(context).push(
                     MaterialPageRoute(

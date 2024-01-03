@@ -4,10 +4,12 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:scse_knowledge_hub_app/utils/auth_helper.dart';
 import 'package:scse_knowledge_hub_app/pages/email_verfication_page.dart';
 import 'package:scse_knowledge_hub_app/pages/home_page.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -220,57 +222,7 @@ class _LoginPageState extends State<LoginPage> {
                                   width: Styles.kScreenWidth(context) * 0.60,
                                   child: ElevatedButton(
                                       onPressed: () async {
-                                        log("login button pressed!");
-                                        if (_formKey.currentState!.validate()) {
-                                          _isLoading = true;
-                                          setState(() {});
-                                          User? user;
-                                          if (true == _isRegister) {
-                                            user = await _signUp(
-                                                userName:
-                                                    _nameController.text.trim(),
-                                                userEmail: _emailController.text
-                                                    .trim(),
-                                                userPassword:
-                                                    _passwordController.text
-                                                        .trim(),
-                                                context: context);
-                                            if (user != null) {
-                                              log("user is registered");
-                                              log(user.uid);
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          EmailVerificationPage(
-                                                              userName:
-                                                                  _nameController
-                                                                      .text,
-                                                              userEmail:
-                                                                  _emailController
-                                                                      .text)));
-                                            }
-                                          } else {
-                                            user = await _login(
-                                              userEmail:
-                                                  _emailController.text.trim(),
-                                              userPassword: _passwordController
-                                                  .text
-                                                  .trim(),
-                                            );
-                                            if (user != null) {
-                                              await _userProvider.setUser(
-                                                  userID: user.uid);
-
-                                              Navigator.of(context)
-                                                  .pushReplacement(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              HomePage()));
-                                            }
-                                          }
-                                          _isLoading = false;
-                                          setState(() {});
-                                        }
+                                        await _verficationButton(context);
                                       },
                                       style: ElevatedButton.styleFrom(
                                           backgroundColor:
@@ -322,6 +274,42 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Future<void> _verficationButton(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      _isLoading = true;
+      setState(() {});
+      User? user;
+      if (true == _isRegister) {
+        user = await _signUp(
+            userName: _nameController.text.trim(),
+            userEmail: _emailController.text.trim(),
+            userPassword: _passwordController.text.trim(),
+            context: context);
+        if (user != null) {
+          log("user is registered");
+          log(user.uid);
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => EmailVerificationPage(
+                  userName: _nameController.text,
+                  userEmail: _emailController.text)));
+        }
+      } else {
+        user = await _login(
+          userEmail: _emailController.text.trim(),
+          userPassword: _passwordController.text.trim(),
+        );
+        if (user != null) {
+          await _userProvider.setUser(userID: user.uid);
+
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => HomePage()));
+        }
+      }
+      _isLoading = false;
+      setState(() {});
+    }
+  }
+
   bool _isNtuEmail(String email) {
     // Define a regular expression pattern for email validation
     // The pattern ensures the email ends with "ntu.edu.sg"
@@ -338,11 +326,7 @@ class _LoginPageState extends State<LoginPage> {
       required String userPassword,
       required BuildContext context}) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: userEmail, password: userPassword);
-
-      return userCredential.user;
+      return AuthHelper.signUp(email: userEmail, password: userPassword);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -361,10 +345,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<User?> _login(
       {required String userEmail, required String userPassword}) async {
     try {
-      User? user = (await FirebaseAuth.instance.signInWithEmailAndPassword(
-              email: userEmail, password: userPassword))
-          .user;
-      return user;
+      return AuthHelper.logIn(email: userEmail, password: userPassword);
     } on FirebaseAuthException catch (e) {
       log(e.code.toString());
       switch (e.code) {
