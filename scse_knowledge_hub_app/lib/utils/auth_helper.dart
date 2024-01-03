@@ -45,7 +45,7 @@ class AuthHelper {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     bool loginState = await prefs.setBool('isLoggedIn', isLoggedIn);
-    log("set isLoggedIn to be : ${loginState}");
+    log("set isLoggedIn to be : $loginState");
   }
 
   static Future<void> saveUserDetails(User? user) async {

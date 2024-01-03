@@ -35,6 +35,7 @@ class _HomePageState extends State<HomePage>
   late bool _currentSliverAppBarExpandedStatus;
   bool _isSliverAppBarExpanded = false;
   bool _isLoading = false;
+  bool _isLoadMoreRunning = false;
   int _currentTab = 0;
   bool _isFilter = false;
 
@@ -70,15 +71,19 @@ class _HomePageState extends State<HomePage>
           _titleText = _isSliverAppBarExpanded ? "Questions" : _welcomeText;
           setState(() {});
         }
-        if (!_isLoading &&
+        if (!_isLoadMoreRunning &&
             false == _questionProvider.isLastPage &&
             _scrollController.position.pixels >
-                0.98 * _scrollController.position.maxScrollExtent) {
+                0.99 * _scrollController.position.maxScrollExtent) {
           log("LOAD MORE");
-          _isLoading = true;
+          _isLoadMoreRunning = true;
           setState(() {});
+
+          // Introduce a delay of 1 second here
+          await Future.delayed(Duration(seconds: 1));
+
           await _questionProvider.getQuestions();
-          _isLoading = false;
+          _isLoadMoreRunning = false;
           setState(() {});
         }
       });
@@ -115,7 +120,7 @@ class _HomePageState extends State<HomePage>
               edgeOffset: Styles.kScreenHeight(context) * 0.20,
               displacement: 50,
               color: Styles.primaryBlueColor,
-              backgroundColor: Colors.white.withOpacity(0.6),
+              // backgroundColor: Colors.white.withOpacity(0),
               onRefresh: () async {
                 await _questionProvider.getQuestions(onRefreshed: true);
               },
@@ -210,6 +215,18 @@ class _HomePageState extends State<HomePage>
                       _tabBar(),
                       //Question List
                       _questionList(),
+                      if (_isLoadMoreRunning)
+                        SliverToBoxAdapter(
+                            child: Container(
+                                height: 40,
+                                color: Styles.primaryBackgroundColor,
+                                child: Center(
+                                  child: SizedBox(
+                                      height: 30,
+                                      width: 30,
+                                      child: CircularProgressIndicator(
+                                          color: Styles.primaryBlueColor)),
+                                ))),
                     ],
                   ),
                 ),
