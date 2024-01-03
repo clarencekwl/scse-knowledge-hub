@@ -2,10 +2,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/pages/home_page.dart';
+import 'package:scse_knowledge_hub_app/pages/login_page.dart';
 import 'package:scse_knowledge_hub_app/pages/profile_page.dart';
 import 'package:scse_knowledge_hub_app/pages/user_replied_question_page.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
+import 'package:scse_knowledge_hub_app/utils/auth_helper.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/no_glow_scroll.dart';
 
@@ -84,7 +86,7 @@ class _NavBarState extends State<NavBar> {
                         BorderRadius.only(bottomRight: Radius.circular(20)),
                   ),
                 ),
-                drawerList(
+                _drawerList(
                   Icons.home,
                   "Home",
                   () {
@@ -94,8 +96,8 @@ class _NavBarState extends State<NavBar> {
                     );
                   },
                 ),
-                drawerList(Icons.notifications, "Notifications", () => null),
-                drawerList(Icons.check_rounded, "Questions answered", () {
+                _drawerList(Icons.notifications, "Notifications", () => null),
+                _drawerList(Icons.check_rounded, "Questions answered", () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => UserRepliedQuestionPage(),
@@ -103,6 +105,12 @@ class _NavBarState extends State<NavBar> {
                   );
                 }),
                 _dropDownFilterList(context),
+                _drawerList(Icons.logout_rounded, "Logout", () async {
+                  _questionProvider.clearAll();
+                  await AuthHelper.logOut();
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                }),
               ],
             ),
           ),
@@ -204,8 +212,9 @@ class _NavBarState extends State<NavBar> {
   }
 }
 
-ListTile drawerList(IconData icon, String title, Function()? onTap) {
+ListTile _drawerList(IconData icon, String title, Function()? onTap) {
   return ListTile(
+    tileColor: title == "Logout" ? Colors.grey.withOpacity(0.1) : null,
     leading: Icon(
       icon,
       color: Colors.white,

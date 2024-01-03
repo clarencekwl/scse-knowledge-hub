@@ -16,8 +16,6 @@ import 'package:scse_knowledge_hub_app/utils/styles.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  // AuthHelper.clearAllSharedPreferences();
-
   runApp(
     MyApp(),
   );
@@ -27,43 +25,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      // Check if the user is logged in or not
       future: AuthHelper.getUserLoginState(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          bool isLoggedIn = snapshot.data as bool;
-          return MultiProvider(
-            providers: [
-              ChangeNotifierProvider<QuestionProvider>(
-                create: (_) => QuestionProvider(),
-              ),
-              ChangeNotifierProvider<UserProvider>(
-                create: (_) => UserProvider(),
-              ),
-            ],
-            child: MaterialApp(
-              title: 'SCSE Knowledge Hub',
-              debugShowCheckedModeBanner: false,
-              theme: ThemeData(
-                primaryColor: Styles.primaryBlueColor,
-                brightness: Brightness.light,
-                fontFamily: 'Inter',
-              ),
-              darkTheme: ThemeData(
-                brightness: Brightness.dark,
-                fontFamily: 'Inter',
-              ),
-              themeMode: ThemeMode.light,
-              home: isLoggedIn ? AutoLoginScreen() : LoginPage(),
-              routes: appRoutes as Map<String, Widget Function(BuildContext)>,
-              onUnknownRoute: (RouteSettings settings) {
-                return MaterialPageRoute(
-                  builder: (BuildContext context) => UnknownPage(),
-                );
-              },
-            ),
-          );
-        } else {
+        bool? isLoggedIn = snapshot.data;
+        if (isLoggedIn == null) {
           return MaterialApp(
             home: Scaffold(
               body: Center(
@@ -72,6 +37,38 @@ class MyApp extends StatelessWidget {
             ),
           );
         }
+
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider<QuestionProvider>(
+              create: (_) => QuestionProvider(),
+            ),
+            ChangeNotifierProvider<UserProvider>(
+              create: (_) => UserProvider(),
+            ),
+          ],
+          child: MaterialApp(
+            title: 'SCSE Knowledge Hub',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primaryColor: Styles.primaryBlueColor,
+              brightness: Brightness.light,
+              fontFamily: 'Inter',
+            ),
+            darkTheme: ThemeData(
+              brightness: Brightness.dark,
+              fontFamily: 'Inter',
+            ),
+            themeMode: ThemeMode.light,
+            home: isLoggedIn ? AutoLoginScreen() : LoginPage(),
+            routes: appRoutes as Map<String, Widget Function(BuildContext)>,
+            onUnknownRoute: (RouteSettings settings) {
+              return MaterialPageRoute(
+                builder: (BuildContext context) => UnknownPage(),
+              );
+            },
+          ),
+        );
       },
     );
   }
@@ -95,7 +92,39 @@ class _AutoLoginScreenState extends State<AutoLoginScreen> {
   Widget build(BuildContext context) {
     _userProvider = Provider.of(context);
     return Scaffold(
-        body: Container(
+      body: Stack(
+        children: [
+          CustomScrollView(
+            slivers: <Widget>[
+              SliverAppBar(
+                pinned: true,
+                backgroundColor: Styles.primaryBlueColor,
+                expandedHeight: Styles.kScreenHeight(context) * 0.16,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Stack(
+                    children: [
+                      Container(
+                        color: Styles.primaryBlueColor,
+                      ),
+                      Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Container(
+                            width: Styles.kScreenWidth(context) * 0.4,
+                            height: Styles.kScreenHeight(context) * 0.15,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.1),
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(50)),
+                            ),
+                          )),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Container(
             height: double.infinity,
             width: double.infinity,
             color: Colors.black.withOpacity(0.3),
@@ -105,15 +134,18 @@ class _AutoLoginScreenState extends State<AutoLoginScreen> {
                   width: 50,
                   child: CircularProgressIndicator(
                       color: Styles.primaryBlueColor)),
-            )));
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Future<void> _tryAutoLogin() async {
     String? userEmail = await AuthHelper.getUserEmail();
     String? userId = await AuthHelper.getUserId();
-    log("current user email: ${userEmail}");
+
     if (userEmail != null && userId != null) {
-      log("current user email: ${userEmail}");
       FirebaseAuth.instance.currentUser?.reload();
       if (FirebaseAuth.instance.currentUser?.emailVerified ?? false) {
         // Set user details to the provider
@@ -125,14 +157,17 @@ class _AutoLoginScreenState extends State<AutoLoginScreen> {
           MaterialPageRoute(builder: (context) => HomePage()),
         );
       } else {
+        log("user email not verified!");
         // Clear stored details as they are invalid or missing
         await AuthHelper.saveUserLoginState(false);
+        await AuthHelper.clearUserDetails();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
       }
     } else {
+      log("user email/id is null");
       // Clear stored details as they are invalid or missing
       await AuthHelper.saveUserLoginState(false);
       Navigator.pushReplacement(

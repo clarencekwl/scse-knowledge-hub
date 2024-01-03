@@ -393,6 +393,23 @@ class QuestionProvider extends ChangeNotifier {
     stopLoading();
   }
 
+  clearAll() {
+    startLoading();
+    _listOfQuestions = [];
+    _listOfUserQuestions = [];
+    _listOfUserRepliedQuestions = [];
+    _selectedTopics = [];
+    _listOfFilteredQuestions = [];
+    _listOfSearchQuestions = [];
+    _listOfFilteredSearchQuestions = [];
+    _listOfTempSearchQuestions = [];
+    _listOfReplies = [];
+    _isLastPage = false;
+    lastDocument = null;
+    lastSearchDocument = null;
+    stopLoading();
+  }
+
   // Future<void> populateUserLikesCollection() async {
   //   // Reference to the 'questions' collection
   //   final questionsCollection =

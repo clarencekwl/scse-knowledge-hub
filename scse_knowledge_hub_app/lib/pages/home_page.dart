@@ -188,22 +188,35 @@ class _HomePageState extends State<HomePage>
                                 Positioned(
                                   top: 35,
                                   right: 20,
-                                  child: ElevatedButton.icon(
-                                      style: ElevatedButton.styleFrom(
-                                          elevation: 6,
-                                          backgroundColor:
-                                              Styles.primaryGreyColor,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(300))),
-                                      onPressed: () async {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    CreateQuestionPage()));
-                                      },
-                                      icon: const Icon(Icons.question_mark),
-                                      label: Text("Ask")),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 6,
+                                      backgroundColor: Styles.primaryGreyColor,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(300),
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              CreateQuestionPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: const [
+                                        Text("Ask"),
+                                        Icon(
+                                          Icons.question_mark,
+                                          size: 18,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                             ],
                           ),
@@ -386,12 +399,12 @@ class _HomePageState extends State<HomePage>
               ));
   }
 
-  void _handleTabSelection() {
+  void _handleTabSelection() async {
     _currentTab = _tabController.index;
     if (_currentTab == 1 && _questionProvider.listOfUserQuestions.isEmpty) {
       _isLoading = true;
       setState(() {});
-      _questionProvider.getUserQuestions(_userProvider.user.id);
+      await _questionProvider.getUserQuestions(_userProvider.user.id);
       _isLoading = false;
       log("length of list: ${_questionProvider.listOfUserQuestions.length}");
     }

@@ -18,6 +18,14 @@ class _ProfilePageState extends State<ProfilePage> {
   late QuestionProvider _questionProvider;
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      await _questionProvider.getUserQuestions(_userProvider.user.id);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     _userProvider = Provider.of(context);
     _questionProvider = Provider.of(context);

@@ -71,8 +71,20 @@ class AuthHelper {
     return prefs.getString('email');
   }
 
-  static Future<void> clearAllSharedPreferences() async {
+  static Future<void> clearUserDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    prefs.remove('userId');
+    prefs.remove('email');
+  }
+
+  static Future<void> logOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      await clearUserDetails();
+      await saveUserLoginState(false);
+    } catch (e) {
+      log('Error during sign out: $e');
+      // Handle sign-out error, if any
+    }
   }
 }
