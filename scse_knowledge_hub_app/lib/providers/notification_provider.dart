@@ -26,6 +26,7 @@ class NotificationProvider extends ChangeNotifier {
     AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
             'Question Notifications', 'Question Notifications',
+            channelDescription: 'Notifications for question updates',
             color: Styles.primaryBlueColor,
             // playSound: true,
             // sound: RawResourceAndroidNotificationSound('notification'),

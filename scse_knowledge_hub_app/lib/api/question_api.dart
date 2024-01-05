@@ -242,7 +242,7 @@ Future<ListOfQuestionRepliesReponse?> getAllReplies(
   }
 }
 
-Future<void> addReply(
+Future<String?> addReply(
     {required String userId,
     required String userName,
     required Question question,
@@ -274,8 +274,10 @@ Future<void> addReply(
       'timestamp': FieldValue.serverTimestamp(),
       if (taggedUserId != null) 'taggedUserId': taggedUserId,
     });
+    return questionReplyRef.id;
   } catch (e) {
     log('Error creating reply: $e');
+    return null;
   }
 }
 
@@ -301,6 +303,84 @@ Future<void> deleteReply(
         .delete();
   } catch (e) {
     log('Error deleting reply: $e');
+  }
+}
+
+Future<ListOfNotificationResponse?> getNotifications(
+    {required String userId}) async {
+  try {
+    QuerySnapshot<Map<String, dynamic>> snapshot = await db
+        .collection('users')
+        .doc(userId)
+        .collection("notifications")
+        .orderBy('timestamp', descending: true)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      return ListOfNotificationResponse.fromJson(snapshot.docs);
+    } else {
+      return null;
+    }
+  } catch (e) {
+    log("Error fetching notifications");
+    return null;
+  }
+}
+
+Future<void> addNotification(
+    {required Question question,
+    required String senderId,
+    required String senderName,
+    required String replyDocumentId}) async {
+  // Add a notification to the "notifications" subcollection of the user
+  try {
+    await db
+        .collection('users')
+        .doc(question.userId)
+        .collection('notifications')
+        .add({
+      'sender_id': senderId,
+      'question_id': question.id,
+      'reply_id': replyDocumentId,
+      'content': "$senderName has replied to your question! Check it out!",
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  } on Exception catch (e) {
+    log("Error adding notification: $e");
+  }
+}
+
+Future<void> deleteNotification(Question question, String replyId) async {
+  try {
+    // Find the notification document that corresponds to the given reply_id
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(question.userId)
+        .collection('notifications')
+        .where('reply_id', isEqualTo: replyId)
+        .get();
+
+    // Iterate through the query results and delete the notification(s)
+    for (QueryDocumentSnapshot document in querySnapshot.docs) {
+      await document.reference.delete();
+    }
+  } on Exception catch (e) {
+    log("Error deleting notification: $e");
+  }
+}
+
+Future<void> removeNotificaitionFromUserList(
+    {required String userId, required String notificationId}) async {
+  try {
+    // Add a notification to the "notifications" subcollection of the user
+    await db
+        .collection('users')
+        .doc(userId)
+        .collection('notifications')
+        .doc(notificationId)
+        .delete();
+  } on Exception catch (e) {
+    log("Error deleting notification: $e");
   }
 }
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/pages/home_page.dart';
 import 'package:scse_knowledge_hub_app/pages/login_page.dart';
+import 'package:scse_knowledge_hub_app/pages/notification_page.dart';
 import 'package:scse_knowledge_hub_app/pages/profile_page.dart';
 import 'package:scse_knowledge_hub_app/pages/user_replied_question_page.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
@@ -96,21 +97,39 @@ class _NavBarState extends State<NavBar> {
                     );
                   },
                 ),
-                _drawerList(Icons.notifications, "Notifications", () => null),
-                _drawerList(Icons.check_rounded, "Questions answered", () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => UserRepliedQuestionPage(),
-                    ),
-                  );
-                }),
+                _drawerList(
+                  Icons.notifications,
+                  "Notifications",
+                  () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => NotificationPage(),
+                      ),
+                    );
+                  },
+                ),
+                _drawerList(
+                  Icons.check_rounded,
+                  "Questions answered",
+                  () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => UserRepliedQuestionPage(),
+                      ),
+                    );
+                  },
+                ),
                 _dropDownFilterList(context),
-                _drawerList(Icons.logout_rounded, "Logout", () async {
-                  _questionProvider.clearAll();
-                  await AuthHelper.logOut();
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => LoginPage()));
-                }),
+                _drawerList(
+                  Icons.logout_rounded,
+                  "Logout",
+                  () async {
+                    _questionProvider.clearAll();
+                    await AuthHelper.logOut();
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => LoginPage()));
+                  },
+                ),
               ],
             ),
           ),

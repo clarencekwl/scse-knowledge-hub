@@ -135,8 +135,8 @@ class _HomePageState extends State<HomePage>
           FloatingActionButton(
               onPressed: () async {
                 await NotificationProvider.showNotification(
-                  title: 'TITLE TEST',
-                  body: 'BODY TEST',
+                  title: 'Someone replied to your question!',
+                  body: 'Go check it out',
                   // payload: 'WTF GG',
                 );
                 log('notif added!');

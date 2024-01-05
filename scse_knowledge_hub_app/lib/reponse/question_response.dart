@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scse_knowledge_hub_app/models/Notification.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/models/Reply.dart';
 
@@ -102,5 +103,19 @@ class ListOfSearchReponse {
       listOfSearchQuestions.add(questionWithUserName);
     }
     return ListOfSearchReponse(listOfSearchQuestions: listOfSearchQuestions);
+  }
+}
+
+class ListOfNotificationResponse {
+  List<Notification> listOfNotifications;
+  ListOfNotificationResponse({required this.listOfNotifications});
+
+  static Future<ListOfNotificationResponse> fromJson(var json) async {
+    List<Notification> listOfNotifications = [];
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc in json) {
+      Notification notif = Notification.fromJson(doc.data(), doc.id);
+      listOfNotifications.add(notif);
+    }
+    return ListOfNotificationResponse(listOfNotifications: listOfNotifications);
   }
 }

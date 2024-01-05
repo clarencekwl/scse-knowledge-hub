@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:cached_memory_image/cached_image_base64_manager.dart';
+import 'package:scse_knowledge_hub_app/models/Notification.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/api/question_api.dart' as QuestionAPI;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -65,6 +66,12 @@ class QuestionProvider extends ChangeNotifier {
   List<Reply> get listOfReplies => _listOfReplies;
   set listOfReplies(List<Reply> listOfReplies) {
     _listOfReplies = listOfReplies;
+  }
+
+  List<Notification> _listOfNotifications = [];
+  List<Notification> get listOfNotifications => _listOfNotifications;
+  set listOfNotifications(List<Notification> listOfNotifications) {
+    _listOfNotifications = listOfNotifications;
   }
 
   DocumentSnapshot? _lastDocument;
@@ -147,6 +154,18 @@ class QuestionProvider extends ChangeNotifier {
     stopLoading();
   }
 
+  Future<void> getNotifications(String userId) async {
+    startLoading();
+    ListOfNotificationResponse? res =
+        await QuestionAPI.getNotifications(userId: userId);
+    if (null == res) {
+      _listOfNotifications = [];
+    } else {
+      _listOfNotifications = res.listOfNotifications;
+    }
+    stopLoading();
+  }
+
   Future<void> createQuestion({
     required String title,
     required String description,
@@ -221,26 +240,40 @@ class QuestionProvider extends ChangeNotifier {
     required String content,
     String? taggedUserId,
   }) async {
+    String? replyDocumentId;
     startLoading();
     taggedUserId == null
-        ? await QuestionAPI.addReply(
+        ? replyDocumentId = await QuestionAPI.addReply(
             userId: userId,
             userName: userName,
             question: question,
             content: content)
-        : await QuestionAPI.addReply(
+        : replyDocumentId = await QuestionAPI.addReply(
             userId: userId,
             userName: userName,
             question: question,
             content: content,
             taggedUserId: taggedUserId);
-    await QuestionAPI.incrementReplies(question.id, question.userId);
-    // Update the List<Question> with the updated number_of_replies
-    final updatedQuestionIndex =
-        listOfQuestions.indexWhere((q) => q.id == question.id);
-    if (updatedQuestionIndex != -1) {
-      listOfQuestions[updatedQuestionIndex].numberOfReplies += 1;
+    if (replyDocumentId != null) {
+      await QuestionAPI.incrementReplies(question.id, question.userId);
+      // Update the List<Question> with the updated number_of_replies
+      final updatedQuestionIndex =
+          listOfQuestions.indexWhere((q) => q.id == question.id);
+      if (updatedQuestionIndex != -1) {
+        listOfQuestions[updatedQuestionIndex].numberOfReplies += 1;
+      }
+      if (userId != question.userId) {
+        await QuestionAPI.addNotification(
+          question: question,
+          senderId: userId,
+          senderName: userName,
+          replyDocumentId: replyDocumentId,
+        );
+      }
+    } else {
+      log("Error adding reply");
     }
+
     stopLoading();
   }
 
@@ -260,6 +293,19 @@ class QuestionProvider extends ChangeNotifier {
     if (updatedQuestionIndex != -1) {
       listOfQuestions[updatedQuestionIndex].numberOfReplies -= 1;
     }
+    if (userId != question.userId) {
+      await QuestionAPI.deleteNotification(question, replyId);
+    }
+
+    stopLoading();
+  }
+
+  Future<void> removeNotificationFromList(
+      {required String userId, required String notificationId}) async {
+    startLoading();
+    await QuestionAPI.removeNotificaitionFromUserList(
+        userId: userId, notificationId: notificationId);
+    await getNotifications(userId);
     stopLoading();
   }
 
