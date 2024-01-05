@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/pages/create_question_page.dart';
 import 'package:scse_knowledge_hub_app/pages/question_details_page.dart';
 import 'package:scse_knowledge_hub_app/pages/search_page.dart';
+import 'package:scse_knowledge_hub_app/providers/notification_provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
@@ -24,7 +26,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late QuestionProvider _questionProvider;
   late UserProvider _userProvider;
   ScrollController _scrollController = ScrollController();
@@ -45,6 +47,7 @@ class _HomePageState extends State<HomePage>
     FocusManager.instance.primaryFocus?.unfocus();
     Future.microtask(() async {
       log("user: ${_userProvider.user.name}");
+      await NotificationProvider().setup();
       _welcomeText = "Hi, ${_userProvider.user.name}";
       _titleText = _welcomeText;
 
@@ -59,6 +62,11 @@ class _HomePageState extends State<HomePage>
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabSelection);
     scrollController();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationProvider.setContext(context);
+    });
+    setupNotificationMessage();
   }
 
   void scrollController() {
@@ -95,20 +103,44 @@ class _HomePageState extends State<HomePage>
     super.dispose();
   }
 
+  Future<void> setupNotificationMessage() async {
+    //! APP IN FOREGROUND
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      if (null != message.notification) {
+        log("onMessage data: ${message.data}");
+        await NotificationProvider.showNotification(
+            title: message.notification!.title,
+            body: message.notification!.body,
+            payload: message.data['case_id'] ?? null);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     _questionProvider = Provider.of(context);
     _userProvider = Provider.of(context);
     return Scaffold(
       floatingActionButton: _isSliverAppBarExpanded
-          ? FloatingActionButton(
+          ?
+          //  FloatingActionButton(
+          //     onPressed: () async {
+          //       Navigator.of(context).push(MaterialPageRoute(
+          //           builder: (context) => CreateQuestionPage()));
+          //     },
+          //     elevation: 6,
+          //     backgroundColor: Styles.primaryBlueColor,
+          //     child: Icon(Icons.add, color: Colors.white),
+          //   )
+          FloatingActionButton(
               onPressed: () async {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => CreateQuestionPage()));
+                await NotificationProvider.showNotification(
+                  title: 'TITLE TEST',
+                  body: 'BODY TEST',
+                  // payload: 'WTF GG',
+                );
+                log('notif added!');
               },
-              elevation: 6,
-              backgroundColor: Styles.primaryBlueColor,
-              child: Icon(Icons.add, color: Colors.white),
             )
           : null,
       drawer: NavBar(),

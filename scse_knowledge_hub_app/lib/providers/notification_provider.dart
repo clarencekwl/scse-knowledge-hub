@@ -96,7 +96,7 @@ class NotificationProvider extends ChangeNotifier {
 
   Future<void> setup() async {
     //! NOTIFICATION
-    const androidSetting = AndroidInitializationSettings('');
+    const androidSetting = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSetting = DarwinInitializationSettings(
       requestCriticalPermission: true,
       requestAlertPermission: true,
