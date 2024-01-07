@@ -2,16 +2,18 @@ class Notification {
   String id;
   String replyId;
   String questionId;
+  String questionTitle;
   String senderId;
-  String content;
+  String senderName;
   DateTime timestamp;
 
   Notification({
     required this.id,
     required this.replyId,
     required this.questionId,
+    required this.questionTitle,
     required this.senderId,
-    required this.content,
+    required this.senderName,
     required this.timestamp,
   });
 
@@ -20,8 +22,9 @@ class Notification {
       id: docId,
       replyId: json['reply_id'] ?? '',
       questionId: json['question_id'] ?? '',
-      senderId: json['sender _id'] ?? '',
-      content: json['content'] ?? '',
+      questionTitle: json['question_title'] ?? '',
+      senderId: json['sender_id'] ?? '',
+      senderName: json['sender_name'] ?? '',
       timestamp: json['timestamp'].toDate(),
     );
   }

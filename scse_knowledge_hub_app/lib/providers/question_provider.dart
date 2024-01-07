@@ -84,6 +84,12 @@ class QuestionProvider extends ChangeNotifier {
     _lastSearchDocument = lastSearchDocument;
   }
 
+  Question? _currentQuestion;
+  Question? get currentQuestion => _currentQuestion;
+  set currentQuestion(Question? currentQuestion) {
+    _currentQuestion = currentQuestion;
+  }
+
   bool _isLastPage = false;
   bool get isLastPage => _isLastPage;
 
@@ -101,6 +107,17 @@ class QuestionProvider extends ChangeNotifier {
       log("there are no other questions to be fetched");
     }
 
+    stopLoading();
+  }
+
+  Future<void> getQuestion({required String questionId}) async {
+    startLoading();
+    Question? question = await QuestionAPI.getQuestion(questionId: questionId);
+    if (null != question) {
+      _currentQuestion = question;
+    } else {
+      _currentQuestion = null;
+    }
     stopLoading();
   }
 
@@ -154,7 +171,7 @@ class QuestionProvider extends ChangeNotifier {
     stopLoading();
   }
 
-  Future<void> getNotifications(String userId) async {
+  Future<void> getNotifications({required String userId}) async {
     startLoading();
     ListOfNotificationResponse? res =
         await QuestionAPI.getNotifications(userId: userId);
@@ -305,7 +322,7 @@ class QuestionProvider extends ChangeNotifier {
     startLoading();
     await QuestionAPI.removeNotificaitionFromUserList(
         userId: userId, notificationId: notificationId);
-    await getNotifications(userId);
+    await getNotifications(userId: userId);
     stopLoading();
   }
 

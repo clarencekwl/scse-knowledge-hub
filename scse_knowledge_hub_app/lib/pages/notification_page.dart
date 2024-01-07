@@ -23,7 +23,7 @@ class _NotificationPageState extends State<NotificationPage> {
     Future.microtask(() async {
       _isLoading = true;
       setState(() {});
-      await _questionProvider.getNotifications(_userProvider.user.id);
+      await _questionProvider.getNotifications(userId: _userProvider.user.id);
       _isLoading = false;
       setState(() {});
     });
@@ -60,58 +60,87 @@ class _NotificationPageState extends State<NotificationPage> {
                 axisDirection: AxisDirection.down,
                 child: ListView.separated(
                   separatorBuilder: (context, index) {
-                    return Divider();
+                    return Divider(thickness: 1.5);
                   },
                   padding: EdgeInsets.all(10),
                   shrinkWrap: true,
                   itemCount: _questionProvider.listOfNotifications.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      titleTextStyle: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14),
-                      title: Text(
-                        _questionProvider.listOfNotifications[index].content,
-                      ),
-                      subtitleTextStyle: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          Styles.formatTimeDifference(DateTime.now().difference(
-                              _questionProvider
-                                  .listOfNotifications[index].timestamp)),
+                  itemBuilder: (
+                    context,
+                    index,
+                  ) {
+                    return Column(
+                      children: [
+                        ListTile(
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${_questionProvider.listOfNotifications[index].senderName} replied to your question!",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                  "Question: ${_questionProvider.listOfNotifications[index].questionTitle} ",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    overflow: TextOverflow.ellipsis,
+                                    fontSize: 12,
+                                  ))
+                            ],
+                          ),
+                          subtitleTextStyle: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              Styles.formatTimeDifference(DateTime.now()
+                                  .difference(_questionProvider
+                                      .listOfNotifications[index].timestamp)),
+                            ),
+                          ),
+                          trailing: GestureDetector(
+                            onTap: () async {
+                              _isLoading = true;
+                              setState(() {});
+                              await _questionProvider
+                                  .removeNotificationFromList(
+                                      userId: _userProvider.user.id,
+                                      notificationId: _questionProvider
+                                          .listOfNotifications[index].id);
+                              _isLoading = false;
+                              setState(() {});
+                            },
+                            child: Icon(
+                              Icons.delete_outline_rounded,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                          onTap: () async {
+                            {
+                              _isLoading = true;
+                              setState(() {});
+                              await _questionProvider.getQuestion(
+                                  questionId: _questionProvider
+                                      .listOfNotifications[index].questionId);
+                              _isLoading = false;
+                              setState(() {});
+                              if (_questionProvider.currentQuestion != null) {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => QuestionDetailsPage(
+                                        question: _questionProvider
+                                            .currentQuestion!)));
+                              }
+                            }
+                          },
                         ),
-                      ),
-                      trailing: GestureDetector(
-                        onTap: () async {
-                          _isLoading = true;
-                          setState(() {});
-                          await _questionProvider.removeNotificationFromList(
-                              userId: _userProvider.user.id,
-                              notificationId: _questionProvider
-                                  .listOfNotifications[index].id);
-                          _isLoading = false;
-                          setState(() {});
-                        },
-                        child: Icon(
-                          Icons.delete_outline_rounded,
-                          color: Colors.redAccent,
-                        ),
-                      ),
-                      onTap: () {
-                        {
-                          // Navigator.of(context).push(MaterialPageRoute(
-                          //     builder: (context) => QuestionDetailsPage(
-                          //         question: _questionProvider
-                          //                 .listOfUserRepliedQuestions[
-                          //             index])));
-                        }
-                      },
+                      ],
                     );
                   },
                 ),
