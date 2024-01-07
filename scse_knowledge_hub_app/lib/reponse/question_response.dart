@@ -119,3 +119,15 @@ class ListOfNotificationResponse {
     return ListOfNotificationResponse(listOfNotifications: listOfNotifications);
   }
 }
+
+class QuestionResponse {
+  Question question;
+  QuestionResponse({required this.question});
+
+  static Future<QuestionResponse> fromJson(
+      Map<String, dynamic> json, String questionId) async {
+    Question question = Question.fromJson(json, questionId);
+    Question questionWithUserName = await Question.createWithUserName(question);
+    return QuestionResponse(question: questionWithUserName);
+  }
+}

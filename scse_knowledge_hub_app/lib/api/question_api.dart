@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:js_interop';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,28 +38,14 @@ Future<ListOfQuestionReponse?> getQuestionsFromDB(
   }
 }
 
-Future<Question?> getQuestion({required String questionId}) async {
+Future<QuestionResponse?> getQuestion({required String questionId}) async {
   try {
     DocumentSnapshot snapshot =
         await db.collection("questions").doc(questionId).get();
     // help from here
     if (snapshot.exists) {
       Map<String, dynamic> json = snapshot.data() as Map<String, dynamic>;
-      final List<String> imageUrls =
-          List<String>.from(json['image_urls'] ?? []);
-      return Question(
-        id: questionId,
-        userId: json['userId'] ?? '',
-        userName: '', // Default value, will be replaced by async method
-        title: json['title'],
-        description: json['description'],
-        numberOfReplies: json['number_of_replies'],
-        likes: json['likes'] ?? 0,
-        timestamp: json['timestamp'].toDate(),
-        anonymous: json['anonymous'],
-        imageUrls: imageUrls,
-        topic: json['topic'] ?? '',
-      );
+      return QuestionResponse.fromJson(json, questionId);
     } else {
       return null;
     }

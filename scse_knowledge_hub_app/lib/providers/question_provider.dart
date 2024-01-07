@@ -112,9 +112,10 @@ class QuestionProvider extends ChangeNotifier {
 
   Future<void> getQuestion({required String questionId}) async {
     startLoading();
-    Question? question = await QuestionAPI.getQuestion(questionId: questionId);
-    if (null != question) {
-      _currentQuestion = question;
+    QuestionResponse? res =
+        await QuestionAPI.getQuestion(questionId: questionId);
+    if (null != res) {
+      _currentQuestion = res.question;
     } else {
       _currentQuestion = null;
     }
