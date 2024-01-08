@@ -1,6 +1,6 @@
 # scse_knowledge_hub_app
 
-A new Flutter project.
+A Flutter project that aims to create a dynamic platform designed to enhance students' learning experiences by providing a secure and supportive environment for asking and answering questions.
 
 ## Getting Started
 
