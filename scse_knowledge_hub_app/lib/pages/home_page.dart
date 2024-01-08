@@ -48,6 +48,8 @@ class _HomePageState extends State<HomePage>
     Future.microtask(() async {
       log("user: ${_userProvider.user.name}");
       await NotificationProvider().setup();
+      await NotificationProvider.addAndStoreFCMToken(
+          userId: _userProvider.user.id);
       _welcomeText = "Hi, ${_userProvider.user.name}";
       _titleText = _welcomeText;
 
