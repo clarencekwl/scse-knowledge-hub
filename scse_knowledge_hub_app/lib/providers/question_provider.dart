@@ -280,14 +280,14 @@ class QuestionProvider extends ChangeNotifier {
       if (updatedQuestionIndex != -1) {
         listOfQuestions[updatedQuestionIndex].numberOfReplies += 1;
       }
-      if (userId != question.userId) {
-        await QuestionAPI.addNotification(
-          question: question,
-          senderId: userId,
-          senderName: userName,
-          replyDocumentId: replyDocumentId,
-        );
-      }
+      // if (userId != question.userId) {
+      //   await QuestionAPI.addNotification(
+      //     question: question,
+      //     senderId: userId,
+      //     senderName: userName,
+      //     replyDocumentId: replyDocumentId,
+      //   );
+      // }
     } else {
       log("Error adding reply");
     }
@@ -390,49 +390,6 @@ class QuestionProvider extends ChangeNotifier {
     }
   }
 
-  // Future<void> likeQuestion(
-  //     {required String docId, required int numberOfLikes}) async {
-  //   startLoading();
-  //   await QuestionAPI.likeQuestion(docId: docId, numberOfLikes: numberOfLikes);
-  //   Question question = _listOfQuestions.firstWhere(
-  //     (question) => question.id == docId,
-  //   );
-
-  //   question.likes = question.likes! + 1;
-  // }
-
-  // Future<void> getAllQuestions() async {
-  //   for (int i = 0; i < 15; i++) {
-  //     _listOfQuestions.add(Question(
-  //         id: i.toString(),
-  //         title:
-  //             _tempListOfTitles[math.Random().nextInt(_tempListOfNames.length)],
-  //         user:
-  //             _tempListOfNames[math.Random().nextInt(_tempListOfNames.length)],
-  //         likes: math.Random().nextInt(100),
-  //         replies: math.Random().nextInt(100)));
-  //     notifyListeners();
-  //   }
-  // }
-
-  // final List<String> _tempListOfNames = [
-  //   'Clarence Kway',
-  //   'Ernest Tan',
-  //   'Pang Cheng Feng',
-  //   'Bhone Myat Gon',
-  //   'Teo Han Hua',
-  //   'Xie Zijian'
-  // ];
-
-  // final List<String> _tempListOfTitles = [
-  //   'CZ2006 Lab 3 documentation',
-  //   'MDP Android Bluetooth',
-  //   'Database system principles',
-  //   'Discrete Math propositional logic',
-  //   "CZ4031 don't understand what prof is teaching",
-  //   'Help me find the bug in my code!'
-  // ];
-
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   set isLoading(bool isLoading) {
@@ -474,117 +431,14 @@ class QuestionProvider extends ChangeNotifier {
     stopLoading();
   }
 
-  // Future<void> populateUserLikesCollection() async {
-  //   // Reference to the 'questions' collection
-  //   final questionsCollection =
-  //       FirebaseFirestore.instance.collection('questions');
+  // Future<void> likeQuestion(
+  //     {required String docId, required int numberOfLikes}) async {
+  //   startLoading();
+  //   await QuestionAPI.likeQuestion(docId: docId, numberOfLikes: numberOfLikes);
+  //   Question question = _listOfQuestions.firstWhere(
+  //     (question) => question.id == docId,
+  //   );
 
-  //   // Reference to the 'userLikes' collection
-  //   final userLikesCollection =
-  //       FirebaseFirestore.instance.collection('userLikes');
-
-  //   // Get all documents from the 'questions' collection
-  //   final questionsSnapshot = await questionsCollection.get();
-
-  //   // Iterate through each question and populate 'userLikes' collection
-  //   for (final questionDoc in questionsSnapshot.docs) {
-  //     final questionId = questionDoc.id;
-
-  //     // You can customize this list with user IDs who liked the question
-  //     final likedUserIds = [
-  //       'bmDrMYHQR4YThCLGFOMY',
-  //       'tePv16GUJzUn5F4LkROW',
-  //       'XnK9A9EZd0QtuksIhEaD'
-  //     ];
-
-  //     // Update 'userLikes' collection for each liked user
-  //     for (final userId in likedUserIds) {
-  //       await userLikesCollection
-  //           .doc(userId)
-  //           .set({questionId: true}, SetOptions(merge: true));
-  //     }
-  //   }
-  // }
-
-//   Future<void> populateUserSubCollection() async {
-//     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-//     // Get all questions
-//     QuerySnapshot questionsSnapshot =
-//         await _firestore.collection('questions').get();
-
-// // Iterate through each question
-//     for (QueryDocumentSnapshot questionDoc in questionsSnapshot.docs) {
-//       // Get userId from the question
-//       String? userId = questionDoc.get('userId'); // Use get() instead of data()
-
-//       // Check if userId is not null
-//       if (userId != null) {
-//         // Get question data
-//         Map<String, dynamic> questionData = {
-//           'title': questionDoc.get('title'),
-//           'description': questionDoc.get('description'),
-//           'likes': questionDoc.get('likes'),
-//           'replies': questionDoc.get('replies'),
-//           'timestamp': questionDoc.get('timestamp'),
-//           'userId': questionDoc.get('userId')
-//           // Add any other fields you want to include in the user's subcollection
-//         };
-
-//         // Add the question to the user's subcollection
-//         await _firestore
-//             .collection('users')
-//             .doc(userId)
-//             .collection('questions')
-//             .add(questionData);
-//       }
-//     }
-//   }
-
-  // Future<void> updateField() async {
-  //   // Update "questions" collection
-  //   CollectionReference questionsRef =
-  //       FirebaseFirestore.instance.collection('questions');
-  //   QuerySnapshot questionsSnapshot = await questionsRef.get();
-
-  //   for (QueryDocumentSnapshot question in questionsSnapshot.docs) {
-  //     Map<String, dynamic> data = question.data() as Map<String, dynamic>;
-  //     int number_of_replies = data['replies'] ?? 0;
-
-  //     // Update the document
-  //     await questionsRef.doc(question.id).update({
-  //       'number_of_replies': number_of_replies,
-  //     });
-
-  //     // Delete the old field
-  //     await questionsRef.doc(question.id).update({
-  //       'replies': FieldValue.delete(),
-  //     });
-  //   }
-
-  //   // Update "questions" subcollections under each user
-  //   CollectionReference usersRef =
-  //       FirebaseFirestore.instance.collection('users');
-  //   QuerySnapshot usersSnapshot = await usersRef.get();
-
-  //   for (QueryDocumentSnapshot user in usersSnapshot.docs) {
-  //     CollectionReference userQuestionsRef =
-  //         usersRef.doc(user.id).collection('questions');
-  //     QuerySnapshot userQuestionsSnapshot = await userQuestionsRef.get();
-
-  //     for (QueryDocumentSnapshot userQuestion in userQuestionsSnapshot.docs) {
-  //       Map<String, dynamic> data = userQuestion.data() as Map<String, dynamic>;
-  //       int number_of_replies = data['replies'] ?? 0;
-
-  //       await userQuestionsRef.doc(userQuestion.id).update({
-  //         'number_of_replies': number_of_replies,
-  //       });
-
-  //       await userQuestionsRef.doc(userQuestion.id).update({
-  //         'replies': FieldValue.delete(),
-  //       });
-  //     }
-  //   }
-
-  //   log('Field name update completed.');
+  //   question.likes = question.likes! + 1;
   // }
 }

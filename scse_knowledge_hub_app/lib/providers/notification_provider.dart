@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:scse_knowledge_hub_app/pages/question_details_page.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tzData;
@@ -107,15 +108,15 @@ class NotificationProvider extends ChangeNotifier {
       return;
     }
     log('Notification payload: ${response.payload}');
-    // _caseProvider = Provider.of<CaseProvider>(_context!, listen: false);
-    // String caseID = response.payload!;
-    // await _caseProvider.getCaseDetailsNotification(caseID);
+    _questionProvider = Provider.of<QuestionProvider>(_context!, listen: false);
+    String questionId = response.payload!;
+    await _questionProvider.getQuestion(questionId: questionId);
 
-    // Navigator.of(_context!)
-    //     .push(MaterialPageRoute(
-    //         builder: (context) =>
-    //             CaseDetailsPage(item: _caseProvider.currentCase!)))
-    //     .then((value) => _caseProvider.getCases(onRefresh: true));
+    Navigator.of(_context!)
+        .push(MaterialPageRoute(
+            builder: (context) => QuestionDetailsPage(
+                question: _questionProvider.currentQuestion!)))
+        .then((value) => _questionProvider.getQuestions(onRefreshed: true));
   }
 }
 

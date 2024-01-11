@@ -60,6 +60,7 @@ class _HomePageState extends State<HomePage>
       _isFilter = _questionProvider.getFilteredQuestions(widget.selectedTopics);
       _isLoading = false;
       setState(() {});
+      await setupNotificationMessage();
     });
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabSelection);
@@ -68,7 +69,6 @@ class _HomePageState extends State<HomePage>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       NotificationProvider.setContext(context);
     });
-    setupNotificationMessage();
   }
 
   void scrollController() {
@@ -108,12 +108,20 @@ class _HomePageState extends State<HomePage>
   Future<void> setupNotificationMessage() async {
     //! APP IN FOREGROUND
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      log("onMessage data: ${message.data}");
+      Map<String, dynamic> data = message.data;
+      await NotificationProvider.showNotification(
+          title: data['title'],
+          body: data['body'],
+          payload: data['questionId']);
+    });
+
+    //! APP IN BACKGROUND / TERMINATED, TAPPED NOTIFICATION
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       if (null != message.notification) {
-        log("onMessage data: ${message.data}");
-        await NotificationProvider.showNotification(
-            title: message.notification!.title,
-            body: message.notification!.body,
-            payload: message.data['case_id'] ?? null);
+        log("onMessageOpenedApp data: ${message.data}");
+        // Handle the tapped notification when the app is in the background or terminated.
+        // You might want to navigate to a specific screen or perform other actions.
       }
     });
   }
@@ -124,26 +132,25 @@ class _HomePageState extends State<HomePage>
     _userProvider = Provider.of(context);
     return Scaffold(
       floatingActionButton: _isSliverAppBarExpanded
-          ?
-          //  FloatingActionButton(
-          //     onPressed: () async {
-          //       Navigator.of(context).push(MaterialPageRoute(
-          //           builder: (context) => CreateQuestionPage()));
-          //     },
-          //     elevation: 6,
-          //     backgroundColor: Styles.primaryBlueColor,
-          //     child: Icon(Icons.add, color: Colors.white),
-          //   )
-          FloatingActionButton(
+          ? FloatingActionButton(
               onPressed: () async {
-                await NotificationProvider.showNotification(
-                  title: 'Someone replied to your question!',
-                  body: 'Go check it out',
-                  // payload: 'WTF GG',
-                );
-                log('notif added!');
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => CreateQuestionPage()));
               },
+              elevation: 6,
+              backgroundColor: Styles.primaryBlueColor,
+              child: Icon(Icons.add, color: Colors.white),
             )
+          // FloatingActionButton(
+          //     onPressed: () async {
+          //       await NotificationProvider.showNotification(
+          //         title: 'Someone replied to your question!',
+          //         body: 'Go check it out',
+          //         // payload: 'WTF GG',
+          //       );
+          //       log('notif added!');
+          //     },
+          //   )
           : null,
       drawer: NavBar(),
       body: SafeArea(
