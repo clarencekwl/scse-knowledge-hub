@@ -27,6 +27,7 @@ class _ReplyCardState extends State<ReplyCard> {
   late QuestionProvider _questionProvider;
   late UserProvider _userProvider;
   bool _isUserReply = false;
+  bool _isDelete = false;
 
   @override
   void initState() {
@@ -43,10 +44,11 @@ class _ReplyCardState extends State<ReplyCard> {
   Widget build(BuildContext context) {
     _questionProvider = Provider.of(context);
     _userProvider = Provider.of(context);
+
     return Container(
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(20))),
+          borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Column(
@@ -69,14 +71,8 @@ class _ReplyCardState extends State<ReplyCard> {
                   },
                   child: Row(
                     children: const [
-                      Icon(
-                        Icons.reply_outlined,
-                        size: 20,
-                      ),
-                      Text(
-                        "Reply",
-                        style: TextStyle(fontSize: 12),
-                      ),
+                      Icon(Icons.reply_outlined, size: 20),
+                      Text("Reply", style: TextStyle(fontSize: 12)),
                     ],
                   ),
                 )
@@ -95,46 +91,50 @@ class _ReplyCardState extends State<ReplyCard> {
                     style: TextStyle(color: Styles.primaryLightBlueColor),
                   ),
                 Expanded(
-                  child: Text(
-                    widget.reply.content,
-                    style: TextStyle(fontSize: 12),
-                  ),
+                  child: Text(widget.reply.content,
+                      style: TextStyle(fontSize: 12)),
                 ),
                 if (_isUserReply)
                   IconButton(
-                      padding: EdgeInsets.all(0),
-                      onPressed: () async {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return WarningDialogWidget(
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: const [
-                                  Text('Your reply will be permanently removed',
-                                      textAlign: TextAlign.center),
-                                  Text('Are you sure?',
-                                      textAlign: TextAlign.center),
-                                ],
-                              ),
-                              onConfirm: () async {
-                                await _questionProvider.deleteReply(
-                                    userId: _userProvider.user.id,
-                                    question: widget.question,
-                                    replyId: widget.reply.id);
-                                Navigator.pop(context);
-                              },
-                              onCancel: () {
-                                Navigator.pop(context);
-                              },
-                            );
-                          },
-                        );
-                      },
-                      icon: Icon(
-                        Icons.remove,
-                        color: Colors.redAccent,
-                      ))
+                    padding: EdgeInsets.all(0),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return WarningDialogWidget(
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                Text('Your reply will be permanently removed',
+                                    textAlign: TextAlign.center),
+                                Text('Are you sure?',
+                                    textAlign: TextAlign.center)
+                              ],
+                            ),
+                            onConfirm: () {
+                              _isDelete = true;
+                              Navigator.pop(context);
+                            },
+                            onCancel: () {
+                              _isDelete = false;
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      ).then((value) async {
+                        if (_isDelete) {
+                          await _questionProvider.deleteReply(
+                              userId: _userProvider.user.id,
+                              question: widget.question,
+                              replyId: widget.reply.id);
+                        }
+                      });
+                    },
+                    icon: Icon(
+                      Icons.remove,
+                      color: Colors.redAccent,
+                    ),
+                  )
               ],
             ),
             // SizedBox(height: 10),

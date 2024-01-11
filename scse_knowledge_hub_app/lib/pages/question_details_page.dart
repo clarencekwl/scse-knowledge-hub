@@ -278,13 +278,17 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                                     question: widget.question,
                                     content: _replyController.text,
                                     taggedUserId: _taggedUser)
-                                : await _questionProvider.addReply(
-                                    userId: _userProvider.user.id,
-                                    userName: _userProvider.user.name,
-                                    question: widget.question,
-                                    content: _replyController.text);
-                            await _questionProvider.getAllRepliesForQuestion(
-                                questionId: widget.question.id);
+                                : await _questionProvider
+                                    .addReply(
+                                        userId: _userProvider.user.id,
+                                        userName: _userProvider.user.name,
+                                        question: widget.question,
+                                        content: _replyController.text)
+                                    .then((value) {
+                                    _questionProvider.getAllRepliesForQuestion(
+                                        questionId: widget.question.id);
+                                  });
+
                             _isLoading = false;
                             _isTaggedReply = false;
 
