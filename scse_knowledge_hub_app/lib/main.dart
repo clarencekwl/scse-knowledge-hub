@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:scse_knowledge_hub_app/providers/notification_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/auth_helper.dart';
@@ -16,7 +18,16 @@ import 'package:scse_knowledge_hub_app/utils/styles.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
   runApp(MyApp());
+}
+
+Future<void> _backgroundMessageHandler(RemoteMessage message) async {
+  //! APP IN BACKGROUND
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+    log("App in background message data: ${message.data}");
+    await NotificationProvider().onReceiveBackgroundNotification(message);
+  });
 }
 
 class MyApp extends StatelessWidget {

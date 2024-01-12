@@ -60,7 +60,6 @@ class _HomePageState extends State<HomePage>
       _isFilter = _questionProvider.getFilteredQuestions(widget.selectedTopics);
       _isLoading = false;
       setState(() {});
-      await setupNotificationMessage();
     });
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabSelection);
@@ -69,6 +68,7 @@ class _HomePageState extends State<HomePage>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       NotificationProvider.setContext(context);
     });
+    setupNotificationMessage();
   }
 
   void scrollController() {
@@ -106,24 +106,49 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> setupNotificationMessage() async {
-    //! APP IN FOREGROUND
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      log("onMessage data: ${message.data}");
-      Map<String, dynamic> data = message.data;
-      await NotificationProvider.showNotification(
-          title: data['title'],
-          body: data['body'],
-          payload: data['questionId']);
-    });
+    try {
+      //! APP KILLED
+      RemoteMessage? initialMessage =
+          await FirebaseMessaging.instance.getInitialMessage();
 
-    //! APP IN BACKGROUND / TERMINATED, TAPPED NOTIFICATION
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      if (null != message.notification) {
-        log("onMessageOpenedApp data: ${message.data}");
-        // Handle the tapped notification when the app is in the background or terminated.
-        // You might want to navigate to a specific screen or perform other actions.
+      if (initialMessage != null) {
+        log('App killed but received notification: ${initialMessage.data}');
+        await _questionProvider.getQuestion(
+            questionId: initialMessage.data['questionId']);
+
+        Navigator.of(context)
+            .push(MaterialPageRoute(
+                builder: (context) => QuestionDetailsPage(
+                    question: _questionProvider.currentQuestion!)))
+            .then((value) => _questionProvider.getQuestions(onRefreshed: true));
       }
-    });
+
+      //! APP IN FOREGROUND
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+        log("App in foreground message data: ${message.data}");
+        Map<String, dynamic> data = message.data;
+        await NotificationProvider.showNotification(
+            title: data['title'],
+            body: data['body'],
+            payload: data['questionId']);
+      });
+
+      // //! APP IN BACKGROUND
+      // FirebaseMessaging.onMessageOpenedApp
+      //     .listen((RemoteMessage message) async {
+      //   log("App in background message data: ${message.data}");
+      //   Map<String, dynamic> data = message.data;
+      //   await _questionProvider.getQuestion(questionId: data['questionId']);
+
+      //   Navigator.of(context)
+      //       .push(MaterialPageRoute(
+      //           builder: (context) => QuestionDetailsPage(
+      //               question: _questionProvider.currentQuestion!)))
+      //       .then((value) => _questionProvider.getQuestions(onRefreshed: true));
+      // });
+    } catch (e, stackTrace) {
+      log('Error handling FCM messages: $e\n$stackTrace');
+    }
   }
 
   @override

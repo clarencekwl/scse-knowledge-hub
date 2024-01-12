@@ -48,7 +48,7 @@ class NotificationProvider extends ChangeNotifier {
     fcmToken = await FirebaseMessaging.instance.getToken();
     final userDocRef =
         FirebaseFirestore.instance.collection('users').doc(userId);
-
+    log("user's updated fcmToken is $fcmToken");
     await userDocRef.update({
       'fcmToken': fcmToken,
     });
@@ -78,9 +78,10 @@ class NotificationProvider extends ChangeNotifier {
 
     await _localNotificationsPlugin.initialize(initSettings,
         onDidReceiveNotificationResponse: onTapNotification);
-    // onDidReceiveBackgroundNotificationResponse: (details) {
-    //   log('RECEIVE NOTIFICATION: ${details.payload}');
-    // },
+    // onDidReceiveBackgroundNotificationResponse:
+    // (details) {
+    //   log('RECEIVE NOTIFICATION: ${details.data}');
+    // };
 
     await _localNotificationsPlugin
         .resolvePlatformSpecificImplementation<
@@ -111,6 +112,17 @@ class NotificationProvider extends ChangeNotifier {
     _questionProvider = Provider.of<QuestionProvider>(_context!, listen: false);
     String questionId = response.payload!;
     await _questionProvider.getQuestion(questionId: questionId);
+
+    Navigator.of(_context!)
+        .push(MaterialPageRoute(
+            builder: (context) => QuestionDetailsPage(
+                question: _questionProvider.currentQuestion!)))
+        .then((value) => _questionProvider.getQuestions(onRefreshed: true));
+  }
+
+  Future<void> onReceiveBackgroundNotification(RemoteMessage message) async {
+    Map<String, dynamic> data = message.data;
+    await _questionProvider.getQuestion(questionId: data['questionId']);
 
     Navigator.of(_context!)
         .push(MaterialPageRoute(

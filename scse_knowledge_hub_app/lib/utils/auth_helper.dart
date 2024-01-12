@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthHelper {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  static Future<User?> logIn(
+  static Future<dynamic> logIn(
       {required String email, required String password}) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -19,13 +19,13 @@ class AuthHelper {
       await saveUserDetails(userCredential.user);
 
       return userCredential.user;
-    } catch (e) {
-      log("Error loggin in: $e");
-      return null;
+    } on FirebaseAuthException catch (e) {
+      log("Error logging in: ${e.code}");
+      return e.code;
     }
   }
 
-  static Future<User?> signUp(
+  static Future<dynamic> signUp(
       {required String email, required String password}) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
@@ -35,9 +35,9 @@ class AuthHelper {
       await saveUserDetails(userCredential.user);
 
       return userCredential.user;
-    } catch (e) {
-      log("Error signing up: $e");
-      return null;
+    } on FirebaseAuthException catch (e) {
+      log("Error signing in: ${e.code}");
+      return e.code;
     }
   }
 

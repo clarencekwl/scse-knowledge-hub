@@ -325,30 +325,34 @@ class _LoginPageState extends State<LoginPage> {
       required String userEmail,
       required String userPassword,
       required BuildContext context}) async {
-    try {
-      return AuthHelper.signUp(email: userEmail, password: userPassword);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('The password provided is too weak.')));
-      } else if (e.code == 'email-already-in-use') {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('The account already exists for that email.')));
+    var res = await AuthHelper.signUp(email: userEmail, password: userPassword);
+    if (res.runtimeType != String) {
+      return res as User;
+    } else {
+      switch (res) {
+        case 'weak-password':
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('The password provided is too weak.')));
+          break;
+        case 'email-already-in-use':
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('The account already exists for that email.')));
+          break;
+        default:
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Login unsuccessful. Please try again')));
       }
-      return null;
-    } catch (e) {
-      debugPrint(e.toString());
       return null;
     }
   }
 
   Future<User?> _login(
       {required String userEmail, required String userPassword}) async {
-    try {
-      return AuthHelper.logIn(email: userEmail, password: userPassword);
-    } on FirebaseAuthException catch (e) {
-      log(e.code.toString());
-      switch (e.code) {
+    var res = await AuthHelper.logIn(email: userEmail, password: userPassword);
+    if (res.runtimeType != String) {
+      return res as User;
+    } else {
+      switch (res) {
         case "user-not-found":
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text(

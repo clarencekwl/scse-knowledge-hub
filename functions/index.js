@@ -13,16 +13,21 @@ exports.addNotification = functions.firestore
             // Get the question details
             const questionSnapshot = await admin.firestore().collection('questions').doc(questionId).get();
             const questionData = questionSnapshot.data();
-
+            if (replyData.userId == questionData.userId) {
+                return null;
+            }
             // Get the FCM token of the question owner
             const questionOwnerSnapshot = await admin.firestore().collection('users').doc(questionData.userId).get();
             const questionOwnerData = questionOwnerSnapshot.data();
             const fcmToken = questionOwnerData.fcmToken;
+            if (fcmToken == null) {
+                return null;
+            }
 
             // Construct the FCM message
             const message = {
                 data: {
-                    title: 'New Reply',
+                    title: 'Someone Repiled You!',
                     body: `You received a new reply on your question: ${questionData.title}`,
                     questionId: `${questionId}`
                 },
