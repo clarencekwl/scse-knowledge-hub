@@ -257,10 +257,11 @@ class QuestionProvider extends ChangeNotifier {
     required Question question,
     required String content,
     String? taggedUserId,
+    String? taggedReplyId,
   }) async {
     String? replyDocumentId;
     startLoading();
-    taggedUserId == null
+    taggedUserId == null && taggedReplyId == null
         ? replyDocumentId = await QuestionAPI.addReply(
             userId: userId,
             userName: userName,
@@ -271,7 +272,9 @@ class QuestionProvider extends ChangeNotifier {
             userName: userName,
             question: question,
             content: content,
-            taggedUserId: taggedUserId);
+            taggedUserId: taggedUserId,
+            taggedReplyId: taggedReplyId,
+          );
     if (replyDocumentId != null) {
       await QuestionAPI.incrementReplies(question.id, question.userId);
       // Update the List<Question> with the updated number_of_replies

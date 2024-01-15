@@ -1,5 +1,7 @@
 // import 'dart:developer';
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
@@ -28,6 +30,7 @@ class QuestionDetailsPage extends StatefulWidget {
 
 class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
   final TextEditingController _replyController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   late QuestionProvider _questionProvider;
   late UserProvider _userProvider;
   bool _isUserQuestion = false;
@@ -35,6 +38,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
   bool _isDelete = false;
   bool _isTaggedReply = false;
   String _taggedUser = '';
+  String _taggedReply = '';
 
   //! TEMP: Images
   List<String> listOfThumbnailUrls = [
@@ -68,6 +72,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
   Widget build(BuildContext context) {
     _questionProvider = Provider.of(context);
     _userProvider = Provider.of(context);
+
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -162,6 +167,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
               child: StretchingOverscrollIndicator(
                 axisDirection: AxisDirection.down,
                 child: SingleChildScrollView(
+                  controller: _scrollController,
                   padding: EdgeInsets.all(10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,10 +196,19 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                             child: ReplyCard(
                               reply: _questionProvider.listOfReplies[index],
                               question: widget.question,
-                              onReplyButtonPressed: (userName) {
+                              isFocused:
+                                  _questionProvider.listOfReplies[index].id ==
+                                      _taggedReply,
+                              onReplyButtonPressed: (userName, replyId) {
                                 _isTaggedReply = true;
                                 _taggedUser = userName;
+                                _taggedReply = replyId;
+
                                 setState(() {});
+                              },
+                              onReplyCardPressed: (replyId, cardHeight) {
+                                scrollToReply(
+                                    replyId, _scrollController, cardHeight);
                               },
                             ),
                           );
@@ -224,8 +239,8 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                                 TextSpan(
                                   text: _taggedUser,
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                      fontWeight: FontWeight.bold,
+                                      overflow: TextOverflow.ellipsis),
                                 ),
                                 TextSpan(
                                   text:
@@ -278,7 +293,8 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                                         userName: _userProvider.user.name,
                                         question: widget.question,
                                         content: _replyController.text,
-                                        taggedUserId: _taggedUser)
+                                        taggedUserId: _taggedUser,
+                                        taggedReplyId: _taggedReply)
                                     .then((value) {
                                     _questionProvider.getAllRepliesForQuestion(
                                         questionId: widget.question.id);
@@ -330,6 +346,23 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
         ),
       ),
     );
+  }
+
+  void scrollToReply(String replyId, ScrollController scrollController,
+      double replyCardHeight) async {
+    log("tagged reply is: $replyId");
+    int indexOfFocusedReply = _questionProvider.listOfReplies
+        .indexWhere((reply) => reply.id == replyId);
+    _taggedReply = replyId;
+    await scrollController.animateTo(
+      indexOfFocusedReply * replyCardHeight,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+    setState(() {});
+    await Future.delayed(Duration(seconds: 2));
+    _taggedReply = '';
+    setState(() {});
   }
 
   Widget questionDetails() {

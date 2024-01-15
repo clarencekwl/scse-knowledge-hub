@@ -4,7 +4,8 @@ class Reply {
   String userName;
   String content;
   DateTime timestamp;
-  String? taggedUserId; // Tagged user ID
+  String? taggedUserId;
+  String? taggedReplyId;
 
   Reply({
     required this.id,
@@ -13,6 +14,7 @@ class Reply {
     required this.content,
     required this.timestamp,
     required this.taggedUserId,
+    required this.taggedReplyId,
   });
 
   factory Reply.fromMap(String replyId, Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class Reply {
       content: json['content'] ?? '',
       timestamp: json['timestamp'].toDate(),
       taggedUserId: json['taggedUserId'],
+      taggedReplyId: json['taggedReplyId'],
     );
   }
 }

@@ -264,7 +264,8 @@ Future<String?> addReply(
     required String userName,
     required Question question,
     required String content,
-    String? taggedUserId}) async {
+    String? taggedUserId,
+    String? taggedReplyId}) async {
   try {
 // Add reply to the "replies" subcollection under the question
     DocumentReference questionReplyRef = await db
@@ -277,6 +278,7 @@ Future<String?> addReply(
       'content': content,
       'timestamp': FieldValue.serverTimestamp(),
       if (taggedUserId != null) 'taggedUserId': taggedUserId,
+      if (taggedUserId != null) 'taggedReplyId': taggedReplyId,
     });
 
 // Add reply to the "replies" subcollection under the user
@@ -290,6 +292,7 @@ Future<String?> addReply(
       'content': content,
       'timestamp': FieldValue.serverTimestamp(),
       if (taggedUserId != null) 'taggedUserId': taggedUserId,
+      if (taggedUserId != null) 'taggedReplyId': taggedReplyId,
     });
     return questionReplyRef.id;
   } catch (e) {

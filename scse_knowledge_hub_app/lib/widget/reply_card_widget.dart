@@ -12,18 +12,23 @@ import 'package:scse_knowledge_hub_app/widget/warning_dialog_widget.dart';
 class ReplyCard extends StatefulWidget {
   final Reply reply;
   final Question question;
-  final Function(String) onReplyButtonPressed;
-  const ReplyCard(
-      {Key? key,
-      required this.reply,
-      required this.question,
-      required this.onReplyButtonPressed})
-      : super(key: key);
+  final bool isFocused;
+  final Function(String, String) onReplyButtonPressed;
+  final Function(String, double) onReplyCardPressed;
+  const ReplyCard({
+    Key? key,
+    required this.reply,
+    required this.question,
+    required this.isFocused,
+    required this.onReplyButtonPressed,
+    required this.onReplyCardPressed,
+  }) : super(key: key);
   @override
   State<ReplyCard> createState() => _ReplyCardState();
 }
 
 class _ReplyCardState extends State<ReplyCard> {
+  final GlobalKey _cardKey = GlobalKey();
   late QuestionProvider _questionProvider;
   late UserProvider _userProvider;
   bool _isUserReply = false;
@@ -45,101 +50,136 @@ class _ReplyCardState extends State<ReplyCard> {
     _questionProvider = Provider.of(context);
     _userProvider = Provider.of(context);
 
-    return Container(
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10))),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return InkWell(
+      onTap: () {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final RenderBox renderBox =
+              _cardKey.currentContext!.findRenderObject() as RenderBox;
+          final cardHeight = renderBox.size.height;
+
+          if (widget.reply.taggedReplyId != null) {
+            widget.onReplyCardPressed(
+              widget.reply.taggedReplyId!,
+              cardHeight,
+            );
+          }
+        });
+      },
+      child: KeyedSubtree(
+        key: _cardKey,
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            border: widget.isFocused
+                ? Border.all(color: Colors.blue, width: 2.0)
+                : null,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(widget.reply.userName,
-                      style: TextStyle(
-                          color: Colors.black,
-                          overflow: TextOverflow.ellipsis,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14)),
-                ),
-                InkWell(
-                  onTap: () {
-                    widget.onReplyButtonPressed(widget.reply.userName);
-                  },
-                  child: Row(
-                    children: const [
-                      Icon(Icons.reply_outlined, size: 20),
-                      Text("Reply", style: TextStyle(fontSize: 12)),
-                    ],
-                  ),
-                )
-              ],
-            ),
-            Text(
-                Styles.formatTimeDifference(
-                    DateTime.now().difference(widget.reply.timestamp)),
-                style: TextStyle(color: Colors.grey, fontSize: 10)),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                if (widget.reply.taggedUserId != null)
-                  Text(
-                    "@${widget.reply.taggedUserId!} ",
-                    style: TextStyle(color: Styles.primaryLightBlueColor),
-                  ),
-                Expanded(
-                  child: Text(widget.reply.content,
-                      style: TextStyle(fontSize: 12)),
-                ),
-                if (_isUserReply)
-                  IconButton(
-                    padding: EdgeInsets.all(0),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return WarningDialogWidget(
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: const [
-                                Text('Your reply will be permanently removed',
-                                    textAlign: TextAlign.center),
-                                Text('Are you sure?',
-                                    textAlign: TextAlign.center)
-                              ],
-                            ),
-                            onConfirm: () {
-                              _isDelete = true;
-                              Navigator.pop(context);
-                            },
-                            onCancel: () {
-                              _isDelete = false;
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      ).then((value) async {
-                        if (_isDelete) {
-                          await _questionProvider.deleteReply(
-                              userId: _userProvider.user.id,
-                              question: widget.question,
-                              replyId: widget.reply.id);
-                        }
-                      });
-                    },
-                    icon: Icon(
-                      Icons.remove,
-                      color: Colors.redAccent,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(widget.reply.userName,
+                          style: TextStyle(
+                              color: Colors.black,
+                              overflow: TextOverflow.ellipsis,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14)),
                     ),
-                  )
+                    InkWell(
+                      onTap: () {
+                        widget.onReplyButtonPressed(
+                            widget.reply.userName, widget.reply.id);
+                      },
+                      child: Row(
+                        children: const [
+                          Icon(Icons.reply_outlined, size: 20),
+                          Text("Reply", style: TextStyle(fontSize: 12)),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                Text(
+                    Styles.formatTimeDifference(
+                        DateTime.now().difference(widget.reply.timestamp)),
+                    style: TextStyle(color: Colors.grey, fontSize: 10)),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    if (widget.reply.taggedUserId != null)
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          "@${widget.reply.taggedUserId!} ",
+                          style: TextStyle(
+                              color: Styles.primaryLightBlueColor,
+                              overflow: TextOverflow.clip),
+                        ),
+                      ),
+                    Expanded(
+                      flex: widget.reply.taggedUserId != null ? 2 : 1,
+                      child: Text(
+                        widget.reply.content,
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                    if (_isUserReply)
+                      IconButton(
+                        padding: EdgeInsets.all(0),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return WarningDialogWidget(
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: const [
+                                    Text(
+                                        'Your reply will be permanently removed',
+                                        textAlign: TextAlign.center),
+                                    Text('Are you sure?',
+                                        textAlign: TextAlign.center)
+                                  ],
+                                ),
+                                onConfirm: () {
+                                  _isDelete = true;
+                                  Navigator.pop(context);
+                                },
+                                onCancel: () {
+                                  _isDelete = false;
+                                  Navigator.pop(context);
+                                },
+                              );
+                            },
+                          ).then((value) async {
+                            if (_isDelete) {
+                              await _questionProvider.deleteReply(
+                                  userId: _userProvider.user.id,
+                                  question: widget.question,
+                                  replyId: widget.reply.id);
+                            }
+                          });
+                        },
+                        icon: Icon(
+                          Icons.remove,
+                          color: Colors.redAccent,
+                        ),
+                      )
+                  ],
+                ),
+                // SizedBox(height: 10),
+                // Styles.bottomRowIcons(Icons.thumb_up_alt_rounded, "${40} Likes"),
               ],
             ),
-            // SizedBox(height: 10),
-            // Styles.bottomRowIcons(Icons.thumb_up_alt_rounded, "${40} Likes"),
-          ],
+          ),
         ),
       ),
     );
