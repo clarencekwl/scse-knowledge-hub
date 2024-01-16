@@ -31,6 +31,14 @@ exports.addNotification = functions.firestore
                     body: `You received a new reply on your question: ${questionData.title}`,
                     questionId: `${questionId}`
                 },
+                apns: {
+                    payload: {
+                        aps: {
+                            'mutable-content': 1,
+                            "content-available": 1
+                        }
+                    }
+                },
                 token: fcmToken,
             };
 

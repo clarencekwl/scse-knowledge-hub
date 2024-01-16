@@ -24,10 +24,12 @@ void main() async {
 
 Future<void> _backgroundMessageHandler(RemoteMessage message) async {
   //! APP IN BACKGROUND
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-    log("App in background message data: ${message.data}");
-    await NotificationProvider().onReceiveBackgroundNotification(message);
-  });
+  log("App in background message data: ${message.data}");
+  await NotificationProvider.showNotification(
+      title: message.data['title'],
+      body: message.data['body'],
+      payload: message.data['questionId']);
+  await NotificationProvider().onReceiveBackgroundNotification(message);
 }
 
 class MyApp extends StatelessWidget {
