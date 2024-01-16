@@ -20,10 +20,11 @@ class UserProvider extends ChangeNotifier {
     stopLoading();
   }
 
-  Future<void> createUser(
-      {required String userID,
-      required String userName,
-      required String userEmail}) async {
+  Future<void> createUser({
+    required String userID,
+    required String userName,
+    required String userEmail,
+  }) async {
     startLoading();
     await UserAPI.createUser(
         userID: userID, userName: userName, userEmail: userEmail);

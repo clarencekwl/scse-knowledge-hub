@@ -40,9 +40,10 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
 
     if (isEmailVerified) {
       await _userProvider.createUser(
-          userID: user.uid,
-          userName: widget.userName,
-          userEmail: widget.userEmail);
+        userID: user.uid,
+        userName: widget.userName,
+        userEmail: widget.userEmail,
+      );
       await _userProvider.setUser(userID: user.uid);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Email Successfully Verified")));

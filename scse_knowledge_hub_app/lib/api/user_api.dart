@@ -17,6 +17,7 @@ Future<void> createUser(
   Map<String, dynamic> data = {
     "name": userName,
     "email": userEmail,
+    "date_joined": FieldValue.serverTimestamp(),
   };
 
   db.collection("users").doc(userID).set(data);

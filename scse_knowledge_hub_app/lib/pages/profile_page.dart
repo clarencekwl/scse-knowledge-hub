@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
+import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({
@@ -22,6 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     Future.microtask(() async {
       await _questionProvider.getUserQuestions(_userProvider.user.id);
+      await _questionProvider.getUserRepliedQuestions(_userProvider.user.id);
     });
   }
 
@@ -89,6 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Row(
                           children: <Widget>[
                             Expanded(
+                              flex: 1,
                               child: Column(
                                 children: <Widget>[
                                   Text("Posts", style: Styles.titleTextStyle),
@@ -107,15 +110,19 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             Expanded(
+                              flex: 2,
                               child: Column(
                                 children: <Widget>[
-                                  Text("Followers",
+                                  Text("Questions Replied To",
+                                      textAlign: TextAlign.center,
                                       style: Styles.titleTextStyle),
                                   SizedBox(
                                     height: 5.0,
                                   ),
                                   Text(
-                                    "28.5K",
+                                    _questionProvider
+                                        .listOfUserRepliedQuestions.length
+                                        .toString(),
                                     style: TextStyle(
                                       fontSize: 20.0,
                                       color: Colors.black,
@@ -125,14 +132,18 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             Expanded(
+                              flex: 2,
                               child: Column(
                                 children: <Widget>[
-                                  Text("Follow", style: Styles.titleTextStyle),
+                                  Text("Date Joined",
+                                      style: Styles.titleTextStyle),
                                   SizedBox(
                                     height: 5.0,
                                   ),
                                   Text(
-                                    "1300",
+                                    formatDateTime(
+                                        _userProvider.user.dateJoined),
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 20.0,
                                       color: Colors.black,
@@ -188,5 +199,10 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
     );
+  }
+
+  String formatDateTime(DateTime dateTime) {
+    // Using the intl package for date formatting
+    return DateFormat.yMMMd().format(dateTime);
   }
 }
