@@ -115,19 +115,19 @@ class _ReplyCardState extends State<ReplyCard> {
                 Row(
                   children: [
                     if (widget.reply.taggedUserId != null)
-                      Expanded(
-                        flex: 1,
+                      Container(
+                        width: 100,
                         child: Text(
                           "@${widget.reply.taggedUserId!} ",
                           style: TextStyle(
-                              color: Styles.primaryLightBlueColor,
-                              overflow: TextOverflow.clip),
+                            color: Styles.primaryLightBlueColor,
+                          ),
                         ),
                       ),
                     Expanded(
-                      flex: widget.reply.taggedUserId != null ? 2 : 1,
                       child: Text(
                         widget.reply.content,
+                        textAlign: TextAlign.start,
                         style: TextStyle(fontSize: 12),
                       ),
                     ),

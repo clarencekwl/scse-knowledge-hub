@@ -283,14 +283,6 @@ class QuestionProvider extends ChangeNotifier {
       if (updatedQuestionIndex != -1) {
         listOfQuestions[updatedQuestionIndex].numberOfReplies += 1;
       }
-      // if (userId != question.userId) {
-      //   await QuestionAPI.addNotification(
-      //     question: question,
-      //     senderId: userId,
-      //     senderName: userName,
-      //     replyDocumentId: replyDocumentId,
-      //   );
-      // }
     } else {
       log("Error adding reply");
     }
@@ -305,7 +297,7 @@ class QuestionProvider extends ChangeNotifier {
   }) async {
     startLoading();
     await QuestionAPI.deleteReply(
-        userId: userId, question: question, replyId: replyId);
+        userId: userId, questionId: question.id, replyId: replyId);
     await QuestionAPI.decrementReplies(question.id, question.userId);
     await getAllRepliesForQuestion(questionId: question.id);
     // Update the List<Question> with the updated number_of_replies

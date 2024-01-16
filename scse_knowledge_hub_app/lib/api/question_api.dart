@@ -87,29 +87,21 @@ Future<ListOfUserRepliedQuestionReponse?> getQuestionsRepliedByUserFromDB(
     // Check if user document exists
     if (userDoc.exists) {
       // Get replies subcollection
-      QuerySnapshot repliesSnapshot = await userDoc.reference
-          .collection('replies')
-          .orderBy('timestamp', descending: true)
-          .get();
+      QuerySnapshot repliesSnapshot =
+          await userDoc.reference.collection('questionsRepliedTo').get();
 
       // Compile a list of question documents (DocumentSnapshot)
       List<DocumentSnapshot> listOfQuestionDocs = [];
 
       for (QueryDocumentSnapshot replyDoc in repliesSnapshot.docs) {
-        String questionId = replyDoc['questionId'];
+        String questionId = replyDoc.id;
 
-        // Check if the question ID is already present in the list
-        bool questionExists =
-            listOfQuestionDocs.any((doc) => doc.id == questionId);
+        // Get question document and add to the list
+        DocumentSnapshot questionDoc =
+            await db.collection('questions').doc(questionId).get();
 
-        if (!questionExists) {
-          // Get question document and add to the list
-          DocumentSnapshot questionDoc =
-              await db.collection('questions').doc(questionId).get();
-
-          if (questionDoc.exists && questionDoc['userId'] != userId) {
-            listOfQuestionDocs.add(questionDoc);
-          }
+        if (questionDoc.exists && questionDoc['userId'] != userId) {
+          listOfQuestionDocs.add(questionDoc);
         }
       }
       if (listOfQuestionDocs.isNotEmpty) {
@@ -217,8 +209,27 @@ Future<void> deleteQuestion(
       await deleteImagesFromStorage(imageUrls);
     }
 
+    // Delete replies from the 'replies' subcollection of the question
+    final repliesCollection =
+        db.collection('questions').doc(questionId).collection('replies');
+    final querySnapshot = await repliesCollection.get();
+    for (var replyDoc in querySnapshot.docs) {
+      await replyDoc.reference.delete();
+    }
+
     // Delete from 'questions' collection
     await db.collection('questions').doc(questionId).delete();
+
+    // Delete replies from user's subcollection
+    final userRepliesCollection =
+        db.collection('users').doc(userId).collection('replies');
+    final userRepliesQuerySnapshot = await userRepliesCollection.get();
+    for (var userReplyDoc in userRepliesQuerySnapshot.docs) {
+      if (userReplyDoc['questionId'] == questionId) {
+        // Delete the document
+        await userReplyDoc.reference.delete();
+      }
+    }
 
     // Delete from user's 'questions' subcollection
     await db
@@ -280,19 +291,37 @@ Future<String?> addReply(
       if (taggedUserId != null) 'taggedUserId': taggedUserId,
       if (taggedUserId != null) 'taggedReplyId': taggedReplyId,
     });
+    // Use a transaction to update "numberOfReplies" and create a new document if needed
+    await db.runTransaction((transaction) async {
+      final userQuestionsRepliedToCollection =
+          db.collection('users').doc(userId).collection('questionsRepliedTo');
 
-// Add reply to the "replies" subcollection under the user
-    await db
-        .collection('users')
-        .doc(userId)
-        .collection('replies')
-        .doc(questionReplyRef.id)
-        .set({
-      'questionId': question.id,
-      'content': content,
-      'timestamp': FieldValue.serverTimestamp(),
-      if (taggedUserId != null) 'taggedUserId': taggedUserId,
-      if (taggedUserId != null) 'taggedReplyId': taggedReplyId,
+      final userQuestionDocRef =
+          userQuestionsRepliedToCollection.doc(question.id);
+
+      try {
+        final userQuestionDocSnapshot =
+            await transaction.get(userQuestionDocRef);
+
+        // Check if there is a document with the specified questionId
+        if (userQuestionDocSnapshot.exists) {
+          // If the document exists, increment "numberOfReplies"
+          final currentNumberOfReplies =
+              userQuestionDocSnapshot.data()?['numberOfReplies'] ?? 0;
+          transaction.update(userQuestionDocRef, {
+            'numberOfReplies': currentNumberOfReplies + 1,
+          });
+          log('Document exists, numberOfReplies incremented to ${currentNumberOfReplies + 1}');
+        } else {
+          // If the document doesn't exist, create a new one
+          await userQuestionDocRef.set({
+            'numberOfReplies': 0,
+          });
+          log('Document created with numberOfReplies set to 1');
+        }
+      } catch (e) {
+        log('Error checking/creating document: $e');
+      }
     });
     return questionReplyRef.id;
   } catch (e) {
@@ -303,24 +332,43 @@ Future<String?> addReply(
 
 Future<void> deleteReply(
     {required String userId,
-    required Question question,
+    required String questionId,
     required String replyId}) async {
   try {
     // Delete reply from the "replies" subcollection under the question
     await db
         .collection('questions')
-        .doc(question.id)
+        .doc(questionId)
         .collection('replies')
         .doc(replyId)
         .delete();
 
-    // Delete reply from the "replies" subcollection under the user
-    await db
-        .collection('users')
-        .doc(userId)
-        .collection('replies')
-        .doc(replyId)
-        .delete();
+// Use a transaction to update "numberOfReplies" in "questionsRepliedTo" and remove document if necessary
+    await db.runTransaction((transaction) async {
+      final userQuestionsRepliedToCollection =
+          db.collection('users').doc(userId).collection('questionsRepliedTo');
+
+      final userQuestionDocRef =
+          userQuestionsRepliedToCollection.doc(questionId);
+
+      final userQuestionDocSnapshot = await transaction.get(userQuestionDocRef);
+
+      if (userQuestionDocSnapshot.exists) {
+        // If the document exists, decrement "numberOfReplies"
+        final currentNumberOfReplies =
+            userQuestionDocSnapshot.data()?['numberOfReplies'] ?? 0;
+
+        if (currentNumberOfReplies > 1) {
+          // If there are more than 1 replies, decrement the counter
+          transaction.update(userQuestionDocRef, {
+            'numberOfReplies': currentNumberOfReplies - 1,
+          });
+        } else {
+          // If there is only 1 reply, remove the document
+          transaction.delete(userQuestionDocRef);
+        }
+      }
+    });
   } catch (e) {
     log('Error deleting reply: $e');
   }

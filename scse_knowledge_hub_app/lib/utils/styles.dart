@@ -88,6 +88,10 @@ class Styles {
     return MediaQuery.of(context).size;
   }
 
+  static double statusBarHeight(BuildContext context) {
+    return MediaQuery.of(context).padding.top;
+  }
+
   static double kScreenHeight(BuildContext context,
       {double percentage = 1, double reducedBy = 0.0}) {
     return (screenSize(context).height - reducedBy) * percentage;

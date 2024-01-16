@@ -252,7 +252,7 @@ class _HomePageState extends State<HomePage>
                                   )),
                               if (false == _isSliverAppBarExpanded)
                                 Positioned(
-                                  top: 35,
+                                  top: Styles.statusBarHeight(context) + 10,
                                   right: 20,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(

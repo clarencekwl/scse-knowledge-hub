@@ -1,9 +1,7 @@
-// import 'dart:developer';
-
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/pages/home_page.dart';
 import 'package:scse_knowledge_hub_app/pages/update_question_page.dart';
@@ -39,6 +37,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
   bool _isTaggedReply = false;
   String _taggedUser = '';
   String _taggedReply = '';
+  String _focusedTaggedReply = '';
 
   //! TEMP: Images
   List<String> listOfThumbnailUrls = [
@@ -198,7 +197,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                               question: widget.question,
                               isFocused:
                                   _questionProvider.listOfReplies[index].id ==
-                                      _taggedReply,
+                                      _focusedTaggedReply,
                               onReplyButtonPressed: (userName, replyId) {
                                 _isTaggedReply = true;
                                 _taggedUser = userName;
@@ -353,7 +352,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
     log("tagged reply is: $replyId");
     int indexOfFocusedReply = _questionProvider.listOfReplies
         .indexWhere((reply) => reply.id == replyId);
-    _taggedReply = replyId;
+    _focusedTaggedReply = replyId;
     await scrollController.animateTo(
       indexOfFocusedReply * replyCardHeight,
       duration: Duration(milliseconds: 500),
@@ -361,8 +360,10 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
     );
     setState(() {});
     await Future.delayed(Duration(seconds: 2));
-    _taggedReply = '';
-    setState(() {});
+    _focusedTaggedReply = '';
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Widget questionDetails() {
