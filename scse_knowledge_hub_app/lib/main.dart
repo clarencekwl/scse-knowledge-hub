@@ -22,13 +22,17 @@ void main() async {
   runApp(MyApp());
 }
 
+@pragma('vm:entry-point')
 Future<void> _backgroundMessageHandler(RemoteMessage message) async {
-  //! APP IN BACKGROUND
-  log("App in background message data: ${message.data}");
+  await Firebase.initializeApp();
+  await NotificationProvider().setup();
+  //! APP IN BACKGROUND/TERMINATED
+  print("App in background message data: ${message.data}");
   await NotificationProvider.showNotification(
       title: message.data['title'],
       body: message.data['body'],
       payload: message.data['questionId']);
+
   await NotificationProvider().onReceiveBackgroundNotification(message);
 }
 

@@ -14,7 +14,7 @@ import 'package:scse_knowledge_hub_app/utils/styles.dart';
 class NotificationProvider extends ChangeNotifier {
   NotificationProvider();
   static BuildContext? _context;
-  static void setContext(BuildContext context) => _context = context;
+  static void setContext(BuildContext? context) => _context = context;
   static String? fcmToken;
 
   static final FlutterLocalNotificationsPlugin _localNotificationsPlugin =
@@ -34,7 +34,7 @@ class NotificationProvider extends ChangeNotifier {
             color: Styles.primaryBlueColor,
             // playSound: true,
             // sound: RawResourceAndroidNotificationSound('notification'),
-            importance: Importance.max,
+            importance: Importance.high,
             priority: Priority.high);
 
     var not = NotificationDetails(
@@ -108,7 +108,7 @@ class NotificationProvider extends ChangeNotifier {
       log("no payload");
       return;
     }
-    log('Notification payload: ${response.payload}');
+    print('Notification payload: ${response.payload}');
     _questionProvider = Provider.of<QuestionProvider>(_context!, listen: false);
     String questionId = response.payload!;
     await _questionProvider.getQuestion(questionId: questionId);
@@ -121,7 +121,22 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   Future<void> onReceiveBackgroundNotification(RemoteMessage message) async {
+    print("onReceiveBackgroungNotification");
     Map<String, dynamic> data = message.data;
+    _questionProvider = Provider.of<QuestionProvider>(_context!, listen: false);
+    await _questionProvider.getQuestion(questionId: data['questionId']);
+
+    Navigator.of(_context!)
+        .push(MaterialPageRoute(
+            builder: (context) => QuestionDetailsPage(
+                question: _questionProvider.currentQuestion!)))
+        .then((value) => _questionProvider.getQuestions(onRefreshed: true));
+  }
+
+  Future<void> onReceiveTerminatedNotification(
+      Map<String, dynamic> data) async {
+    print("onReceiveTerminatedNotification");
+    _questionProvider = Provider.of<QuestionProvider>(_context!, listen: false);
     await _questionProvider.getQuestion(questionId: data['questionId']);
 
     Navigator.of(_context!)

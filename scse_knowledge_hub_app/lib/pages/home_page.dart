@@ -107,22 +107,6 @@ class _HomePageState extends State<HomePage>
 
   Future<void> setupNotificationMessage() async {
     try {
-      //! APP KILLED
-      RemoteMessage? initialMessage =
-          await FirebaseMessaging.instance.getInitialMessage();
-
-      if (initialMessage != null) {
-        log('App killed but received notification: ${initialMessage.data}');
-        await _questionProvider.getQuestion(
-            questionId: initialMessage.data['questionId']);
-
-        Navigator.of(context)
-            .push(MaterialPageRoute(
-                builder: (context) => QuestionDetailsPage(
-                    question: _questionProvider.currentQuestion!)))
-            .then((value) => _questionProvider.getQuestions(onRefreshed: true));
-      }
-
       //! APP IN FOREGROUND
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         log("App in foreground message data: ${message.data}");
@@ -132,19 +116,29 @@ class _HomePageState extends State<HomePage>
             body: data['body'],
             payload: data['questionId']);
       });
+      //? These 2 functions not being called
+      // // //! APP KILLED
+      // RemoteMessage? initialMessage =
+      //     await FirebaseMessaging.instance.getInitialMessage();
 
-      // //! APP IN BACKGROUND
+      // if (initialMessage != null) {
+      //   print('App killed but received notification: ${initialMessage.data}');
+      //   Map<String, dynamic> data = initialMessage.data;
+      //   await NotificationProvider.showNotification(
+      //       title: data['title'],
+      //       body: data['body'],
+      //       payload: data['questionId']);
+      //   await NotificationProvider().onReceiveTerminatedNotification(data);
+      // }
+      // // //! APP IN BACKGROUND
       // FirebaseMessaging.onMessageOpenedApp
       //     .listen((RemoteMessage message) async {
-      //   log("App in background message data: ${message.data}");
-      //   Map<String, dynamic> data = message.data;
-      //   await _questionProvider.getQuestion(questionId: data['questionId']);
-
-      //   Navigator.of(context)
-      //       .push(MaterialPageRoute(
-      //           builder: (context) => QuestionDetailsPage(
-      //               question: _questionProvider.currentQuestion!)))
-      //       .then((value) => _questionProvider.getQuestions(onRefreshed: true));
+      //   print("App in background message data: ${message.data}");
+      //   await NotificationProvider.showNotification(
+      //       title: message.data['title'],
+      //       body: message.data['body'],
+      //       payload: message.data['questionId']);
+      //   await NotificationProvider().onReceiveBackgroundNotification(message);
       // });
     } catch (e, stackTrace) {
       log('Error handling FCM messages: $e\n$stackTrace');
