@@ -200,6 +200,29 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
               fontSize: 16,
               color: Styles.primaryGreyColor),
         ),
+        if (!isDescriptionField)
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "(Include course code if applicable)",
+                  style:
+                      TextStyle(fontSize: 12, color: Styles.primaryGreyColor),
+                ),
+              ),
+              Tooltip(
+                margin: EdgeInsets.symmetric(horizontal: 15),
+                message:
+                    "Including course code helps to make your question more noticiable and relevant to users!",
+                triggerMode: TooltipTriggerMode.tap,
+                child: Icon(Icons.info_outline_rounded),
+                showDuration: Duration(
+                  seconds: 3,
+                ),
+                preferBelow: false,
+              )
+            ],
+          ),
         SizedBox(
           height: 10,
         ),
@@ -296,7 +319,13 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                   ],
                 ),
                 SizedBox(height: 15),
-                userInputField("Title", isDescriptionField: false),
+                Row(
+                  children: [
+                    Expanded(
+                      child: userInputField("Title", isDescriptionField: false),
+                    ),
+                  ],
+                ),
                 userInputField("Description", isDescriptionField: true),
                 Row(
                   children: [
