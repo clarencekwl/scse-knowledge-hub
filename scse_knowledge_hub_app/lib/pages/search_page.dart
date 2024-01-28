@@ -36,6 +36,30 @@ class _SearchPageState extends State<SearchPage> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _showBottomSheet(context);
+          },
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(10.0), // Adjust the radius as needed
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.search,
+                color: Colors.grey.shade500,
+              ),
+              SizedBox(height: 4),
+              Text(
+                'Tips',
+                style: TextStyle(color: Colors.grey.shade500),
+              ),
+            ],
+          ),
+        ),
         appBar: AppBar(
           leading: IconButton(
               onPressed: (() async {
@@ -235,6 +259,60 @@ class _SearchPageState extends State<SearchPage> {
                   ))
           ],
         ),
+      ),
+    );
+  }
+
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25), topRight: Radius.circular(25))),
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(20.0),
+          height: 250.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Tips for a Better Search Experience!',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 8.0),
+              _buildTip('Include course code (e.g. CZ4041, SC2002).'),
+              _buildTip(
+                  'Search for keywords (e.g. Java, FYP, MDP) instead of long sentences.'),
+              _buildTip('Make use of filters provided.'),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTip(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.check_circle,
+            color: Colors.green,
+          ),
+          SizedBox(width: 8.0),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 16.0),
+            ),
+          ),
+        ],
       ),
     );
   }
