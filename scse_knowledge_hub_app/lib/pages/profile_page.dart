@@ -157,12 +157,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         Icons.date_range_rounded),
                     Divider(),
                     _profileField(
-                        "Number of Posts",
+                        "No. of Posts",
                         _questionProvider.listOfUserQuestions.length.toString(),
                         Icons.post_add_sharp),
                     Divider(),
                     _profileField(
-                        "Questions Replied To",
+                        "No. of Questions Replied to",
                         _questionProvider.listOfUserRepliedQuestions.length
                             .toString(),
                         Icons.reply_rounded),
