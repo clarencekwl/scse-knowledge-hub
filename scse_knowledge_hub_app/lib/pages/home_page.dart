@@ -50,8 +50,7 @@ class _HomePageState extends State<HomePage>
       await NotificationProvider().setup();
       await NotificationProvider.addAndStoreFCMToken(
           userId: _userProvider.user.id);
-      _welcomeText = "Hi, ${_userProvider.user.name}";
-      _titleText = _welcomeText;
+      _titleText = "Hi, ${_userProvider.user.name}";
 
       _isLoading = true;
       setState(() {});
@@ -78,7 +77,9 @@ class _HomePageState extends State<HomePage>
         _isSliverAppBarExpanded = _scrollController.offset >
             (Styles.kScreenHeight(context) * 0.16 - kToolbarHeight);
         if (_isSliverAppBarExpanded != _currentSliverAppBarExpandedStatus) {
-          _titleText = _isSliverAppBarExpanded ? "Questions" : _welcomeText;
+          // _titleText = _isSliverAppBarExpanded
+          //     ? "Questions"
+          //     : "Hi, ${_userProvider.user.name}";
           setState(() {});
         }
         if (!_isLoadMoreRunning &&
@@ -147,8 +148,8 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    _questionProvider = Provider.of(context);
-    _userProvider = Provider.of(context);
+    _questionProvider = Provider.of<QuestionProvider>(context);
+    _userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       floatingActionButton: _isSliverAppBarExpanded
           ? FloatingActionButton(
@@ -206,7 +207,9 @@ class _HomePageState extends State<HomePage>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _titleText,
+                                _isSliverAppBarExpanded
+                                    ? "Questions"
+                                    : "Hi, ${_userProvider.user.name}",
                                 style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,

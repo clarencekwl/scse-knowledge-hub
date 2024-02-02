@@ -15,7 +15,7 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> setUser({required userID}) async {
     startLoading();
-    UserReponse user = await UserAPI.getUser(userID: userID);
+    UserResponse user = await UserAPI.getUser(userID: userID);
     _user = user.user;
     stopLoading();
   }
@@ -28,9 +28,19 @@ class UserProvider extends ChangeNotifier {
     startLoading();
     await UserAPI.createUser(
         userID: userID, userName: userName, userEmail: userEmail);
-    UserReponse user = await UserAPI.getUser(userID: userID);
+    UserResponse user = await UserAPI.getUser(userID: userID);
     _user = user.user;
     log(_user.toString());
+    stopLoading();
+  }
+
+  Future<void> changeUsername(
+      {required String userId, required String newUsername}) async {
+    startLoading();
+    await UserAPI.changeUsername(userId: userId, newUsername: newUsername);
+    UserResponse user = await UserAPI.getUser(userID: userId);
+    _user = user.user;
+
     stopLoading();
   }
 
@@ -48,6 +58,7 @@ class UserProvider extends ChangeNotifier {
 
   stopLoading() {
     _isLoading = false;
+    log("notified");
     notifyListeners();
   }
 }

@@ -17,6 +17,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   late UserProvider _userProvider;
   late QuestionProvider _questionProvider;
+  bool _isEdit = false;
+  final TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
@@ -31,171 +33,176 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     _userProvider = Provider.of(context);
     _questionProvider = Provider.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromRGBO(30, 90, 162, 1),
-        elevation: 0,
-      ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: const [
-                  Color.fromRGBO(30, 90, 162, 1),
-                  Color.fromRGBO(60, 104, 158, 1),
-                  Color.fromRGBO(82, 115, 156, 1)
-                ])),
-            child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Styles.primaryGreyColor,
-                    child: const Icon(
-                      Icons.person_rounded,
-                      size: 50,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  Text(
-                    _userProvider.user.name,
-                    style: TextStyle(
-                        fontSize: 30.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 20),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-                      clipBehavior: Clip.antiAlias,
-                      color: Colors.white,
-                      elevation: 5.0,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 22.0),
-                        child: Row(
-                          children: <Widget>[
-                            Expanded(
-                              flex: 1,
-                              child: Column(
-                                children: <Widget>[
-                                  Text("Posts", style: Styles.titleTextStyle),
-                                  SizedBox(
-                                    height: 5.0,
-                                  ),
-                                  Text(
-                                    _questionProvider.listOfUserQuestions.length
-                                        .toString(),
-                                    style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.black,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Column(
-                                children: <Widget>[
-                                  Text("Questions Replied To",
-                                      textAlign: TextAlign.center,
-                                      style: Styles.titleTextStyle),
-                                  SizedBox(
-                                    height: 5.0,
-                                  ),
-                                  Text(
-                                    _questionProvider
-                                        .listOfUserRepliedQuestions.length
-                                        .toString(),
-                                    style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.black,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Column(
-                                children: <Widget>[
-                                  Text("Date Joined",
-                                      style: Styles.titleTextStyle),
-                                  SizedBox(
-                                    height: 5.0,
-                                  ),
-                                  Text(
-                                    formatDateTime(
-                                        _userProvider.user.dateJoined),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.black,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
+    return GestureDetector(
+      onTap: () {
+        _isEdit = false;
+        _textController.clear();
+        setState(() {});
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color.fromRGBO(30, 90, 162, 1),
+          elevation: 0,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  _isEdit = true;
+                  _textController.text = _userProvider.user.name;
+                  setState(() {});
+                },
+                icon: Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                )),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(40),
+                        bottomLeft: Radius.circular(40)),
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: const [
+                          Color.fromRGBO(30, 90, 162, 1),
+                          Color.fromRGBO(60, 104, 158, 1),
+                          Color.fromRGBO(82, 115, 156, 1)
+                        ])),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Styles.primaryGreyColor,
+                          child: const Icon(
+                            Icons.person_rounded,
+                            size: 50,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        if (!_isEdit)
+                          Text(
+                            _userProvider.user.name,
+                            style: TextStyle(
+                                overflow: TextOverflow.clip,
+                                fontSize: 30.0,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        if (_isEdit)
+                          TextField(
+                            textAlign: TextAlign.center,
+                            autofocus: _isEdit,
+                            keyboardType: TextInputType.text,
+                            style: TextStyle(
+                                fontSize: 30.0,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                            controller: _textController,
+                            cursorColor: Colors.white,
+                            decoration: InputDecoration(
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color:
+                                        Colors.transparent), // Underline color
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color:
+                                        Colors.white), // Focus underline color
+                              ),
+                            ),
+                            onSubmitted: (value) {
+                              _userProvider.user.name = _textController.text;
+                              _isEdit = false;
+                              setState(() {});
+                              _userProvider.changeUsername(
+                                  userId: _userProvider.user.id,
+                                  newUsername: _textController.text);
+                              _textController.clear();
+                            },
+                          ),
+                        SizedBox(
+                          height: 50.0,
+                        ),
+                      ],
                     ),
-                  )
-                ],
+                  ),
+                ),
               ),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10))),
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 30.0, horizontal: 16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.email_rounded,
-                        color: Styles.primaryGreyColor,
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        _userProvider.user.email,
-                        style: TextStyle(fontSize: 15),
-                      )
-                    ],
-                  )
-                ],
+              Padding(
+                padding: const EdgeInsets.only(
+                    bottom: 15.0, top: 25, left: 20.0, right: 20),
+                child: Column(
+                  children: [
+                    _profileField(
+                        "Email", _userProvider.user.email, Icons.email_rounded),
+                    Divider(),
+                    _profileField(
+                        "Date Joined",
+                        formatDateTime(_userProvider.user.dateJoined),
+                        Icons.date_range_rounded),
+                    Divider(),
+                    _profileField(
+                        "Number of Posts",
+                        _questionProvider.listOfUserQuestions.length.toString(),
+                        Icons.post_add_sharp),
+                    Divider(),
+                    _profileField(
+                        "Questions Replied To",
+                        _questionProvider.listOfUserRepliedQuestions.length
+                            .toString(),
+                        Icons.reply_rounded),
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
-          SizedBox(
-            height: 20.0,
-          ),
+        ),
+      ),
+    );
+  }
+
+  Container _profileField(String title, String content, IconData icon) {
+    return Container(
+      padding: EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text("$title: ", style: Styles.titleTextStyle),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Icon(
+                icon,
+                color: Styles.primaryGreyColor,
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Text(
+                content,
+                style: TextStyle(fontSize: 15),
+              )
+            ],
+          )
         ],
       ),
     );
