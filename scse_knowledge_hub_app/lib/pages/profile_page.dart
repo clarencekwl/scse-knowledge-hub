@@ -16,7 +16,7 @@ class ProfilePage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
@@ -174,13 +174,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     Divider(),
                     _profileField(
                         "No. of Question Asked",
-                        _questionProvider.listOfUserQuestions.length.toString(),
+                        widget.user?.noOfQuestions.toString() ??
+                            _userProvider.user.noOfQuestions.toString(),
                         Icons.post_add_sharp),
                     Divider(),
                     _profileField(
                         "No. of Question Replied to",
-                        _questionProvider.listOfUserRepliedQuestions.length
-                            .toString(),
+                        widget.user?.noOfQuestionsReplied.toString() ??
+                            _userProvider.user.noOfQuestionsReplied.toString(),
                         Icons.reply_rounded),
                   ],
                 ),

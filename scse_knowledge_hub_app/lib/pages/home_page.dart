@@ -32,8 +32,8 @@ class _HomePageState extends State<HomePage>
   ScrollController _scrollController = ScrollController();
   late TabController _tabController;
 
-  late String _welcomeText = "";
-  late String _titleText = "";
+  // late String _welcomeText = "";
+  // late String _titleText = "";
   late bool _currentSliverAppBarExpandedStatus;
   bool _isSliverAppBarExpanded = false;
   bool _isLoading = false;
@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage>
       await NotificationProvider().setup();
       await NotificationProvider.addAndStoreFCMToken(
           userId: _userProvider.user.id);
-      _titleText = "Hi, ${_userProvider.user.name}";
+      // _titleText = "Hi, ${_userProvider.user.name}";
 
       _isLoading = true;
       setState(() {});

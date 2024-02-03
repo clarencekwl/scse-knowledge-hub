@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:scse_knowledge_hub_app/api/user_api.dart' as UserAPI;
 import 'package:scse_knowledge_hub_app/models/User.dart';
@@ -25,6 +23,16 @@ class UserProvider extends ChangeNotifier {
     return user.user;
   }
 
+  void incrementNumberOfQuestions() {
+    _user.noOfQuestions = _user.noOfQuestions + 1;
+    stopLoading();
+  }
+
+  void decrementNumberOfQuestions() {
+    _user.noOfQuestions = _user.noOfQuestions - 1;
+    stopLoading();
+  }
+
   Future<void> createUser({
     required String userID,
     required String userName,
@@ -35,7 +43,6 @@ class UserProvider extends ChangeNotifier {
         userID: userID, userName: userName, userEmail: userEmail);
     UserResponse user = await UserAPI.getUser(userID: userID);
     _user = user.user;
-    log(_user.toString());
     stopLoading();
   }
 
@@ -63,7 +70,6 @@ class UserProvider extends ChangeNotifier {
 
   stopLoading() {
     _isLoading = false;
-    log("notified");
     notifyListeners();
   }
 }

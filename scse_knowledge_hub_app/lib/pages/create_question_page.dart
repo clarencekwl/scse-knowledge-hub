@@ -104,6 +104,7 @@ class _CreateQuestionPageState extends State<CreateQuestionPage> {
                                 topic: _selectedTopic);
                             _questionProvider.removeAllAttachments();
                             await _questionProvider.clearImageCache();
+                            _userProvider.incrementNumberOfQuestions();
                             _isLoading = false;
                             setState(() {});
                             Navigator.pop(context);

@@ -137,6 +137,7 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                               userId: _userProvider.user.id,
                             )
                                 .then((_) {
+                              _userProvider.decrementNumberOfQuestions();
                               _isLoading = false;
                               setState(() {});
 

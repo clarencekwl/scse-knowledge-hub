@@ -87,16 +87,16 @@ class _ReplyCardState extends State<ReplyCard> {
               children: [
                 Row(
                   children: [
-                    InkWell(
-                      onTap: () async {
-                        User user = await _userProvider.getUser(
-                            userID: widget.reply.userId);
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => ProfilePage(
-                                  user: user,
-                                )));
-                      },
-                      child: Expanded(
+                    Expanded(
+                      child: InkWell(
+                        onTap: () async {
+                          User user = await _userProvider.getUser(
+                              userID: widget.reply.userId);
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ProfilePage(
+                                    user: user,
+                                  )));
+                        },
                         child: Text(widget.reply.userName,
                             style: TextStyle(
                                 color: Colors.black,
