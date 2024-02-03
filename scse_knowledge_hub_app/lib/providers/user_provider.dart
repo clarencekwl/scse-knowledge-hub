@@ -13,11 +13,16 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setUser({required userID}) async {
+  Future<void> setUser({required String userID}) async {
     startLoading();
     UserResponse user = await UserAPI.getUser(userID: userID);
     _user = user.user;
     stopLoading();
+  }
+
+  Future<User> getUser({required String userID}) async {
+    UserResponse user = await UserAPI.getUser(userID: userID);
+    return user.user;
   }
 
   Future<void> createUser({

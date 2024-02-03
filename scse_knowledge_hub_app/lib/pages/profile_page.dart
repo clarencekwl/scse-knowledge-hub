@@ -1,13 +1,18 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:scse_knowledge_hub_app/models/User.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
+  final User? user;
   const ProfilePage({
     Key? key,
+    this.user,
   }) : super(key: key);
 
   @override
@@ -23,9 +28,12 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+
     Future.microtask(() async {
-      await _questionProvider.getUserQuestions(_userProvider.user.id);
-      await _questionProvider.getUserRepliedQuestions(_userProvider.user.id);
+      await _questionProvider
+          .getUserQuestions(widget.user?.id ?? _userProvider.user.id);
+      await _questionProvider
+          .getUserRepliedQuestions(widget.user?.id ?? _userProvider.user.id);
     });
   }
 
@@ -45,16 +53,17 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Color.fromRGBO(30, 90, 162, 1),
           elevation: 0,
           actions: [
-            IconButton(
-                onPressed: () {
-                  _isEdit = true;
-                  _textController.text = _userProvider.user.name;
-                  setState(() {});
-                },
-                icon: Icon(
-                  Icons.edit,
-                  color: Colors.white,
-                )),
+            if (widget.user == null)
+              IconButton(
+                  onPressed: () {
+                    _isEdit = true;
+                    _textController.text = _userProvider.user.name;
+                    setState(() {});
+                  },
+                  icon: Icon(
+                    Icons.edit,
+                    color: Colors.white,
+                  ))
           ],
         ),
         body: SingleChildScrollView(
@@ -90,12 +99,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(
-                          height: 10.0,
-                        ),
+                        const SizedBox(height: 10.0),
                         if (!_isEdit)
                           Text(
-                            _userProvider.user.name,
+                            widget.user == null
+                                ? _userProvider.user.name
+                                : widget.user!.name,
                             style: TextStyle(
                                 overflow: TextOverflow.clip,
                                 fontSize: 30.0,
@@ -148,21 +157,28 @@ class _ProfilePageState extends State<ProfilePage> {
                     bottom: 15.0, top: 25, left: 20.0, right: 20),
                 child: Column(
                   children: [
+                    if (widget.user == null)
+                      Column(
+                        children: [
+                          _profileField("Email", _userProvider.user.email,
+                              Icons.email_rounded),
+                          Divider(),
+                        ],
+                      ),
                     _profileField(
-                        "Email", _userProvider.user.email, Icons.email_rounded),
+                      "Date Joined",
+                      formatDateTime(widget.user?.dateJoined ??
+                          _userProvider.user.dateJoined),
+                      Icons.date_range_rounded,
+                    ),
                     Divider(),
                     _profileField(
-                        "Date Joined",
-                        formatDateTime(_userProvider.user.dateJoined),
-                        Icons.date_range_rounded),
-                    Divider(),
-                    _profileField(
-                        "No. of Posts",
+                        "No. of Question Asked",
                         _questionProvider.listOfUserQuestions.length.toString(),
                         Icons.post_add_sharp),
                     Divider(),
                     _profileField(
-                        "No. of Questions Replied to",
+                        "No. of Question Replied to",
                         _questionProvider.listOfUserRepliedQuestions.length
                             .toString(),
                         Icons.reply_rounded),
@@ -187,6 +203,7 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text("$title: ", style: Styles.titleTextStyle),
+          const SizedBox(height: 2.5),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [

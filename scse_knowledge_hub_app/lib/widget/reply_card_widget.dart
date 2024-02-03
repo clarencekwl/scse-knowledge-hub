@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/models/Reply.dart';
+import 'package:scse_knowledge_hub_app/models/User.dart';
+import 'package:scse_knowledge_hub_app/pages/profile_page.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
@@ -85,13 +87,23 @@ class _ReplyCardState extends State<ReplyCard> {
               children: [
                 Row(
                   children: [
-                    Expanded(
-                      child: Text(widget.reply.userName,
-                          style: TextStyle(
-                              color: Colors.black,
-                              overflow: TextOverflow.ellipsis,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14)),
+                    InkWell(
+                      onTap: () async {
+                        User user = await _userProvider.getUser(
+                            userID: widget.reply.userId);
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ProfilePage(
+                                  user: user,
+                                )));
+                      },
+                      child: Expanded(
+                        child: Text(widget.reply.userName,
+                            style: TextStyle(
+                                color: Colors.black,
+                                overflow: TextOverflow.ellipsis,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14)),
+                      ),
                     ),
                     InkWell(
                       onTap: () {
