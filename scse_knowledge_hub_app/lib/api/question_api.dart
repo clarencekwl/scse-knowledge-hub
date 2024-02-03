@@ -118,7 +118,7 @@ Future<ListOfUserRepliedQuestionReponse?> getQuestionsRepliedByUserFromDB(
 Future<void> createQuestion({
   required String title,
   required String description,
-  required String userID,
+  required String userId,
   required int likes,
   required int numberOfReplies,
   required FieldValue timestamp,
@@ -132,7 +132,7 @@ Future<void> createQuestion({
     "description": description,
     "likes": likes,
     "number_of_replies": numberOfReplies,
-    "userId": userID,
+    "userId": userId,
     "timestamp": timestamp,
     "anonymous": anonymous,
     "topic": topic,
@@ -146,19 +146,28 @@ Future<void> createQuestion({
     // Add the question to the user's 'questions' subcollection
     await db
         .collection("users")
-        .doc(userID)
+        .doc(userId)
         .collection("questions")
         .doc(questionDocRef.id)
         .set(data);
 
     log('Question created successfully with ID: ${questionDocRef.id}');
+    db.runTransaction((transaction) async {
+      final userNumberOfQuestionDocSnapshot =
+          await transaction.get(db.collection('users').doc(userId));
+      final currentNumberOfQuestions =
+          userNumberOfQuestionDocSnapshot.data()?['no_of_questions'] ?? 0;
+      transaction.update(db.collection('users').doc(userId), {
+        'no_of_questions': currentNumberOfQuestions + 1,
+      });
+    });
 
     if (images.isNotEmpty) {
       // Call uploadImages with the question ID and images
       imageUrls = await uploadImages(questionDocRef.id, images);
     }
     // Call updateQuestionWithImageUrls to update the Firestore document with image URLs
-    await updateQuestionWithImageUrls(userID, questionDocRef.id, imageUrls);
+    await updateQuestionWithImageUrls(userId, questionDocRef.id, imageUrls);
   } catch (e) {
     log('Error creating question: $e');
   }
@@ -240,6 +249,16 @@ Future<void> deleteQuestion(
         .delete();
 
     log('Question and associated images deleted successfully');
+
+    db.runTransaction((transaction) async {
+      final userNumberOfQuestionDocSnapshot =
+          await transaction.get(db.collection('users').doc(userId));
+      final currentNumberOfQuestions =
+          userNumberOfQuestionDocSnapshot.data()?['no_of_questions'] ?? 0;
+      transaction.update(db.collection('users').doc(userId), {
+        'no_of_questions': currentNumberOfQuestions - 1,
+      });
+    });
   } catch (e) {
     log('Error deleting question: $e');
   }
@@ -317,6 +336,15 @@ Future<String?> addReply(
           await userQuestionDocRef.set({
             'numberOfReplies': 0,
           });
+          final userNumberOfQuestionRepliedDocSnapshot =
+              await transaction.get(db.collection('users').doc(userId));
+          final currentNumberOfQuestionsRepliedTo =
+              userNumberOfQuestionRepliedDocSnapshot
+                      .data()?['no_of_questions_replied'] ??
+                  0;
+          transaction.update(db.collection('users').doc(userId), {
+            'no_of_questions_replied': currentNumberOfQuestionsRepliedTo + 1,
+          });
           log('Document created with numberOfReplies set to 1');
         }
       } catch (e) {
@@ -366,6 +394,15 @@ Future<void> deleteReply(
         } else {
           // If there is only 1 reply, remove the document
           transaction.delete(userQuestionDocRef);
+          final userNumberOfQuestionRepliedDocSnapshot =
+              await transaction.get(db.collection('users').doc(userId));
+          final currentNumberOfQuestionsRepliedTo =
+              userNumberOfQuestionRepliedDocSnapshot
+                      .data()?['no_of_questions_replied'] ??
+                  0;
+          transaction.update(db.collection('users').doc(userId), {
+            'no_of_questions_replied': currentNumberOfQuestionsRepliedTo - 1,
+          });
         }
       }
     });

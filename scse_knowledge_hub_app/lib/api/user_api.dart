@@ -18,6 +18,8 @@ Future<void> createUser(
     "name": userName,
     "email": userEmail,
     "date_joined": FieldValue.serverTimestamp(),
+    "no_of_questions": 0,
+    "no_of_questions_replies": 0,
   };
   await db.collection("users").doc(userID).set(data);
 }
