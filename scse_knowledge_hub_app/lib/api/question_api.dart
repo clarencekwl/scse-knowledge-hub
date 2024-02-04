@@ -367,7 +367,6 @@ Future<void> _updateNumberOfQuestionsRepliedTo(
     transaction.update(db.collection('users').doc(userId), {
       'no_of_questions_replied': currentNumberOfQuestionsRepliedTo + value,
     });
-    log("currentNumberOfQuestionsRepliedTo: ${await userNumberOfQuestionRepliedDocSnapshot.data()?['no_of_questions_replied']}");
   });
   value == 1
       ? Provider.of<UserProvider>(context, listen: false)

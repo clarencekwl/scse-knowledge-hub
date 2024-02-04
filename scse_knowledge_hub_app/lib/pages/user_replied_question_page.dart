@@ -26,8 +26,8 @@ class _UserRepliedQuestionPageState extends State<UserRepliedQuestionPage> {
   void initState() {
     Future.microtask(() async {
       _isLoading = true;
-      log("here i call");
       setState(() {});
+      _questionProvider.listOfUserRepliedQuestions.clear();
       await _questionProvider.getUserRepliedQuestions(_userProvider.user.id);
       _isLoading = false;
       setState(() {});
