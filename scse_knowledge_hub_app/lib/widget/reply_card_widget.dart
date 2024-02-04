@@ -14,9 +14,11 @@ import 'package:scse_knowledge_hub_app/widget/warning_dialog_widget.dart';
 class ReplyCard extends StatefulWidget {
   final Reply reply;
   final Question question;
+
   final bool isFocused;
   final Function(String, String) onReplyButtonPressed;
   final Function(String, double) onReplyCardPressed;
+  final Function(String) onDeleteReply;
   const ReplyCard({
     Key? key,
     required this.reply,
@@ -24,6 +26,7 @@ class ReplyCard extends StatefulWidget {
     required this.isFocused,
     required this.onReplyButtonPressed,
     required this.onReplyCardPressed,
+    required this.onDeleteReply,
   }) : super(key: key);
   @override
   State<ReplyCard> createState() => _ReplyCardState();
@@ -173,10 +176,7 @@ class _ReplyCardState extends State<ReplyCard> {
                             },
                           ).then((value) async {
                             if (_isDelete) {
-                              await _questionProvider.deleteReply(
-                                  userId: _userProvider.user.id,
-                                  question: widget.question,
-                                  replyId: widget.reply.id);
+                              widget.onDeleteReply(widget.reply.id);
                             }
                           });
                         },

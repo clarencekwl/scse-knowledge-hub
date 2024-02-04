@@ -3,7 +3,10 @@ import 'dart:developer';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/models/Question.dart';
+import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/reponse/question_response.dart';
 
 final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -294,6 +297,7 @@ Future<String?> addReply(
     required String userName,
     required Question question,
     required String content,
+    required BuildContext context,
     String? taggedUserId,
     String? taggedReplyId}) async {
   try {
@@ -336,15 +340,7 @@ Future<String?> addReply(
           await userQuestionDocRef.set({
             'numberOfReplies': 0,
           });
-          final userNumberOfQuestionRepliedDocSnapshot =
-              await transaction.get(db.collection('users').doc(userId));
-          final currentNumberOfQuestionsRepliedTo =
-              userNumberOfQuestionRepliedDocSnapshot
-                      .data()?['no_of_questions_replied'] ??
-                  0;
-          transaction.update(db.collection('users').doc(userId), {
-            'no_of_questions_replied': currentNumberOfQuestionsRepliedTo + 1,
-          });
+          await _updateNumberOfQuestionsRepliedTo(userId, context, 1);
           log('Document created with numberOfReplies set to 1');
         }
       } catch (e) {
@@ -358,10 +354,33 @@ Future<String?> addReply(
   }
 }
 
+Future<void> _updateNumberOfQuestionsRepliedTo(
+    String userId, BuildContext context, int value) async {
+  await db.runTransaction((transaction) async {
+    final userNumberOfQuestionRepliedDocSnapshot =
+        await transaction.get(db.collection('users').doc(userId));
+    final currentNumberOfQuestionsRepliedTo =
+        await userNumberOfQuestionRepliedDocSnapshot
+                .data()?['no_of_questions_replied'] ??
+            0;
+
+    transaction.update(db.collection('users').doc(userId), {
+      'no_of_questions_replied': currentNumberOfQuestionsRepliedTo + value,
+    });
+    log("currentNumberOfQuestionsRepliedTo: ${await userNumberOfQuestionRepliedDocSnapshot.data()?['no_of_questions_replied']}");
+  });
+  value == 1
+      ? Provider.of<UserProvider>(context, listen: false)
+          .incrementNumberOfQuestionReplies()
+      : Provider.of<UserProvider>(context, listen: false)
+          .decrementNumberOfQuestionReplies();
+}
+
 Future<void> deleteReply(
     {required String userId,
     required String questionId,
-    required String replyId}) async {
+    required String replyId,
+    required BuildContext context}) async {
   try {
     // Delete reply from the "replies" subcollection under the question
     await db
@@ -393,16 +412,10 @@ Future<void> deleteReply(
           });
         } else {
           // If there is only 1 reply, remove the document
+          log("delete is called");
           transaction.delete(userQuestionDocRef);
-          final userNumberOfQuestionRepliedDocSnapshot =
-              await transaction.get(db.collection('users').doc(userId));
-          final currentNumberOfQuestionsRepliedTo =
-              userNumberOfQuestionRepliedDocSnapshot
-                      .data()?['no_of_questions_replied'] ??
-                  0;
-          transaction.update(db.collection('users').doc(userId), {
-            'no_of_questions_replied': currentNumberOfQuestionsRepliedTo - 1,
-          });
+
+          await _updateNumberOfQuestionsRepliedTo(userId, context, -1);
         }
       }
     });
@@ -505,7 +518,7 @@ Future<void> _updateReplies(
   await db.runTransaction((transaction) async {
     final questionDoc = await transaction.get(questionRef);
     if (questionDoc.exists) {
-      final currentReplies = questionDoc['number_of_replies'] ?? 0;
+      final currentReplies = await questionDoc['number_of_replies'] ?? 0;
       transaction.update(
         questionRef,
         {'number_of_replies': currentReplies + change},

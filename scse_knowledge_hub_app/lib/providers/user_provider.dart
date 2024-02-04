@@ -33,6 +33,16 @@ class UserProvider extends ChangeNotifier {
     stopLoading();
   }
 
+  void incrementNumberOfQuestionReplies() {
+    _user.noOfQuestionsReplied = _user.noOfQuestionsReplied + 1;
+    stopLoading();
+  }
+
+  void decrementNumberOfQuestionReplies() {
+    _user.noOfQuestionsReplied = _user.noOfQuestionsReplied - 1;
+    stopLoading();
+  }
+
   Future<void> createUser({
     required String userID,
     required String userName,

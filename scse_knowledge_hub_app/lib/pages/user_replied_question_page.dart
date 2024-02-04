@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/pages/question_details_page.dart';
@@ -24,6 +26,7 @@ class _UserRepliedQuestionPageState extends State<UserRepliedQuestionPage> {
   void initState() {
     Future.microtask(() async {
       _isLoading = true;
+      log("here i call");
       setState(() {});
       await _questionProvider.getUserRepliedQuestions(_userProvider.user.id);
       _isLoading = false;

@@ -212,6 +212,19 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                                 scrollToReply(
                                     replyId, _scrollController, cardHeight);
                               },
+                              onDeleteReply: (replyId) async {
+                                _isLoading = true;
+                                setState(() {});
+                                await _questionProvider.deleteReply(
+                                  userId: _userProvider.user.id,
+                                  question: widget.question,
+                                  replyId: replyId,
+                                  context: context,
+                                );
+                                widget.question.numberOfReplies -= 1;
+                                _isLoading = false;
+                                setState(() {});
+                              },
                             ),
                           );
                         },
@@ -295,21 +308,26 @@ class _QuestionDetailsPageState extends State<QuestionDetailsPage> {
                                         userName: _userProvider.user.name,
                                         question: widget.question,
                                         content: _replyController.text,
+                                        context: context,
                                         taggedUserId: _taggedUser,
                                         taggedReplyId: _taggedReply)
                                     .then((value) {
                                     _questionProvider.getAllRepliesForQuestion(
                                         questionId: widget.question.id);
+                                    widget.question.numberOfReplies += 1;
                                   })
                                 : await _questionProvider
                                     .addReply(
-                                        userId: _userProvider.user.id,
-                                        userName: _userProvider.user.name,
-                                        question: widget.question,
-                                        content: _replyController.text)
+                                    userId: _userProvider.user.id,
+                                    userName: _userProvider.user.name,
+                                    question: widget.question,
+                                    content: _replyController.text,
+                                    context: context,
+                                  )
                                     .then((value) {
                                     _questionProvider.getAllRepliesForQuestion(
                                         questionId: widget.question.id);
+                                    widget.question.numberOfReplies += 1;
                                   });
 
                             _isLoading = false;

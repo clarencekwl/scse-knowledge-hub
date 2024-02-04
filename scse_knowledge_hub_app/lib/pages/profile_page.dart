@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/models/User.dart';
@@ -105,6 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             widget.user == null
                                 ? _userProvider.user.name
                                 : widget.user!.name,
+                            textAlign: TextAlign.center,
                             style: TextStyle(
                                 overflow: TextOverflow.clip,
                                 fontSize: 30.0,
