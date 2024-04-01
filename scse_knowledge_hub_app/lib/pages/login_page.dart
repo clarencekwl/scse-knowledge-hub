@@ -133,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                                           child: TextFormField(
                                             controller: _nameController,
                                             decoration: InputDecoration(
-                                              hintText: "Name (Can be changed)",
+                                              hintText: "Username",
                                               hintStyle:
                                                   TextStyle(color: Colors.grey),
                                               border: InputBorder.none,
@@ -151,10 +151,10 @@ class _LoginPageState extends State<LoginPage> {
                                             if (value!.isEmpty) {
                                               return "Please enter a NTU email";
                                             }
-                                            // if (false == _isNtuEmail(value)) {
-                                            //   log(value.toString());
-                                            //   return "Please enter a valid NTU email";
-                                            // }
+                                            if (false == _isNtuEmail(value)) {
+                                              log(value.toString());
+                                              return "Please enter a valid NTU email";
+                                            }
                                             return null;
                                           },
                                           controller: _emailController,
