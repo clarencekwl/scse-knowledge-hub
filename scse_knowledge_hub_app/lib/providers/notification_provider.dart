@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:scse_knowledge_hub_app/pages/question_details_page.dart';
 import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tzData;
+// import 'package:timezone/timezone.dart' as tz;
+// import 'package:timezone/data/latest.dart' as tzData;
 import 'package:provider/provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 

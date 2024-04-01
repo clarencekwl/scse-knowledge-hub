@@ -6,7 +6,7 @@ import 'package:scse_knowledge_hub_app/models/Question.dart';
 import 'package:scse_knowledge_hub_app/models/Reply.dart';
 import 'package:scse_knowledge_hub_app/models/User.dart';
 import 'package:scse_knowledge_hub_app/pages/profile_page.dart';
-import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
+// import 'package:scse_knowledge_hub_app/providers/question_provider.dart';
 import 'package:scse_knowledge_hub_app/providers/user_provider.dart';
 import 'package:scse_knowledge_hub_app/utils/styles.dart';
 import 'package:scse_knowledge_hub_app/widget/warning_dialog_widget.dart';
@@ -34,7 +34,7 @@ class ReplyCard extends StatefulWidget {
 
 class _ReplyCardState extends State<ReplyCard> {
   final GlobalKey _cardKey = GlobalKey();
-  late QuestionProvider _questionProvider;
+  // late QuestionProvider _questionProvider;
   late UserProvider _userProvider;
   bool _isUserReply = false;
   bool _isDelete = false;
@@ -52,7 +52,7 @@ class _ReplyCardState extends State<ReplyCard> {
 
   @override
   Widget build(BuildContext context) {
-    _questionProvider = Provider.of(context);
+    // _questionProvider = Provider.of(context);
     _userProvider = Provider.of(context);
 
     return InkWell(
@@ -130,7 +130,7 @@ class _ReplyCardState extends State<ReplyCard> {
                 Row(
                   children: [
                     if (widget.reply.taggedUserId != null)
-                      Container(
+                      SizedBox(
                         width: 100,
                         child: Text(
                           "@${widget.reply.taggedUserId!} ",
