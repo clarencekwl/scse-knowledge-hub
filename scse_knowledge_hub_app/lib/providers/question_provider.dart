@@ -116,6 +116,7 @@ class QuestionProvider extends ChangeNotifier {
 
   Future<void> getQuestion({required String questionId}) async {
     startLoading();
+    // call function in QuestionAPI to fetch document from Firestore 
     QuestionResponse? res =
         await QuestionAPI.getQuestion(questionId: questionId);
     if (null != res) {

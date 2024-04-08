@@ -43,10 +43,12 @@ Future<ListOfQuestionReponse?> getQuestionsFromDB(
 
 Future<QuestionResponse?> getQuestion({required String questionId}) async {
   try {
+    // get document snapshot from Firestore based on the questionId that is 
+    // to be fetched
     DocumentSnapshot snapshot =
         await db.collection("questions").doc(questionId).get();
-    // help from here
     if (snapshot.exists) {
+      // decode the snapshot data by calling QuestionReponse
       Map<String, dynamic> json = snapshot.data() as Map<String, dynamic>;
       return QuestionResponse.fromJson(json, questionId);
     } else {

@@ -147,7 +147,11 @@ class _LoginPageState extends State<LoginPage> {
                                                 bottom: BorderSide(
                                                     color: Colors.grey))),
                                         child: TextFormField(
+                                          // validate if email is a NTU email
                                           validator: (value) {
+                                            if (!_isRegister) {
+                                              return null;
+                                            }
                                             if (value!.isEmpty) {
                                               return "Please enter a NTU email";
                                             }
@@ -310,7 +314,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   bool _isNtuEmail(String email) {
-    // Define a regular expression pattern for email validation
     // The pattern ensures the email ends with "ntu.edu.sg"
     RegExp regex =
         RegExp(r"^[a-zA-Z0-9._%+-]+@(e\.)?ntu\.edu\.sg$", caseSensitive: false);

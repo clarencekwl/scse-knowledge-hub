@@ -126,7 +126,9 @@ class QuestionResponse {
 
   static Future<QuestionResponse> fromJson(
       Map<String, dynamic> json, String questionId) async {
+    // invoke Factory method of Question Class
     Question question = Question.fromJson(json, questionId);
+    // fetch username of the question owner
     Question questionWithUserName = await Question.createWithUserName(question);
     return QuestionResponse(question: questionWithUserName);
   }

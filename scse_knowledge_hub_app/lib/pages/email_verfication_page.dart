@@ -26,7 +26,6 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   Timer? timer;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     FirebaseAuth.instance.currentUser?.sendEmailVerification();
     timer =
@@ -45,9 +44,12 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
         userEmail: widget.userEmail,
       );
       await _userProvider.setUser(userID: user.uid);
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Email Successfully Verified")));
+      // ignore: use_build_context_synchronously
       Navigator.of(context).popUntil((route) => route.isFirst);
+      // ignore: use_build_context_synchronously
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => HomePage()));
       timer?.cancel();
