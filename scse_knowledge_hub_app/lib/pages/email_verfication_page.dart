@@ -37,12 +37,13 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
     User? user = FirebaseAuth.instance.currentUser;
     isEmailVerified = user!.emailVerified;
 
+    await _userProvider.createUser(
+      userID: user.uid,
+      userName: widget.userName,
+      userEmail: widget.userEmail,
+    );
+
     if (isEmailVerified) {
-      await _userProvider.createUser(
-        userID: user.uid,
-        userName: widget.userName,
-        userEmail: widget.userEmail,
-      );
       await _userProvider.setUser(userID: user.uid);
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context)

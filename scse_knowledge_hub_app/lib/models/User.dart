@@ -21,7 +21,7 @@ class User {
         name: json['name'],
         email: json['email'],
         dateJoined: json['date_joined'].toDate(),
-        noOfQuestions: json['no_of_questions'],
-        noOfQuestionsReplied: json['no_of_questions_replied']);
+        noOfQuestions: json['no_of_questions'] ?? 0,
+        noOfQuestionsReplied: json['no_of_questions_replied'] ?? 0);
   }
 }
